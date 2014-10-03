@@ -1,7 +1,17 @@
 CyberCoachProject for the ASE Course in 2014
 --------------------------------------------
 
+Team Members: 
+- Sveta Krasikova
+- Roman Kuepper
+- Alexander Rueedlinger
+- Stefan Wanzenried
+
+
+
+
 PROJECT IDEAS:
+--------------
 
 (The "scheduling" part)
 
