@@ -57,3 +57,4 @@ gem 'therubyracer'
 
 # rest client
 gem 'rest-client'
+gem "activerecord-tableless", "~> 1.0"

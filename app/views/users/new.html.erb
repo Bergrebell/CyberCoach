@@ -1,5 +1,5 @@
 <h1>Users#new</h1>
-<%= form_for(@user) do |f| %>
+<%= form_for(@user, url: users_path, method: :post) do |f| %>
 
     <p>
     <%= f.label :username %>
@@ -14,6 +14,11 @@
     <p>
     <%= f.label :realname %>
     <%= f.text_field :realname %>
+    </p>
+
+    <p>
+      <%= f.label :email %>
+      <%= f.text_field :email %>
     </p>
 
     <p>

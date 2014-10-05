@@ -4,7 +4,8 @@ require 'active_support'
 # the cyber coach resources. In order to use just extend this class.
 #
 #
-class Cybercoach::Base
+class Cybercoach::Base < ActiveRecord::Base
+  has_no_table
 
   # class variables
 
@@ -33,7 +34,7 @@ class Cybercoach::Base
   def initialize(params={})
 
     @@fields.each do |field|
-      self.set_field(field,nil)
+      self.set_field(field,'')
       self.create_accessor(field)
     end
 
