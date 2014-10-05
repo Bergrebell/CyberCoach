@@ -1,0 +1,26 @@
+<h1>Users#new</h1>
+<%= form_for(@user) do |f| %>
+
+    <p>
+    <%= f.label :username %>
+    <%= f.text_field :username %>
+    </p>
+
+    <p>
+    <%= f.label :password %>
+    <%= f.text_field :password %>
+    </p>
+
+    <p>
+    <%= f.label :realname %>
+    <%= f.text_field :realname %>
+    </p>
+
+    <p>
+    <%= f.label :publicvisible %>
+    <%= f.text_field :publicvisible %>
+    </p>
+
+    <%= f.submit 'Register' %>
+<% end %>
+
