@@ -18,8 +18,7 @@ class UserTest < ActiveSupport::TestCase
     sleep 1.5
     user = User.find_first(filter: ->(user) {user.username == 'lexruee8'})
     assert_equal('lexruee8',user.username)
-    user.password = 'test'
-    user.delete
+    user.delete(username: user.username,password: 'test')
     sleep 1.5
 
     user = User.find_first(filter: ->(user) {user.username == 'lexruee8'})
@@ -47,8 +46,7 @@ class UserTest < ActiveSupport::TestCase
      user = user.load
      assert_equal("Peter Muller", user.realname)
      user.realname = 'Peter Hans'
-     user.password = 'test'
-     user.update
+     user.update(username: user.username,password: 'test')
 
      sleep 1.5
 
@@ -59,8 +57,7 @@ class UserTest < ActiveSupport::TestCase
      sleep 1.5
 
      user.realname = 'Peter Muller'
-     user.password = 'test'
-     user.update
+     user.update(username: user.username,password: 'test')
    end
 
 end

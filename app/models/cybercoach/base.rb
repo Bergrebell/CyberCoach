@@ -63,28 +63,34 @@ class Cybercoach::Base < ActiveRecord::Base
 
   # Saves a new resource on the cyber coach server.
   #
-  def save
+  def save(params={})
     hash = self.instance_values # get hash from instance variables
     xml = self.class.hash_to_xml(hash)
     create_path = self.class.resource_path(resource: self.id)
-    RestClient.put(create_path, xml, content_type: :xml, accept: :xml)
-  end
 
+    options = {content_type: :xml, accept: :xml}
+
+    if not params[:username].nil? and not params[:password].nil?
+      b64 = self.class.encrypt_basic_auth(params[:username],params[:password])
+      options = options.update({authorization: b64})
+    end
+    RestClient.put(create_path, xml, options)
+  end
 
   # Updates a resource on the remote server.
   #
-  def update
+  def update(params)
     hash = self.instance_values
     xml = self.class.hash_to_xml(hash)
     update_path = self.class.resource_path(resource: self.id)
-    b64 = self.class.encrypt_basic_auth(self.username,self.password)
+    b64 = self.class.encrypt_basic_auth(params[:username],params[:password])
     RestClient.put(update_path, xml, content_type: :xml, accept: :xml, authorization: b64)
   end
 
 
-  def delete
+  def delete(params)
     delete_path = self.class.resource_path(resource: self.id)
-    b64 = self.class.encrypt_basic_auth(self.username,self.password)
+    b64 = self.class.encrypt_basic_auth(params[:username],params[:password])
     RestClient.delete(delete_path, content_type: :xml, accept: :xml, authorization: b64)
   end
 
