@@ -3,7 +3,7 @@
 #
 # It is based on the Reverse Polish notation and the Shunting-yard algorithm.
 # More details see: 	1) http://en.wikipedia.org/wiki/Reverse_Polish_notation
-# 						        2) http://en.wikipedia.org/wiki/Shunting-yard_algorithm
+# 						      2) http://en.wikipedia.org/wiki/Shunting-yard_algorithm
 #
 #
 class ConditionParser
@@ -11,7 +11,7 @@ class ConditionParser
   # This method takes as argument a hash with the following properties:
   # conditions: a list of conditions, assignments: a hash of assignments.
   #
-  # The symbols :and, :not and :or are used as connectives for building more complex
+  # The symbols :and, :not and :or are used as connectives for building more complex conditions.
   #
   # ====Example
   # x1 = { value: 10, op: '<', attribute: 'km'}
