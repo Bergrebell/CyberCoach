@@ -25,22 +25,34 @@ class ConditionParser
   #
   def parse(params)
     conditions, assignments = params[:conditions], params[:assignments]
-    conditions = preprocessing(conditions)
-    parser = Infix2Postfix.new
-    conditions = parser.parse(conditions) # apply Shunting-yard algorithm
 
+    # map all keys to symbols
+    assignments = Hash[assignments.map {|k,v| [k.to_sym,v]}]
+
+    # map (,),and,not,or to symbols that are internally used.
+    conditions = preprocessing(conditions)
+
+    # apply Shunting-yard algorithm
+    parser = Infix2Postfix.new
+    conditions = parser.parse(conditions)
+
+    # map to boolean functions
     boolean_functions = to_boolean_functions(conditions, assignments)
+
+    # apply all boolean functions
     booleans = boolean_functions.map do |boolean_function|
       if boolean_function.kind_of?(Symbol) # if true its a symbol like :not, :and, :or
         boolean_function
       else #otherwise its a boolean function
-        boolean_function.call
+        boolean_function.call # apply it
       end
     end
     # apply Reverse Polish algorithm and return a closure which returns the final result.
     return ->() { eval(booleans) }
   end
 
+
+  private
 
   def preprocessing(conditions)
     conditions.map do |literal|
@@ -61,43 +73,46 @@ class ConditionParser
     end
   end
 
-  private
-
-#
-# Map each condition to a boolean function using the
-# provided assignments for these boolean functions.
-#
+  #
+  # Map each condition to a boolean function using the
+  # provided assignments for these boolean functions.
+  #
   def to_boolean_functions(conditions, assignments)
     conditions = conditions.map do |x|
-      if not x.kind_of?(Symbol)
-        op, v, attr = x[:op], x[:value], x[:attribute]
-        p = assignments[attr.to_sym]
-        case op
+      if not x.kind_of?(Symbol) # check if its a condition
+        operator, condition_value, attribute = x[:op], x[:value], x[:attribute].to_sym
+        assignment = assignments[attribute]
+
+        case operator
           when '<' then
-            ->() { v < p }
+            ->() { condition_value < assignment }
           when '>' then
-            ->() { v > p }
+            ->() { condition_value > assignment }
           when '=' then
-            ->() { v == p }
+            ->() { condition_value == assignment }
           when '<=' then
-            ->() { v <= p }
+            ->() { condition_value <= assignment }
           when '>=' then
-            ->() { v >= p }
+            ->() { condition_value >= assignment }
           when '!=' then
-            ->() { v != p }
+            ->() { condition_value != assignment }
+          when 'includes' then
+            ->() {  condition_value.include?(assignment) }
+          when 'excludes' then
+            ->() {  not condition_value.include?(assignment) }
           else
             raise 'Error: op not found!'
         end
-      else
+      else # otherwise its a symbol
         x
       end
     end
   end
 
-#
-# Evaluate the conditions in order to get a final boolean value using
-# the Reverse Polish notation.
-#
+  #
+  # Evaluate the conditions in order to get a final boolean value using
+  # the Reverse Polish notation.
+  #
   def eval(conditions)
     stack = Array.new
     # lookup table

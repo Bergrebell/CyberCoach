@@ -1,24 +1,50 @@
 require 'test_helper'
-require 'pp'
+
 class TestConditionParser  < ActiveSupport::TestCase
 
-  test "and example" do
-    parser =  ConditionParser.new
 
+  test "includes example" do
+    # json string
+    conditions = [
+        { value: [5,10,15,30], op: "includes", attribute: "km"}
+    ]
+    # km attribute must be a member of [5,10,15,30]
+
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 10})
+    assert validator.call
+  end
+
+
+  test "excludes example" do
+    # json string
+    conditions = [
+        { value: [5,10,15,30], op: "excludes", attribute: "km"}
+    ]
+    # km attribute must not be a member of [5,10,15,30]
+
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 10})
+    assert !validator.call #should fail
+  end
+
+
+  test "and example" do
     # json string
     conditions = [
             { value: 10, op: "<", attribute: "km"},
              "and", { value: 20, op: ">", attribute: "km"}
     ]
+    # km attribute must be between 10 and 20
 
-    # value must be between 10 and 20
-
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 16})
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 16})
     assert validator.call
 
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 15})
+    validator = parser.parse(conditions: conditions, assignments: { km: 15})
     assert validator.call
   end
+
 
   test "or example" do
     # json string
@@ -26,13 +52,16 @@ class TestConditionParser  < ActiveSupport::TestCase
         { value: 10, op: "=", attribute: "km"},
         "or", { value: 20, op: "=", attribute: "km"},
     ]
+    # km attribute must equals to 10 or 20
 
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 10})
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 10})
     assert validator.call
 
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 20})
+    validator = parser.parse(conditions: conditions, assignments: { km: 20})
     assert validator.call
   end
+
 
   test "second and example" do
     # json string
@@ -41,18 +70,18 @@ class TestConditionParser  < ActiveSupport::TestCase
         "and", { value: 60, op: ">=", attribute: "duration"},
     ]
 
-    # km must be greater than or equals to 10 km AND
-    # duration must be less or equals to 60
+    # km attribute must be greater than or equals to 10 km AND
+    # duration attribute must be less or equals to 60
 
     # should succeed
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 11, duration: 55})
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 11, duration: 55})
     assert validator.call
 
     # should fail
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 9, duration: 55})
+    validator = parser.parse(conditions: conditions, assignments: { km: 9, duration: 55})
     assert !validator.call
   end
-
 
 
   test "second or example" do
@@ -62,19 +91,20 @@ class TestConditionParser  < ActiveSupport::TestCase
         "or", { value: 60, op: ">=", attribute: "duration"},
     ]
 
-    # km must be greater than or equals to 10 km OR
-    # duration must be less or equals to 60
+    # km attribute must be greater than or equals to 10 km OR
+    # duration attribute must be less or equals to 60
 
     # should succeed
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 9, duration: 55})
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 9, duration: 55})
     assert validator.call
 
     # should succeed
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 11, duration: 61})
+    validator = parser.parse(conditions: conditions, assignments: { km: 11, duration: 61})
     assert validator.call
 
     # should fail
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 9, duration: 61})
+    validator = parser.parse(conditions: conditions, assignments: { km: 9, duration: 61})
     assert !validator.call
   end
 
@@ -87,13 +117,15 @@ class TestConditionParser  < ActiveSupport::TestCase
 
 
     # should fail
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 10})
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 10})
     assert !validator.call
 
     # should succeed
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 20})
+    validator = parser.parse(conditions: conditions, assignments: { km: 20})
     assert validator.call
   end
+
 
   test "second not example" do
     # json string
@@ -105,10 +137,12 @@ class TestConditionParser  < ActiveSupport::TestCase
 
 
     # should succeed
-    validator = ConditionParser.new.parse(conditions: conditions, assignments: { km: 10})
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions, assignments: { km: 10})
     assert validator.call
 
   end
+
 
   test "complex example" do
     # json string
@@ -133,11 +167,13 @@ class TestConditionParser  < ActiveSupport::TestCase
         ")"
     ]
 
-      # should fail
-      validator = ConditionParser.new.parse(conditions: conditions,
+    # should fail
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions,
                                             assignments: { v1: 10, v2: 8, v3: 9, v4: 6, v5: 5, v6: 5, v7: 4})
-      assert !validator.call
+    assert !validator.call
   end
+
 
   test "second complex example" do
     # json string
@@ -165,8 +201,11 @@ class TestConditionParser  < ActiveSupport::TestCase
     ]
 
     # should succeed
-    validator = ConditionParser.new.parse(conditions: conditions,
+    parser =  ConditionParser.new
+    validator = parser.parse(conditions: conditions,
                                           assignments: { v1: 10, v2: 8, v3: 9, v4: 6, v5: 5, v6: 5, v7: 4})
     assert validator.call
   end
+
+
 end
