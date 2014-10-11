@@ -97,11 +97,20 @@ class TestAchievement  < ActiveSupport::TestCase
 
     # create some achievements and use the title as key values for readability
     achievements = {
-        '5 km in 30 minutes' => MyAchievement.new({ id: 1, title: '5 km in 30 minutes', attributes: [:distance, :duration], points: 30, sport: 'Running' }),
-        '10 km in 60 minutes' => MyAchievement.new({ id: 2, title: '10 km in 60 minutes', attributes: [:distance, :duration], points: 60, sport: 'Running' }),
-        '10 km' => MyAchievement.new({ id: 3, title: '10 km run achieved', attributes: [:distance], points: 60, sport: 'Running' }),
-        'first run' => MyAchievement.new({ id: 4, title: 'First run! Congrats Buddy!', attributes: [:distance], points: 60, sport: 'Running' }),
-        '5 km' => MyAchievement.new({ id: 3, title: '5 km run achieved', attributes: [:distance], points: 60, sport: 'Running' }),
+        '5 km in 30 minutes' => MyAchievement.new({id: 1, title: '5 km in 30 minutes',
+                                                   attributes: [:distance, :duration], points: 30, sport: 'Running'}),
+
+        '10 km in 60 minutes' => MyAchievement.new({id: 2, title: '10 km in 60 minutes',
+                                                    attributes: [:distance, :duration], points: 60, sport: 'Running'}),
+
+        '10 km' => MyAchievement.new({id: 3, title: '10 km run achieved',
+                                                    attributes: [:distance], points: 60, sport: 'Running'}),
+
+        'first run' => MyAchievement.new({id: 4, title: 'First run! Congrats Buddy!',
+                                                    attributes: [:distance], points: 60, sport: 'Running'}),
+
+        '5 km' => MyAchievement.new({id: 3, title: '5 km run achieved',
+                                                    attributes: [:distance], points: 60, sport: 'Running'}),
     }
 
     # create rules and associate them with the corresponding achievements
@@ -117,7 +126,8 @@ class TestAchievement  < ActiveSupport::TestCase
                           })
 
     rule_4 = GameRule.new({ achievement: achievements['first run'],
-                            validator: ->(attributes) { attributes[:distance] >= 0  and not attributes[:user].has_achievement?(achievements['first run']) }
+                            validator: ->(attributes) { attributes[:distance] >= 0
+                                              and not attributes[:user].has_achievement?(achievements['first run']) }
                           })
 
     rule_5 = GameRule.new({ achievement: achievements['5 km'],
