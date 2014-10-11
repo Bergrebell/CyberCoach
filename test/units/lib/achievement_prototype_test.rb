@@ -18,11 +18,16 @@ end
 
 class GameRule
 
-  attr_reader :achievement
+  attr_reader :achievements
 
   def initialize(params)
     @validator = params[:validator]
-    @achievement = params[:achievement]
+    @achievements = Array.new
+    # hack alert
+    # add multiple achievements if :achievements is used
+    @achievements.push(*params[:achievements]) if not params[:achievements].nil?
+    # add single achievement if :achievement is used
+    @achievements << params[:achievement] if not params[:achievement].nil?
   end
 
   def validate(data)
@@ -34,13 +39,19 @@ class GameRule
     # get all attributes in the data
     data_attributes = Set.new params[:attributes].keys # just get the keys and create a set of keys
 
-    # get all necessary attributes for an achievement and create a set
-    achievement_attributes = Set.new @achievement.attributes
+    # get all necessary attributes for an achievement / multiple achievements
+    achievement_attributes = @achievements.map {|a| a.attributes}.flatten
+    achievement_attributes = Set.new achievement_attributes # create a set of attributes (eliminates duplicated attributes)
+
+
+    # create a set of sport categories, first extract sport category and the resulting list to Set.new
+    sports = Set.new @achievements.map { |a| a.sport }
 
     # check if set of achievement attributes is a subset of the set data attributes
     # if so the rule can be applied = all necessary attributes are matched / available
-    # and check if the rule is responsible for this type of sport.
-    achievement_attributes.subset?(data_attributes) and @achievement.sport == params[:sport]
+    # and check if the rule is responsible for this sport category.
+
+    achievement_attributes.subset?(data_attributes) and  sports.include?(params[:sport]) #hack alert: include?
   end
 
 end
@@ -63,7 +74,7 @@ class GameController
         params[:attributes][:user] = user # dirty hack, not really nice, otherwise the game rules don't have access to
         # the user object
         if rule.validate(params[:attributes])
-          achievements << rule.achievement
+          achievements.push(*rule.achievements)
         end
       end
     end
@@ -118,7 +129,9 @@ class TestAchievement  < ActiveSupport::TestCase
                             validator: ->(attributes) { (attributes[:distance] >= 5 and attributes[:duration] <= 30) }
                         })
 
-    rule_2 = GameRule.new({ achievement: achievements['10 km in 60 minutes'],
+    # special rule: links two achievements together:
+    # if a user achieves 10km in 60 minutes, he is also awarded for 5km in 30 minutes
+    rule_2 = GameRule.new({ achievements: [achievements['10 km in 60 minutes'],achievements['5 km in 30 minutes']],
                             validator: ->(attributes) { attributes[:distance] >= 10 and attributes[:duration] <= 60}
                           })
     rule_3 = GameRule.new({ achievement: achievements['10 km'],
@@ -126,8 +139,8 @@ class TestAchievement  < ActiveSupport::TestCase
                           })
 
     rule_4 = GameRule.new({ achievement: achievements['first run'],
-                            validator: ->(attributes) { attributes[:distance] >= 0
-                                              and not attributes[:user].has_achievement?(achievements['first run']) }
+                            validator: ->(attributes) { attributes[:distance] >= 0 and
+                                  not attributes[:user].has_achievement?(achievements['first run']) }
                           })
 
     rule_5 = GameRule.new({ achievement: achievements['5 km'],
@@ -147,7 +160,7 @@ class TestAchievement  < ActiveSupport::TestCase
     assert obtained_achievements.include?(achievements['10 km in 60 minutes'])
     assert obtained_achievements.include?(achievements['10 km'])
     assert obtained_achievements.include?(achievements['5 km'])
-
+    assert obtained_achievements.include?(achievements['10 km in 60 minutes'])
     assert !obtained_achievements.include?(achievements['first run'])
 
 
