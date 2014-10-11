@@ -131,7 +131,7 @@ class TestAchievement  < ActiveSupport::TestCase
     user = TestUser.new
     user.achievements << achievements['first run']
 
-    # users enters new data see :attributes and :sport
+    # user enters new data see :attributes and :sport
     obtained_achievements = game_controller.check user: user, attributes: { distance: 11, duration:55 }, sport: 'Running'
 
     assert obtained_achievements.include?(achievements['10 km in 60 minutes'])
