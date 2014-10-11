@@ -160,7 +160,7 @@ class TestAchievement  < ActiveSupport::TestCase
     assert obtained_achievements.include?(achievements['10 km in 60 minutes'])
     assert obtained_achievements.include?(achievements['10 km'])
     assert obtained_achievements.include?(achievements['5 km'])
-    assert obtained_achievements.include?(achievements['10 km in 60 minutes'])
+    assert obtained_achievements.include?(achievements['5 km in 30 minutes'])
     assert !obtained_achievements.include?(achievements['first run'])
 
 
