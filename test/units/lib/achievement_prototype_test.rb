@@ -6,8 +6,8 @@ class MyAchievement
 
   attr_reader :id, :title, :points, :sport, :attributes
 
-  def initialize(params)
-    @id = params[:id]
+  def initialize(params) # using hashes as parameters, we can simulate named parameters using a cool notation like
+    @id = params[:id]    # blah. new :first 'x', :second 'y' etc
     @title = params[:title]
     @points = params[:points]
     @sport = params[:sport]
@@ -16,12 +16,14 @@ class MyAchievement
 
 end
 
+
+# GameRule encapsulates validation function and associates a single or multiple achievements
 class GameRule
 
   attr_reader :achievements
 
   def initialize(params)
-    @validator = params[:validator]
+    @validator = params[:validator] # injected validation function (lambda)
     @achievements = Array.new
     # hack alert
     # add multiple achievements if :achievements is used
@@ -30,8 +32,10 @@ class GameRule
     @achievements << params[:achievement] if not params[:achievement].nil?
   end
 
-  def validate(data)
-    @validator.call(data)
+  # Validates if the condition is satisfied by the provided attributes.
+  # If all conditions are satisfied it returns true, otherwise false.
+  def validate(attributes)
+    @validator.call(attributes) #apply the lambda function
   end
 
   # checks if a rule can be applied on the provided attributes and the corresponding sport category
@@ -44,7 +48,7 @@ class GameRule
     achievement_attributes = Set.new achievement_attributes # create a set of attributes (eliminates duplicated attributes)
 
 
-    # create a set of sport categories, first extract sport category and the resulting list to Set.new
+    # create a set of sport categories, first extract sport category and pass the resulting list to Set.new
     sports = Set.new @achievements.map { |a| a.sport }
 
     # check if set of achievement attributes is a subset of the set data attributes
@@ -56,6 +60,8 @@ class GameRule
 
 end
 
+
+# Game controller which takes care of the application of all game rules for incoming sport events.
 class GameController
 
   def initialize(params)
@@ -66,23 +72,22 @@ class GameController
   #
   def check(params)
     user = params[:user]
-    attributes = params[:attributes]
-    achievements = Array.new # use temp array, because some rules might use the user achievements,
+    achievements = Array.new # use temp array, because some rules might use the user achievements.
     @rules.each do |rule|
       # check if the rule can be applied on these parameters
       if rule.applicable?(params)
-        params[:attributes][:user] = user # dirty hack, not really nice, otherwise the game rules don't have access to
-        # the user object
-        if rule.validate(params[:attributes])
-          achievements.push(*rule.achievements)
+        attributes = params[:attributes].dup # make a copy
+        attributes = attributes.merge({user: user}) # dirty hack, not really nice,
+        # otherwise the game rules don't have access to the user object
+
+        if rule.validate(attributes) # check if conditions are satisfied, maybe the method name should be changed...
+          achievements.push(*rule.achievements) # push multiple achievements using * operator
         end
+
       end
     end
-
-    achievements.each do |achievement|
-      user.achievements << achievement
-    end
-    achievements
+    user.achievements.merge(achievements)
+    achievements #return earned achievements
   end
 
 end
@@ -92,7 +97,7 @@ class TestUser
   attr_accessor :achievements
 
   def initialize
-    @achievements = Set.new
+    @achievements = Set.new #use set to eliminate duplicates
   end
 
   def has_achievement?(achievement)
@@ -155,15 +160,13 @@ class TestAchievement  < ActiveSupport::TestCase
     user.achievements << achievements['first run']
 
     # user enters new data see :attributes and :sport
-    obtained_achievements = game_controller.check user: user, attributes: { distance: 11, duration:55 }, sport: 'Running'
+    earned_achievements = game_controller.check user: user, attributes: { distance: 11, duration:55 }, sport: 'Running'
 
-    assert obtained_achievements.include?(achievements['10 km in 60 minutes'])
-    assert obtained_achievements.include?(achievements['10 km'])
-    assert obtained_achievements.include?(achievements['5 km'])
-    assert obtained_achievements.include?(achievements['5 km in 30 minutes'])
-    assert !obtained_achievements.include?(achievements['first run'])
-
-
+    assert earned_achievements.include?(achievements['10 km in 60 minutes'])
+    assert earned_achievements.include?(achievements['10 km'])
+    assert earned_achievements.include?(achievements['5 km'])
+    assert earned_achievements.include?(achievements['5 km in 30 minutes'])
+    assert !earned_achievements.include?(achievements['first run'])
 
   end
 
