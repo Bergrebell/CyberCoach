@@ -6,9 +6,9 @@ require 'addressable/uri'
 # and to give the user a look-a-like rails model with new, all, find, save, update.
 #
 #
-class RestResource::Base < ActiveRecord::Base
+class RestResource::Base
 
-  has_no_table
+
 
   # make properties directly accessible
   attr_reader :properties
@@ -42,16 +42,23 @@ class RestResource::Base < ActiveRecord::Base
 
 
   # Creates a new object.
-  def save
+  def save(params={})
+    # basic options
+    options = {
+        accept: self.class.format,
+        content_type: self.class.format
+    }
+
+    if params[:username] and params[:password]
+      options = options.merge({authorization: self.class.basic_auth_encryption(params)})
+    end
+
     begin
       uri = entity_resource_uri
       serializer = self.class.get_serializer
       changed(true) #mark all attributes as changed
       xml = serializer.call(serializable_properties)
-      response = RestClient.put(uri,xml,{
-          accept: self.class.format,
-          content_type: self.class.format
-      })
+      response = RestClient.put(uri,xml,options)
 
       deserializer = self.class.get_deserializer
       deserializer.call(response)
@@ -110,6 +117,7 @@ class RestResource::Base < ActiveRecord::Base
     begin
       uri = entity_resource_uri
       serializer = self.class.get_serializer
+
       xml = serializer.call(serializable_properties)
 
       response = RestClient.delete(uri,{
@@ -229,6 +237,15 @@ class RestResource::Base < ActiveRecord::Base
     end
 
 
+    def set_site(url=nil)
+      #hack alert: method is setter and getter at the same time
+      @site = url if not url.nil? #set value if available
+      @site = url[0...-1] if not url.nil? and url[-1] == '/' #remove backslash if available
+      @site #return value
+    end
+
+    alias_method :site_uri, :set_site
+
     def set_base(url=nil)
       #hack alert: method is setter and getter at the same time
       @base = url if not url.nil? #set value if available
@@ -261,7 +278,7 @@ class RestResource::Base < ActiveRecord::Base
 
     # Returns the full uri of this resource (collection_uri).
     def collection_resource_uri
-      @base + @resource
+      @base + @site + @resource
     end
 
 
@@ -322,6 +339,17 @@ class RestResource::Base < ActiveRecord::Base
 
   end
 
+  protected
+
+  # Returns the full uri of this resource (entity_uri).
+  def entity_resource_uri
+    if self.uri.nil?
+      self.class.collection_resource_uri + '/' + self.id
+    else
+      self.class.base_uri + self.uri
+    end
+  end
+
   private
 
   # Marks all properties has changed if boolean=true or as unchanged if boolean=false.
@@ -330,10 +358,7 @@ class RestResource::Base < ActiveRecord::Base
     @changed = Hash[@properties.map{ |k,v| [k.to_sym, boolean]}]
   end
 
-  # Returns the full uri of this resource (entity_uri).
-  def entity_resource_uri
-    self.class.collection_resource_uri + '/' + self.id
-  end
+
 
   # Creates dynamically getters and setters for this property..
   def create_accessor(property)

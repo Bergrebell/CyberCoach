@@ -6,7 +6,8 @@ class TestCyberCoachUser < RestResource::Base
 
   properties :username, :password, :email, :publicvisible
 
-  base_uri 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources/'
+  base_uri 'http://diufvm31.unifr.ch:8090/'
+  site_uri '/CyberCoachServer/resources/'
 
   resource_path '/users/'
 
@@ -22,7 +23,9 @@ class TestCyberCoachUser2 < RestResource::Base
   properties :username, :password, :email, :publicvisible
   serializable :username, :email, :publicvisible
 
-  base_uri 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources/'
+  base_uri 'http://diufvm31.unifr.ch:8090/'
+  site_uri '/CyberCoachServer/resources/'
+
 
   resource_path '/users/'
 
@@ -37,7 +40,9 @@ class TestCyberCoachUser3 < RestResource::Base
   properties :username, :password, :email, :publicvisible
   serializable :none
 
-  base_uri 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources/'
+  base_uri 'http://diufvm31.unifr.ch:8090/'
+  site_uri '/CyberCoachServer/resources/'
+
 
   resource_path '/users/'
 
@@ -83,8 +88,13 @@ class RestResource::BaseTest < ActiveSupport::TestCase
   end
 
   test "base url" do
-    should_be = 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources'
+    should_be = 'http://diufvm31.unifr.ch:8090'
     assert_equal(should_be,TestCyberCoachUser.base_uri)
+  end
+
+  test "site url" do
+    should_be = '/CyberCoachServer/resources'
+    assert_equal(should_be,TestCyberCoachUser.site_uri)
   end
 
   test "resource path" do

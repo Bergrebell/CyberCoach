@@ -26,13 +26,15 @@ class CyberCoachUserTest < ActiveSupport::TestCase
       x.username == 'lexruee5'
     end
     assert_equal 'lexruee5', user.username
+    assert_equal '/CyberCoachServer/resources/users/lexruee5/',user.uri
   end
 
   test "get user second example" do
     user = CyberCoachUser.find_first filter: ->(x) do
-      x.username == 'lexruee7'
+      x.username == 'timon'
     end
-    assert_equal 'lexruee7', user.username
+    assert_equal 'timon', user.username
+    assert_equal '/CyberCoachServer/resources/users/timon/',user.uri
   end
 
   test "get user details" do
@@ -77,6 +79,11 @@ class CyberCoachUserTest < ActiveSupport::TestCase
     user = CyberCoachUser.authenticate(username: 'timon', password: 'scareface')
     assert user != false
     assert_equal "timon", user.username
+
+
+    user = CyberCoachUser.authenticate(username: 'moritz', password: 'scareface')
+    assert user != false
+    assert_equal "moritz", user.username
 
   end
 
