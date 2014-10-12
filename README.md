@@ -1,61 +1,25 @@
-CyberCoachProject for the ASE Course in 2014
+CyberCoachProject for the ASE Course 2014/15
 --------------------------------------------
+Note: to be improved
 
-Team Members: 
+Developer Team:
 - Sveta Krasikova
 - Roman Kuepper
 - Alexander Rueedlinger
 - Stefan Wanzenried
 
+Project Idea
 
+The goal of this project is to create an application with the functionality important for doing sports activities.
+The application should present a friendly interface to the CyberCoach service deployed on: http://diufvm31.unifr.ch:8090/CyberCoachServer/
+Currently, we are focusing on implementing some functionality for motivating users to do sports.
+In particular, we want to use gamification techniques to leverage users' desire to engage in sports activities, as the following user stories make clear.
 
+User Stories
 
-PROJECT IDEAS:
---------------
-
-(The "scheduling" part)
-
-+++++
-Authenticate yourself and update your current status
-	- time availability for the next running session
-	- your level
-	- your location
-
-Maintain the list of your favourite running tracks
-	- difficulty (e.g. based on how steep)
-	- proximity to your location
-	- gps data
-	- optionally, weather compatibility (e.g. good only for dry weather, good for sunny/hot weather) 
-
-Generate the list of matching running sessions based on
-	- your status
-	- your friends status
-	- the difficulty of your running tracks 
-	- current weather conditions
-
-Invite your friends for a running session
-	- draw the running track of your choice on the google maps
-
-Join a running session or reject an invitation
-
-
-
-+++++
-Register your running sessions
-
-See your progress (km, minutes, pace, speed, calories)
-
-Challenge your buddies 
- (example I could run 6.4 km in 35 minutes, can you beat me?)
-
-Earn levels, achievments, points
-	- Rookie Runner, Intermediate Runner First Level, Intermediate Runner Second Level, ..., Chuck Norris of Running
-	- 1 km in 5 minutes (running)
-	- athlete of the month in each sport category (with highest score, km, etc)
-	- three running sessions in a week etc.
-	- 30 km in one week etc.
-	- 120 km in one month etc.
-
-History of all sports sessions, running / biking, etc...
-
-Spam all your twitter friends / facebook friends with your achievements
+As a user, I should be able to
+- earn points for doing sport activities(plus challenges & achievements)
+- earn achievements for completing activities (Rookie runner, Intermediate runner, Pro runner, Usian Bolt)
+- have challenges to solve (example: Run 5 km in 30 minutes, Run 100 km in one week etc.)
+- share his progress/challenges on facebook and/or twitter
+- see his progress plotted on a graph
