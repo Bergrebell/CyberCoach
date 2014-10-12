@@ -3,9 +3,11 @@ class CyberCoachUser < RestResource::Base
   id :username
 
   # these properties are all available using conventional setter and getters
-  properties :username, :password, :realname, :email, :publicvisible, :partnerships, :uri, :datecreated
+  properties :username, :password, :realname, :email, :publicvisible,  :uri, :datecreated
 
-  base_uri 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources'
+  base_uri 'http://diufvm31.unifr.ch:8090/'
+
+  site_uri '/CyberCoachServer/resources/'
 
   resource_path '/users/'
 
@@ -58,7 +60,7 @@ class CyberCoachUser < RestResource::Base
   #
   def self.authenticate(params)
     begin
-      response = RestClient.get(self.base_uri + '/authenticateduser/', {
+      response = RestClient.get(self.base_uri + self.site_uri + '/authenticateduser/', {
           content_type: self.format,
           accept: self.format,
           authorization: self.basic_auth_encryption(params)
@@ -70,8 +72,20 @@ class CyberCoachUser < RestResource::Base
     end
   end
 
-  def propose_partnership_to(another_user)
+  def proposes_partnership(params)
+    partnership = CyberCoachPartnership.new user1: self, user2: params[:to], publicvisible: params[:publicvisible]
+    partnership.save(params)
+  end
 
+  alias_method :confirms_partnership, :proposes_partnership
+
+
+  def partnerships
+    if @properties[:partnerships].nil?
+      @properties[:partnerships] = self.load.properties[:partnerships]['partnership'].map {|p| CyberCoachPartnership.new p }
+    else
+      @properties[:partnerships]
+    end
   end
 
 end
