@@ -1,6 +1,8 @@
 <h1>Session#login</h1>
 <p>Find me in app/views/session/login.html.erb</p>
-
+<% flash.each do |name, msg| -%>
+    <%= content_tag :div, msg, class: name %>
+<% end -%>
 <form action="<%= session_login_url %>" method="POST">
   <label for="username">Username:</label>
   <input type="text" name="username" id="username">

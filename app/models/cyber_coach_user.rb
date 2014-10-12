@@ -2,7 +2,8 @@ class CyberCoachUser < RestResource::Base
 
   id :username
 
-  properties :username, :password, :email, :publicvisible, :partnerships, :uri, :datecreated
+  # these properties are all available using conventional setter and getters
+  properties :username, :password, :realname, :email, :publicvisible, :partnerships, :uri, :datecreated
 
   base_uri 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources'
 
@@ -23,13 +24,16 @@ class CyberCoachUser < RestResource::Base
   end
 
   # setup serializer
-  serializer do |properties,changed|
-    keys = changed.select {|k,v| v==true}.keys
-    changed_properties = properties.select {|k,v| keys.include?(k)}
-    changed_properties.to_xml(root: 'user')
+  serializer do |properties|
+    properties.to_xml(root: 'user')
   end
 
 
+  # Checks if a user name is available on the cyber coach webservice.
+  # Returns false if the username is already taken or if the username is not alphanumeric string with at least 4 letters.
+  # Otherwise it returns true.
+  # It uses a string as fir the argument username.
+  #
   def self.username_available?(username)
     # check if username is alphanumeric and that it contains least 4 letters
     if  not /^[a-zA-Z0-9]{4,}$/ =~ username
@@ -37,7 +41,7 @@ class CyberCoachUser < RestResource::Base
     end
     # try and error: check if username is already used... i'm feeling dirty...
     begin
-      response = RestClient.get(self.resource_uri + '/' + username, {
+      response = RestClient.get(self.collection_resource_uri + '/' + username, {
           content_type: self.format,
           accept: self.format
       })
@@ -47,9 +51,27 @@ class CyberCoachUser < RestResource::Base
     end
   end
 
+
+  # Authenticates a user against the cyber coach webservice.
+  # It uses a hash as argument with the following properties:
+  # params = { username: username, password: password }
+  #
   def self.authenticate(params)
-    #TODO: implement that
-    false
+    begin
+      response = RestClient.get(self.base_uri + '/authenticateduser/', {
+          content_type: self.format,
+          accept: self.format,
+          authorization: self.basic_auth_encryption(params)
+      })
+      deserializer = self.get_deserializer
+      user = deserializer.call(response)
+    rescue
+      false
+    end
+  end
+
+  def propose_partnership_to(another_user)
+
   end
 
 end

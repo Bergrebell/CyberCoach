@@ -8,10 +8,10 @@ class ApplicationController < ActionController::Base
   private
 
   def require_login
-    if session[:username].present?
+    if session[:user].present?
       # We are logged in, define a global user variable for the app -> here again use Alex's wrapper class
       # Or get relevant user data also from session so that we don't need to fetch user data from Cybercoach on every request
-      @current_user = User.new
+      @current_user = User.new proxy_for: session[:user]
     else
       redirect_to '/welcome/index', alert: 'Please login to access this section'
     end
