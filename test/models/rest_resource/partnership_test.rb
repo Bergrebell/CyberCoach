@@ -37,7 +37,6 @@ class PartnershipTest < ActiveSupport::TestCase
     assert partnership.confirmed_by_second_user?
   end
 
-
   test "propose partnership" do
     alex = CyberCoachUser.find_first(filter: ->(user) { user.username = 'alex'})
     timon = CyberCoachUser.find_first(filter: ->(user) { user.username = 'timon'})
@@ -49,8 +48,7 @@ class PartnershipTest < ActiveSupport::TestCase
     assert timon.confirms_partnership(to: alex, username: 'timon', password: 'scareface', publicvisible: RestResource::Privacy::Public) !=false
   end
 
-
-  test "moritz proposed partnership to timon" do
+  test "moritz proposes partnership to timon" do
     moritz = CyberCoachUser.find_first(filter: ->(user) { user.username == 'moritz'})
     timon = CyberCoachUser.find_first(filter: ->(user) { user.username == 'timon'})
 
@@ -76,30 +74,28 @@ class PartnershipTest < ActiveSupport::TestCase
     timon = CyberCoachUser.find_first(filter: ->(user) { user.username == 'timon'})
 
     partnerships = timon.partnerships
-    assert partnerships!=false
+    assert_not_nil partnerships
     pp partnerships
   end
-
 
   test "update partnerships of a user" do
     timon = CyberCoachUser.find_first(filter: ->(user) { user.username == 'timon'})
 
     partnerships = timon.partnerships
-    assert partnerships!=false
+    assert_not_nil partnerships
     partnerships.each do |p|
       p.publicvisible = RestResource::Privacy::Member
       assert p.update(username: 'timon', password: 'scareface')
     end
 
     partnerships = timon.partnerships
-    assert partnerships!=false
+    assert_not_nil partnerships
     partnerships.each do |p|
       assert p.publicvisible == RestResource::Privacy::Member
       p.publicvisible = RestResource::Privacy::Public
       assert p.update(username: 'timon', password: 'scareface')
     end
   end
-
 
   test "delete partnerships of a user" do
     timon = CyberCoachUser.find_first(filter: ->(user) { user.username == 'timon'})
@@ -113,5 +109,14 @@ class PartnershipTest < ActiveSupport::TestCase
 
   end
 
+  test "load details" do
+    partnership = CyberCoachPartnership.find with: 'lexruee5', and: 'lexruee11'
+    assert_equal 'lexruee5', partnership.first_user.username
+    assert_equal 'lexruee11', partnership.second_user.username
+
+    pp partnership.first_user
+    partnership = partnership.load
+    pp partnership
+  end
 
 end

@@ -1,7 +1,16 @@
 class CyberCoachPartnership < RestResource::Base
 
+  use_resource 'partnership'
+  include RestResource::CyberCoach
 
   id :id
+  properties :id, :uri, :publicvisible, :userconfirmed1, :userconfirmed2, :user1, :user2
+  serializable :publicvisible
+
+  def initialize(properties)
+    initialize_properties(properties)
+    create_accessors
+  end
 
   def entity_resource_uri
     if self.uri.nil?
@@ -10,41 +19,6 @@ class CyberCoachPartnership < RestResource::Base
       self.class.base_uri + self.uri
     end
   end
-
-  properties :id, :uri, :publicvisible, :userconfirmed1, :userconfirmed2, :user1, :user2
-  serializable :publicvisible
-
-  base_uri 'http://diufvm31.unifr.ch:8090/'
-
-  site_uri '/CyberCoachServer/resources/'
-
-  resource_path '/partnerships/'
-
-  format :xml
-
-  # setup deserializer
-  deserializer do |xml|
-    hash = Hash.from_xml(xml)
-    if hash['list']
-      partnerships = hash['list']['partnerships']['partnership']
-      partnership = partnerships.map {|params| CyberCoachPartnership.new params}
-    else
-      params = hash['partnership']
-      partnership = CyberCoachPartnership.new params
-    end
-  end
-
-  # setup serializer
-  serializer do |properties|
-    properties.to_xml(root: 'partnership')
-  end
-
-
-  def initialize(properties)
-    initialize_properties(properties)
-    create_accessors
-  end
-
 
   # Return first user of this partnership.
   def first_user
@@ -57,17 +31,25 @@ class CyberCoachPartnership < RestResource::Base
   end
 
   def confirmed_by_first_user?
-    self.userconfirmed1
+    self.userconfirmed1 == 'true'
   end
 
   def confirmed_by_second_user?
-    self.userconfirmed2
+    self.userconfirmed2 == 'true'
+  end
+
+  def active?
+    self.confirmed_by_first_user? and self.confirmed_by_second_user?
+  end
+
+  def inactive?
+    not self.active?
   end
 
   def confirmed_by?(user)
     username = user.kind_of?(CyberCoachUser) ? user.username : user #support username and cyber coach user
     confirmed = self.user1['username'] == username ? self.userconfirmed1 : self.userconfirmed2
-    confirmed == 'true' ? true : false
+    confirmed == 'true'
   end
 
 

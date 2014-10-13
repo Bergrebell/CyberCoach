@@ -1,35 +1,10 @@
 class CyberCoachUser < RestResource::Base
 
+  use_resource 'user'
+  include RestResource::CyberCoach
+
   id :username
-
-  # these properties are all available using conventional setter and getters
   properties :username, :password, :realname, :email, :publicvisible,  :uri, :datecreated
-
-  base_uri 'http://diufvm31.unifr.ch:8090/'
-
-  site_uri '/CyberCoachServer/resources/'
-
-  resource_path '/users/'
-
-  format :xml
-
-  # setup deserializer
-  deserializer do |xml|
-    hash = Hash.from_xml(xml)
-    if hash['list']
-      users = hash['list']['users']['user']
-      users = users.map {|params| CyberCoachUser.new params}
-    else
-      params = hash['user']
-      user = CyberCoachUser.new params
-    end
-  end
-
-  # setup serializer
-  serializer do |properties|
-    properties.to_xml(root: 'user')
-  end
-
 
   # Checks if a user name is available on the cyber coach webservice.
   # Returns false if the username is already taken or if the username is not alphanumeric string with at least 4 letters.
@@ -52,7 +27,6 @@ class CyberCoachUser < RestResource::Base
       true
     end
   end
-
 
   # Authenticates a user against the cyber coach webservice.
   # It uses a hash as argument with the following properties:
@@ -78,7 +52,6 @@ class CyberCoachUser < RestResource::Base
   end
 
   alias_method :confirms_partnership, :proposes_partnership
-
 
   def partnerships
     if @properties[:partnerships].nil?

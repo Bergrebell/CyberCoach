@@ -7,9 +7,6 @@ require 'addressable/uri'
 #
 #
 class RestResource::Base
-
-
-
   # make properties directly accessible
   attr_reader :properties
 
@@ -26,7 +23,6 @@ class RestResource::Base
     @properties = Hash[properties.map{ |k,v| [k.to_sym, v]}]
   end
 
-
   # Creates all setters and getters methods for the properties.
   def create_accessors
     keys = self.class.registered_properties #get keys for all registered properties
@@ -39,7 +35,6 @@ class RestResource::Base
   def id
     @properties[self.class.id]
   end
-
 
   # Creates a new object.
   def save(params={})
@@ -56,7 +51,6 @@ class RestResource::Base
     begin
       uri = entity_resource_uri
       serializer = self.class.get_serializer
-      changed(true) #mark all attributes as changed
       xml = serializer.call(serializable_properties)
       response = RestClient.put(uri,xml,options)
 
@@ -66,7 +60,6 @@ class RestResource::Base
       false
     end
   end
-
 
   # Loads all details of this object.
   def load
@@ -81,7 +74,6 @@ class RestResource::Base
   end
 
   alias_method :read, :load
-
 
   # Updates this object.
   # params = {username: username, password: password }
@@ -104,12 +96,10 @@ class RestResource::Base
     end
   end
 
-
   def serializable_properties
     keys = self.class.serializable_properties
     @properties.select {|property,v| keys.include?(property)}
   end
-
 
   # Deletes this object.
   # params = {username: username, password: password }
@@ -117,9 +107,7 @@ class RestResource::Base
     begin
       uri = entity_resource_uri
       serializer = self.class.get_serializer
-
       xml = serializer.call(serializable_properties)
-
       response = RestClient.delete(uri,{
           accept: self.class.format,
           content_type: self.class.format,
@@ -143,14 +131,11 @@ class RestResource::Base
   # }
   #
   # query (optional): these parameters specifies which objects in the range of start to size should be retrieved.
-
   def self.all(params={})
-
     # if query is not set use default
     if params[:query].nil?
       params = params.merge({query: { start: 0, size: 999}})
     end
-
     # build query
     uri = Addressable::URI.new
     uri.query_values = params[:query]
@@ -164,7 +149,6 @@ class RestResource::Base
     deserializer = self.get_deserializer
     results = deserializer.call(response)
   end
-
 
   # Retrieves a collection of objects.
   # It takes a hash as argument with the following properties:
@@ -204,13 +188,11 @@ class RestResource::Base
     results.empty? ? nil : results.first
   end
 
-
   # Returns a string representation for this object.
   def to_s
     values = @properties.values.map {|x| x.to_s}.select { |x| not x.empty? }
     '{' << values.join(',') << '}'
   end
-
 
   class << self
 
@@ -222,7 +204,6 @@ class RestResource::Base
 
     alias_method :id, :set_id
 
-
     # Take fields as list and set the class variable fields.
     def set_properties(*properties)
       @properties = properties
@@ -231,11 +212,9 @@ class RestResource::Base
 
     alias_method :properties, :set_properties
 
-
     def registered_properties
       @properties
     end
-
 
     def set_site(url=nil)
       #hack alert: method is setter and getter at the same time
@@ -255,8 +234,7 @@ class RestResource::Base
 
     alias_method :base_uri, :set_base
 
-
-    def set_resource(resource=nil)
+    def set_resource_path(resource=nil)
       #hack alert: method is setter and getter at the same time
       @resource = resource if not resource.nil? #set value if available
       #remove backslash if available
@@ -264,8 +242,17 @@ class RestResource::Base
       @resource #return value
     end
 
-    alias_method :resource_path, :set_resource
+    alias_method :resource_path, :set_resource_path
 
+    def set_resource(resource_name)
+      @resource_name = resource_name
+    end
+
+    alias_method :use_resource, :set_resource
+
+    def resource
+      @resource_name
+    end
 
     def set_format(format=nil)
       #hack alert: method is setter and getter at the same time
@@ -275,12 +262,10 @@ class RestResource::Base
 
     alias_method :format, :set_format
 
-
     # Returns the full uri of this resource (collection_uri).
     def collection_resource_uri
       @base + @site + @resource
     end
-
 
     #
     def serializable(*params)
@@ -310,6 +295,24 @@ class RestResource::Base
 
     alias_method :deserializer, :set_deserializer
 
+    def use_default_deserializer(resource,clazz)
+      @deserializer = ->(xml) do
+        hash = Hash.from_xml(xml)
+        if hash['list']
+          objs = hash['list'][resource.pluralize][resource]
+          objs = objs.map {|params| clazz.new params}
+        else
+          params = hash[resource]
+          obj = clazz.new params
+        end
+      end
+    end
+
+    def use_default_serializer(resource)
+      @serializer = ->(properties) do
+        properties.to_xml(root: resource)
+      end
+    end
 
     # The serializer is used to serialize objects for outgoing xml messages.
     def set_serializer(&block)
@@ -334,7 +337,7 @@ class RestResource::Base
     # Builds a basic auth string and returns the final basic auth string.
     # params = {username: username, password: password }
     def basic_auth_encryption(params)
-      'Basic '  << Base64.encode64("#{params[:username]}:#{params[:password]}")
+      'Basic ' + Base64.encode64("#{params[:username]}:#{params[:password]}")
     end
 
   end
@@ -351,14 +354,6 @@ class RestResource::Base
   end
 
   private
-
-  # Marks all properties has changed if boolean=true or as unchanged if boolean=false.
-  def changed(boolean)
-    # mark all properties as unchanged
-    @changed = Hash[@properties.map{ |k,v| [k.to_sym, boolean]}]
-  end
-
-
 
   # Creates dynamically getters and setters for this property..
   def create_accessor(property)

@@ -5,13 +5,11 @@ class CyberCoachUserTest < ActiveSupport::TestCase
 
   test "get five users" do
     users = CyberCoachUser.all query: { start: 0, size: 5 }
-
     assert_equal(5,users.size)
   end
 
   test "filter users" do
     find_users = ['lexruee','lexruee5','lexruee11']
-
     users = CyberCoachUser.find filter: ->(x) do
       find_users.include?(x.username)
     end, query: { start: 0, size: 999}
@@ -26,7 +24,7 @@ class CyberCoachUserTest < ActiveSupport::TestCase
       x.username == 'lexruee5'
     end
     assert_equal 'lexruee5', user.username
-    assert_equal '/CyberCoachServer/resources/users/lexruee5/',user.uri
+    assert_equal '/CyberCoachServer/resources/users/lexruee5/', user.uri
   end
 
   test "get user second example" do
@@ -34,7 +32,7 @@ class CyberCoachUserTest < ActiveSupport::TestCase
       x.username == 'timon'
     end
     assert_equal 'timon', user.username
-    assert_equal '/CyberCoachServer/resources/users/timon/',user.uri
+    assert_equal '/CyberCoachServer/resources/users/timon/', user.uri
   end
 
   test "get user details" do
@@ -67,7 +65,6 @@ class CyberCoachUserTest < ActiveSupport::TestCase
   end
 
   test "user authentication should succeed" do
-
     user = CyberCoachUser.authenticate(username: 'alex', password: 'scareface')
     assert user != false
     assert_equal "alex", user.username
@@ -79,7 +76,6 @@ class CyberCoachUserTest < ActiveSupport::TestCase
     user = CyberCoachUser.authenticate(username: 'timon', password: 'scareface')
     assert user != false
     assert_equal "timon", user.username
-
 
     user = CyberCoachUser.authenticate(username: 'moritz', password: 'scareface')
     assert user != false
@@ -113,13 +109,11 @@ class CyberCoachUserTest < ActiveSupport::TestCase
 
 
   test "create user if username is available" do
-
     if CyberCoachUser.username_available?('MikeShiva')
       shiva = CyberCoachUser.new username: 'MikeShiva', email: 'mike.shiva@unifr.ch', password: '12345', realname: 'Mike Shiva', publicvisible: RestResource::Privacy::Public
       assert_equal 'MikeShiva', shiva.username
       assert_not_nil shiva.save
     end
-
   end
 
   test "cyber coach uses only lower case user names" do
