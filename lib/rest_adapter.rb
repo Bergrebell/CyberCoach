@@ -22,9 +22,9 @@ module RestAdapter
 
   # Helper classes
 
-  # This class provides a proxy object for operation that need authentication.
-  # If an operation (save,update,delete) of an object needs authentication you can use a AuthProxy object.
-  # It takes care of the authentication details.
+  # This class is responsible for providing access for authentication protected operations.
+  # An operation like save, update or delete applied on a object needs authentication.
+  # To hide the details and to provide a common interface you can use a AuthProxy object.
   class AuthProxy
 
     # Creates AuthProxy object.
@@ -36,8 +36,19 @@ module RestAdapter
     # The property :subject is optional.
     #
     def initialize(params)
-      @auth_header = Helper.basic_auth_encryption(username: params[:username], password: params[:password])
+      @auth_params = {
+          username: params[:username],
+          password: params[:password]
+      }
       @subject = params[:subject]
+      @auth_header = Helper.basic_auth_encryption(@auth_params)
+    end
+
+    # Checks if this AuthProxy object is valid in terms of the user credentials.
+    # For validation an authentication request is performed.
+    # Only for testing purposes!
+    def valid?
+      User.authenticate(@auth_params) != false
     end
 
 
@@ -75,32 +86,43 @@ module RestAdapter
       end
     end
 
+
     # make a alias for method save
     alias_method :update, :save
 
-    # Delegate each method call that is not supported by this proxy
+
+    # Delegates each method call that is not supported by this proxy
     # to the subject.
     def method_missing(name, *args, &block)
+      # This is basically used for wrapping a user object.
+      # The only simple way to get the user credentials without dirty hacking
+      # is in the authenticate class method in the User class.
+      # Instead of returning a User object the authenticate class method returns a AuthProxy object
+      # which acts like user object.
+      # So here the user object plays the role of the subject.
       @subject.send(name, *args, &block)
     end
 
   end
 
 
-  # Basic skeleton classes.
+  # Basic skeleton classes: Resource, BaseResource
 
   # This class defines the basic skeleton of a resource class.
+  # It defines which methods or class methods that need to be
+  # implemented by the subclasses.
   class Resource
 
 
-    # Returns an id of this object.
+    # Returns an id of this resource.
     def id
       self.instance_variable_get("@#{self.class.id}")
     end
 
 
-    # Returns the uri of this object without the base.
-    # E.g: /CyberCoachServer/resources/users/alex
+    # Returns the uri of this resource without the base.
+    # Example====
+    # resource.uri =>  /CyberCoachServer/resources/users/alex
     def uri
       if not defined? @uri or @uri.nil?
         self.class.site + self.class.resource_path + '/' + self.id
@@ -110,7 +132,7 @@ module RestAdapter
     end
 
 
-    # Returns the full uri of this object.
+    # Returns the uri of a single resource entity.
     # Example====
     # resource.entity_uri => http://www.blahhh.com/CyberCoachServer/resources/users/alex
     #
@@ -118,8 +140,9 @@ module RestAdapter
       self.class.base + self.uri
     end
 
-    # Class methods for the class resource.
-    # open the eigenclass
+
+    # Class methods for the resource class.
+    # open eigenclass
     class << self
 
       # create setters and getters for class variables
@@ -149,6 +172,7 @@ module RestAdapter
         raise 'Not implemented!'
       end
 
+
       # Getters for meta class variables.
       def base
         @@base
@@ -166,7 +190,7 @@ module RestAdapter
       # Setter and getters for class variables.
 
 
-      # Sets the id variable for this class.
+      # Sets the id variable for this resource class.
       # Examples====
       # set_id :username        => instance variable @username is used as id
       # user.id                 => returns @username
@@ -185,7 +209,7 @@ module RestAdapter
       end
 
 
-      # Maps the resource for this class.
+      # Maps the given resource to this resource class.
       # Eexample====
       # set_resource 'user'
       #
@@ -205,7 +229,7 @@ module RestAdapter
       end
 
 
-      # Creates an entity uri with the passed id
+      # Creates an entity uri with the given id.
       # Example====
       # Resource.create_entity_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
       #
@@ -219,10 +243,10 @@ module RestAdapter
 
 
   # This class implements common instance and class methods
-  # that all resources have in common..
+  # that all resources have in common.
   class BaseResource < Resource
 
-    # Fetches all details of this object and returns a object
+    # Fetches all details for this resource object and returns a object
     # containing all details.
     #
     def fetch
@@ -241,7 +265,7 @@ module RestAdapter
     end
 
 
-    # Fetches all detail information of this object and modifies its internal properties
+    # Fetches all detail information of this resource object and modifies its internal properties
     # according the fetched details.
     #
     def fetch!
@@ -257,6 +281,7 @@ module RestAdapter
         variables.each do |variable|
           self.instance_variable_set(variable, obj.instance_variable_get(variable))
         end
+        obj
       rescue Exception => e
         puts e
         false
@@ -264,7 +289,7 @@ module RestAdapter
     end
 
 
-    # Creates or updates this object. DO NOT call this method.
+    # Creates or updates this resource object. DO NOT call this method.
     # Pass modified objects  to the AuthProxy object and apply the save operation on
     # the AuthProxy object.
     #
@@ -292,7 +317,7 @@ module RestAdapter
     alias_method :update, :save
 
 
-    # Deletes this object. DO NOT call this method.
+    # Deletes this resource object. DO NOT call this method.
     # Pass modified objects to the AuthProxy object and apply the delete operation on
     # the AuthProxy object.
     #
@@ -318,15 +343,15 @@ module RestAdapter
     # open eigenclass
     class << self
 
-      # This class method creates a new resource given the parameters by the deserializer class method.
+      # This class method creates a new resource given the parameters by the deserialize class method.
       # Each class that subclasses this class MUST implement such a create class method.
       def create(params)
         raise 'Not implemented'
       end
 
 
-      # This class deserializes the received response of a rest client and delegates the object creation to
-      # its subclasses.
+      # This class method deserializes the received response of a rest client
+      # and delegates the object creation to its subclasses.
       def deserialize(response)
         hash = Hash.from_xml(response)
         if not hash['list'].nil? # check if it's a list of resources
@@ -340,7 +365,7 @@ module RestAdapter
       end
 
 
-      # Returns a resource with the provided id.
+      # Returns a resource object with the provided id.
       def retrieve(id)
         begin
           uri = self.create_entity_uri(id)
@@ -356,7 +381,7 @@ module RestAdapter
       end
 
 
-      # Returns a collection of resources.
+      # Returns a collection of resource objects..
       def all(params={})
         # if query is not set, use default
         if params[:query].nil?
@@ -379,7 +404,7 @@ module RestAdapter
         })
         filter = params[:filter]
         results = self.deserialize(response)
-        results = results.select { |item| filter.call(item) }
+        results = results.select { |item| filter.call(item) } #filter the results
       end
 
     end # end of eigenclass
@@ -388,9 +413,9 @@ module RestAdapter
 
 
 
-  # Basic adapter classes
+  # Basic adapter classes for the resources User, Partnership, Sport, Subscription
 
-  # This class adapts the resource user.
+  # This class is responsible for adapting the resource user.
   class User < BaseResource
 
     # set user resource specific config values
@@ -399,7 +424,7 @@ module RestAdapter
     set_resource 'user'
 
     # getters and setters
-    attr_accessor :username, :password, :email, :real_name, :partnerships, :public_visible
+    attr_accessor :username, :password
 
 
     # Creates a user object.
@@ -414,6 +439,59 @@ module RestAdapter
       @partnerships = params[:partnerships]
     end
 
+
+    #should we apply 'hidden lazy loading' on missing data ???
+
+    def partnerships
+      if @partnerships.nil?
+        user = self.fetch!
+      end
+      @partnerships
+    end
+
+
+    def partnerships=(partnerships)
+      @partnerships = partnerships
+    end
+
+
+    def email
+      if @email.nil?
+        user = self.fetch!
+      end
+      @email
+    end
+
+
+    def email=(email)
+      @email = email
+    end
+
+
+    def real_name
+      if @real_name.nil?
+        user = self.fetch!
+      end
+      @real_name
+    end
+
+
+    def real_name=(real_name)
+      @real_name = real_name
+    end
+
+
+    def public_visible
+      if @public_visible.nil?
+        user = self.fetch!
+      end
+      @public_visible
+    end
+
+
+    def public_visible=(public_visible)
+      @public_visible = public_visible
+    end
 
     # open eigenclass
     class << self
@@ -433,6 +511,16 @@ module RestAdapter
             real_name: params['realname'],
             public_visible: params['publicvisible'].to_i
         }
+
+        if not params['partnerships'].nil?
+          # really, really ugly
+          if params['partnerships']['partnership'].kind_of?(Array)
+            partnerships =  params['partnerships']['partnership'].map {|p| Partnership.create p }
+          else
+            partnerships = [Partnership.create(params['partnerships']['partnership'])]
+          end
+          properties = properties.merge({partnerships: partnerships})
+        end
 
         new(properties)
       end
@@ -459,7 +547,10 @@ module RestAdapter
 
       # Authenticates a user against the cyber coach webservice.
       # It uses a hash as argument with the following properties:
-      # params = { username: username, password: password }
+      # params = {
+      #           username: username,
+      #           password: password
+      # }
       #
       def authenticate(params)
         begin
@@ -476,10 +567,9 @@ module RestAdapter
       end
 
 
-      # Checks if a user name is available on the cyber coach webservice.
-      # Returns false if the username is already taken or if the username is not alphanumeric string with at least 4 letters.
-      # Otherwise it returns true.
-      # It uses a string as fir the argument username.
+      # Checks if a username is available on the cyber coach webservice.
+      # Returns false if the username is already taken or the username is not a alphanumeric string
+      # with at least 4 letters. Otherwise it returns true.
       #
       def username_available?(username)
         # check if username is alphanumeric and that it contains least 4 letters
@@ -504,20 +594,19 @@ module RestAdapter
   end # end of class User
 
 
-  # This class adapts the resource partnership.
+  # This class is responsible for adapting the resource partnership.
   class Partnership < BaseResource
 
+    #getters and setters
+    attr_reader :public_visible, :confirmed_by_first_user, :confirmed_by_second_user,
+                :first_user, :second_user, :confirmed
     set_resource_path '/partnerships'
     set_resource 'partnership'
-
-    # getters and setters
-
-    attr_reader :public_visible, :confirmed_by_first_user, :confirmed_by_second_user, :first_user, :second_user
 
     alias_method :confirmed_by_first_user?, :confirmed_by_first_user
     alias_method :confirmed_by_second_user?, :confirmed_by_second_user
 
-    # Define customized id for partnership
+    # Defines a customized id for a partnership resource.
     def id
       self.first_user.username + ';' + self.second_user.username
     end
@@ -525,21 +614,34 @@ module RestAdapter
 
     # Creates a partnership object.
     def initialize(params)
-      # default value for all properties is nil
+      # default value for all properties is nil!
       @uri = params[:uri]
       @public_visible = params[:public_visible]
       @confirmed_by_first_user = params[:confirmed_by_first_user]
       @confirmed_by_second_user = params[:confirmed_by_second_user]
       @first_user = params[:first_user]
       @second_user = params[:second_user]
+      @confirmed = params[:confirmed]
     end
 
 
     # Returns true if the given user is associated with this partnership.
     def associated_with?(user)
-      username = user.kind_of?(User) ? user.username : user
+      username = user.kind_of?(User) ? user.username : user # support usernames and user object
       user_names = self.class.extract_user_names_from_uri(self.uri)
       user_names.include?(username)
+    end
+
+    # Returns true if the given user has confirmed this partnership.
+    def confirmed_by?(user)
+      username = user.kind_of?(User) ? user.username : user # support usernames and user object
+
+      # check if confirmed lookup table is present
+      if self.confirmed.nil?
+        self.fetch! #fetch details
+      end
+
+      self.confirmed[username] == true # table lookup for user 'username'
     end
 
 
@@ -553,15 +655,36 @@ module RestAdapter
 
         properties = {
             uri: params['uri'],
-
+            id: params['id'],
+            public_visible: params['publicvisible']
         }
+
+        # check if user properties are present
+        if not params['user1'].nil? and not params['user2'].nil?
+          # this hack is dedicated to my dear friend julian pollack.
+          # awesome guy. i learnt a lot of him...
+          # create a boolean lookup table to avoid error prone 'if comparisons' with usernames
+          # use username as key values
+          confirmed = {
+              params['user1']['username'] => (params['userconfirmed1']=='true'),
+              params['user2']['username'] => (params['userconfirmed2']=='true')
+          }
+
+          properties = properties.merge({
+                                            first_user: User.create(params['user1']),
+                                            second_user: User.create(params['user2']),
+                                            confirmed: confirmed,
+                                            confirmed_by_first_user: (params['userconfirmed1']=='true'),
+                                            confirmed_by_second_user: (params['userconfirmed2']=='true')
+                                       })
+        end
 
         new(properties)
       end
 
 
       def serialize(partnership)
-        if not user.kind_of?(User)
+        if not partnership.kind_of?(Partnership)
           raise ArgumentError, 'Argument must be of type partnership'
         end
         hash = {
@@ -582,11 +705,11 @@ module RestAdapter
   end # end of class Partnership
 
 
-  # This class adapts the resource partnership.
+  # This class is responsible for adapting the resource sport..
   class Sport < BaseResource
 
+    # getters and setters
     attr_reader :name, :id
-
     set_resource_path '/sports'
     set_resource 'sport'
 
