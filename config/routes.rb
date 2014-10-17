@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  get 'friends/proposals'
+
+  get 'friends/requests'
+
+  get 'friends/index'
+
   get 'welcome/index'
 
   get   'session/login'

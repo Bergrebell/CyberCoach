@@ -57,7 +57,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
 
   test "find mikeshiva's partnership" do
-    results = RestAdapter::Partnership.all filter: ->(p) { p.associated_with?('mikeshiva') }
+    results = RestAdapter::Partnership.all filter: ->(p) { p.associated_with?('mikeshiva') and p.associated_with?('timon')}
     assert_not_nil results
     assert results.size > 0
     partnership = results.first

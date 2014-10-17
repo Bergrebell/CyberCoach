@@ -95,8 +95,20 @@ class TestRestAdapter < ActiveSupport::TestCase
 
   test "authenticate user" do
     user = RestAdapter::User.authenticate username: 'asarteam1', password: 'scareface'
+    pp user.as_hash
     assert user != false
     assert_equal 'asarteam1', user.username
+  end
+
+
+  test "user as hash" do
+    user = RestAdapter::User.authenticate username: 'asarteam1', password: 'scareface'
+    user_hash = user.as_hash
+    assert user_hash
+    assert_equal 'asarteam1', user_hash['username']
+    assert_equal 'asarteam1', user_hash['real_name']
+    assert_equal 2, user_hash['public_visible']
+    assert_equal 'asarteam1@test.com', user_hash['email']
   end
 
 

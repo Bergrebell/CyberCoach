@@ -5,10 +5,12 @@ class SessionController < ApplicationController
   def login
     if params[:username].present? and params[:password].present?
       # if okay, user is an object and evaluates to true
-      if user = User.authenticate(params[:username], params[:password])
-        # The username key the session is basically the proof that the user is authenticated for further requests
-        session[:user] = user
+      if user = RestAdapter::User.authenticate(params)
+        # get a hash of the user object, because rails cannot store objects in a session.
+        # the rails session is just a key value store...
+        session[:user] = user.as_hash
         session[:remote_ip] = request.remote_ip
+
         redirect_to '/welcome/index', notice: 'Logged in successfully'
       else
         flash[:error] = 'User credentials not valid'

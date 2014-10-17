@@ -27,19 +27,32 @@ module RestAdapter
   # To hide the details and to provide a common interface you can use a AuthProxy object.
   class AuthProxy
 
+    attr_accessor :subject, :auth_params
     # Creates AuthProxy object.
-    # It takes as argument an hash with the following properties:
+    # It takes as argument a hash with the following properties:
     # { :username => a username,
     #   :password => a password,
+    #   :subject => an optional subject}
+    #
+    # or alternatively a hash as follows:
+    # { :user => a user object,
     #   :subject => an optional subject}
     #
     # The property :subject is optional.
     #
     def initialize(params)
-      @auth_params = {
-          username: params[:username],
-          password: params[:password]
-      }
+      @auth_params = if not params[:user].nil?
+        {
+            username: params[:user].username,
+            password: params[:user].password
+        }
+      else
+        {
+            username: params[:username],
+            password: params[:password]
+        }
+      end
+
       @subject = params[:subject]
       @auth_header = Helper.basic_auth_encryption(@auth_params)
     end
@@ -100,6 +113,7 @@ module RestAdapter
       # Instead of returning a User object the authenticate class method returns a AuthProxy object
       # which acts like user object.
       # So here the user object plays the role of the subject.
+
       @subject.send(name, *args, &block)
     end
 
@@ -129,6 +143,13 @@ module RestAdapter
       else
         @uri
       end
+    end
+
+    # Returns a hash representation of this resource.
+    def as_hash
+      # hack alert
+      json_string = self.to_json
+      hash = JSON.parse(json_string)
     end
 
 
@@ -429,6 +450,8 @@ module RestAdapter
 
     # Creates a user object.
     def initialize(params={})
+      # Support string keys too, because rails maps symbols to string keys...
+      params = Hash[params.map {|k,v| [k.to_sym,v]}]
       # default value for all properties is nil
       @username = params[:username]
       @password = params[:password]
@@ -440,11 +463,35 @@ module RestAdapter
     end
 
 
+    # Returns all friends of this user.
+    def friends
+      partnerships = self.partnerships.map {|p| p.fetch } # fetch all details
+      active_partnerships = partnerships.select {|p| p.active? } # filter, only get active partnerships
+      friends = active_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
+    end
+
+
+    # Returns all received friend requests of this user.
+    def received_friend_requests
+      partnerships = self.partnerships.map {|p| p.fetch } # fetch all details
+      proposed_partnerships = partnerships.select {|p| not p.confirmed_by?(self) } # filter, only get proposed partnerships
+      friends = proposed_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
+    end
+
+
+    # Returns all sent friend requests of this user.
+    def sent_friend_requests
+      partnerships = self.partnerships.map {|p| p.fetch } # fetch all details
+      proposed_partnerships = partnerships.select {|p| p.confirmed_by?(self) and not p.active? }
+      friends = proposed_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
+    end
+
+
     #should we apply 'hidden lazy loading' on missing data ???
 
     def partnerships
       if @partnerships.nil?
-        user = self.fetch!
+        self.fetch!
       end
       @partnerships
     end
@@ -457,7 +504,7 @@ module RestAdapter
 
     def email
       if @email.nil?
-        user = self.fetch!
+        self.fetch!
       end
       @email
     end
@@ -470,7 +517,7 @@ module RestAdapter
 
     def real_name
       if @real_name.nil?
-        user = self.fetch!
+        self.fetch!
       end
       @real_name
     end
@@ -483,7 +530,7 @@ module RestAdapter
 
     def public_visible
       if @public_visible.nil?
-        user = self.fetch!
+        self.fetch!
       end
       @public_visible
     end
@@ -551,6 +598,8 @@ module RestAdapter
       #           username: username,
       #           password: password
       # }
+      # Remark: http://stackoverflow.com/questions/22978704/object-stored-in-rails-session-becomes-a-string
+      # God dammit, rails cannot store objects in a session variable...
       #
       def authenticate(params)
         begin
@@ -560,7 +609,8 @@ module RestAdapter
               authorization: Helper.basic_auth_encryption(params)
           })
           user = self.deserialize(response)
-          AuthProxy.new username: params[:username], password: params[:password], subject: user
+          user.password = params[:password]
+          user
         rescue
           false
         end
@@ -572,7 +622,7 @@ module RestAdapter
       # with at least 4 letters. Otherwise it returns true.
       #
       def username_available?(username)
-        # check if username is alphanumeric and that it contains least 4 letters
+        # check if username is alphanumeric and that it contains at least four letters
         if  not /^[a-zA-Z0-9]{4,}$/ =~ username
           return false
         end
@@ -632,6 +682,7 @@ module RestAdapter
       user_names.include?(username)
     end
 
+
     # Returns true if the given user has confirmed this partnership.
     def confirmed_by?(user)
       username = user.kind_of?(User) ? user.username : user # support usernames and user object
@@ -642,6 +693,22 @@ module RestAdapter
       end
 
       self.confirmed[username] == true # table lookup for user 'username'
+    end
+
+
+    # Returns the partner of this user in this partnership.
+    def partner_of(user)
+      partner = self.first_user.username == user.username ? self.second_user : self.first_user
+    end
+
+
+    # Returns true if this partnership is active. Otherwise it returns false.
+    def active?
+      self.confirmed_by_first_user and self.confirmed_by_second_user
+    end
+
+    def users
+      self.class.extract_user_names_from_uri(self.uri)
     end
 
 
@@ -677,6 +744,12 @@ module RestAdapter
                                             confirmed_by_first_user: (params['userconfirmed1']=='true'),
                                             confirmed_by_second_user: (params['userconfirmed2']=='true')
                                        })
+        else # if not extract user names from the uri
+          first_user, second_user  = self.extract_user_names_from_uri(params['uri'])
+          properties = properties.merge({
+                                            first_user: User.create('username' => first_user),
+                                            second_user: User.create('username' => second_user)
+                                        })
         end
 
         new(properties)
@@ -694,6 +767,7 @@ module RestAdapter
       end
 
 
+      # Returns a list containing two user names.
       def extract_user_names_from_uri(uri)
         resource = uri.split('/').last # get last part of the uri
         resource = resource[0...-1] if resource[-1] == '/' # remove last forward slash if present

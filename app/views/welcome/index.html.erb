@@ -1,2 +1,52 @@
 <h1>Welcome#index</h1>
+<% if not current_user %>
+    <%= link_to 'Login', session_login_path %>
+<% end %>
+
+<% if current_user %>
+    <p>
+      Welcome <%= current_user.username %>!
+    </p>
+    <h2>Kick ass user panel! Version 3.0</h2>
+    <ul>
+      <li>
+        <%= link_to 'Logout', session_logout_path %>
+      </li>
+      <li>
+        <%= link_to 'Friends', friends_index_path %>
+      </li>
+
+      <li>
+        <%= link_to 'Received friend requests', friends_requests_path %>
+      </li>
+
+      <li>
+        <%= link_to 'Sent friend reqeusts', friends_proposals_path %>
+      </li>
+
+    </ul>
+<% end %>
+
+<% if current_user %>
+
+    <h2>Some user data</h2>
+    <p>
+      username: <%= current_user.username %> <br>
+      email: <%= current_user.email %> <br>
+      real name: <%= current_user.real_name %> <br>
+      public visible: <%= current_user.public_visible.to_s %> <br>
+    </p>
+
+
+    <h2>partnerships</h2>
+    <% current_user.partnerships.each do |p| %>
+        <p>
+          <%= p.partner_of(current_user).username %>
+        </p>
+    <% end %>
+
+
+<% end %>
+
+
 <p>Find me in app/views/welcome/index.html.erb</p>
