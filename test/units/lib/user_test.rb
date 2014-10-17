@@ -85,6 +85,14 @@ class TestRestAdapter < ActiveSupport::TestCase
   end
 
 
+  test "lazy loading on user object" do
+    users = RestAdapter::User.all filter: ->(user) { user.username == 'asarteam1' }
+    user = users.first
+    assert_equal 'asarteam1', user.real_name
+    assert_equal RestAdapter::Privacy::Public, user.public_visible
+  end
+
+
   test "authenticate user" do
     user = RestAdapter::User.authenticate username: 'asarteam1', password: 'scareface'
     assert user != false
