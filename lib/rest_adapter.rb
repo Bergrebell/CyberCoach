@@ -662,7 +662,7 @@ module RestAdapter
         # check if user properties are present
         if not params['user1'].nil? and not params['user2'].nil?
           # this hack is dedicated to my dear friend julian pollack.
-          # awesome guy. i learnt a lot of him...
+          # awesome guy. i have learned a lot from him...
           # create a boolean lookup table to avoid error prone 'if comparisons' with usernames
           # use username as key values
           confirmed = {
