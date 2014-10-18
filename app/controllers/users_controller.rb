@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   skip_before_action :require_login
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :require_login, only: [:update, :edit]
 
   # GET /users
   # GET /users.json
@@ -20,6 +21,20 @@ class UsersController < ApplicationController
 
   # GET /users/1/edit
   def edit
+    if params[:id] == current_user.username
+      user_hash = @user.as_hash(included_keys: [
+          :username,
+          :public_visible,
+          :real_name,
+          :email,
+          :password,
+          :password_confirmation
+      ])
+      @user = User.new(user_hash)
+    else
+      flash[:notice] = 'Hey buddy! You cannot change an account of someone else!'
+      redirect_to welcome_index_path
+    end
   end
 
   # POST /users
@@ -45,8 +60,11 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     respond_to do |format|
-      if @user.update(user_params)
-        format.html { redirect_to @user, notice: 'User was successfully updated.' }
+      @user = User.new user_params
+      cc_user = RestAdapter::User.new user_params
+      if @user.valid?(context: :update) and current_user.save(cc_user)
+        session[:user] = cc_user.as_hash
+        format.html { redirect_to welcome_index_path, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
         format.html { render :edit }

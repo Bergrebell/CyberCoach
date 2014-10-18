@@ -1,9 +1,9 @@
 class User < ActiveRecord::Base
   has_many :credits
 
-  validates :password, confirmation: true
+  validates :password, confirmation: true, on: :create
   validates :real_name, presence: true
-  validate :username_available
+  validate :username_available, on: :create
   validates :email, email_format: { message: "Doesn't look like an email address!" }
 
   # create some virtual attributes
@@ -55,6 +55,22 @@ class User < ActiveRecord::Base
     @public_visible
   end
 
+  def ignore_username_validation=(param)
+    @ignore = param
+  end
+
+  def ignore_username_validation
+    @ignore
+  end
+
+  def new_record?
+    @new_record
+  end
+
+  def new_record=(param)
+    @new_record = param
+  end
+
   # Authenticate user credentials against data on CyberCoach webservice.
   # If user authentication succeeds a a lookalike user object is returned, otherwise it returns false.
   #
@@ -70,7 +86,7 @@ class User < ActiveRecord::Base
 
   # Validate against cyber coach if username is available.
   def username_available
-    if not RestAdapter::User.username_available?(@username)
+    if not RestAdapter::User.username_available?(@username) and not ignore_username_validation
       errors.add(:username,"Username is not available or invalid.")
     end
   end
