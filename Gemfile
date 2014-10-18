@@ -59,3 +59,4 @@ gem 'therubyracer'
 gem 'rest-client'
 gem "activerecord-tableless", "~> 1.0"
 gem 'addressable'
+gem 'validates_email_format_of'

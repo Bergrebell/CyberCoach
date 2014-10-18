@@ -1,10 +1,11 @@
 class UsersController < ApplicationController
+  skip_before_action :require_login
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
+    @users = RestAdapter::User.all
   end
 
   # GET /users/1
@@ -24,13 +25,16 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    @user = User.new(user_params)
-
+    # create a cyber coach user
+    cc_user = RestAdapter::User.new user_params
+    # create a fake user only for validating
+    @user = User.new user_params
     respond_to do |format|
-      if @user.save
+      if @user.valid? and cc_user.save # if validation is ok, try to create the user
         format.html { redirect_to @user, notice: 'User was successfully created.' }
         format.json { render :show, status: :created, location: @user }
       else
+        flash[:notice] = 'Could not register. Cyber coach server is bitchy today!'
         format.html { render :new }
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
@@ -64,11 +68,12 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = User.find(params[:id])
+      @user = RestAdapter::User.retrieve(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:name)
+      user_params = params.require(:user).permit(:username,:password,:password_confirmation,:email,:real_name)
+      user_params = user_params.merge({public_visible: RestAdapter::Privacy::Public})
     end
 end

@@ -490,10 +490,16 @@ module RestAdapter
     #should we apply 'hidden lazy loading' on missing data ???
 
     def partnerships
+      # if nil fetch some data
       if @partnerships.nil?
         self.fetch!
       end
-      @partnerships
+      # if still nil, return empty list
+      if @partnerships.nil?
+        []
+      else
+        @partnerships
+      end
     end
 
 

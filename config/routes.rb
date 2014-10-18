@@ -6,7 +6,10 @@ Rails.application.routes.draw do
 
   get 'friends/index'
 
+  post 'friends/create'
+
   get 'welcome/index'
+
 
   get   'session/login'
   post  'session/login'

@@ -1,9 +1,36 @@
-<p id="notice"><%= notice %></p>
 
 <p>
-  <strong>Name:</strong>
-  <%= @user.name %>
+  <strong>Username:</strong>
+  <%= @user.username %>
 </p>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
+<p>
+  <strong>Realname:</strong>
+  <%= @user.real_name %>
+</p>
+
+
+<p>
+  <strong>Email:</strong>
+  <%= @user.email %>
+</p>
+
+
+<p>
+  <strong>Public visible:</strong>
+  <%= @user.public_visible %>
+</p>
+
+<p>
+<strong>Partnerships:</strong>
+  <ul>
+    <% @user.partnerships.each do |p| %>
+         <li> <%= p.partner_of(@user).username %> </li>
+    <% end %>
+  </ul>
+</p>
+
+<% if current_user %>
+    <%= button_to 'Send friend request', controller: 'friends', action: 'create', method: :post, id: @user.username %>
+<% end %>
 <%= link_to 'Back', users_path %>
