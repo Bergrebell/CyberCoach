@@ -503,6 +503,12 @@ module RestAdapter
       friends = proposed_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
     end
 
+    
+    # Returns true if this user is befriended with the given 'another_user'.
+    def befriended_with?(another_user)
+      not self.partnerships.select {|p| p.associated_with?(another_user)}.empty?
+    end
+
 
     #should we apply 'hidden lazy loading' on missing data ???
 

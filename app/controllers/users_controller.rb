@@ -62,7 +62,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       @user = User.new user_params
       cc_user = RestAdapter::User.new user_params
-      if @user.valid?(context: :update) and current_user.save(cc_user)
+      if @user.valid?(context: :update) and auth_proxy.save(cc_user)
         session[:user] = cc_user.as_hash
         format.html { redirect_to welcome_index_path, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }

@@ -24,7 +24,7 @@ class FriendsController < ApplicationController
     )
 
     respond_to do |format|
-      if current_user.save(partnership) # if validation is ok, try to create the user
+      if auth_proxy.save(partnership) # if validation is ok, try to create the user
         format.html { redirect_to user_path(params[:id]), notice: 'Friend request is sent to %s.' % params[:id]  }
       else
         format.html { redirect_to user_path(params[:id]), notice: 'Friend request failed! Cyber Coach server is bitchy.'  }

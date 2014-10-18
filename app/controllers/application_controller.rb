@@ -29,5 +29,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  alias_method :auth_proxy, :current_user
+
 
 end
