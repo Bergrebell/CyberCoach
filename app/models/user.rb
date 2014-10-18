@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   has_many :credits
 
-  validates :password, confirmation: true, on: :create
+  validates :password, presence: true, confirmation: true, length: { within: 4..10 }
   validates :real_name, presence: true
   validate :username_available, on: :create
   validates :email, email_format: { message: "Doesn't look like an email address!" }
