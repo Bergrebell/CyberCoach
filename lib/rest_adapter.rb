@@ -190,8 +190,8 @@ module RestAdapter
       # All subclasses share the same base, site and format variables.
       @@base = 'http://diufvm31.unifr.ch:8090'
       @@site = '/CyberCoachServer/resources'
-      @@format = :xml #used for http accept and content-type header
-
+      @@default_deserialize_format = :json #use json as default value for http header accept
+      @@default_serialize_format = :xml #use json as default value for http header content-type
 
 
       # Template methods / Hook up methods
@@ -220,8 +220,29 @@ module RestAdapter
         @@site
       end
 
-      def format
-        @@format
+      # Returns the format that is used.
+      # If format is not specified a default value is used.
+      def deserialize_format
+        !@deserialize_format.nil? ? @deserialize_format : @@default_deserialize_format
+      end
+
+
+      # Returns the format that is used.
+      # If not format is specified a default value is used.
+      def serialize_format
+        !@serialize_format.nil? ? @serialize_format : @@default_serialize_format
+      end
+
+      # Sets the format for this resource.
+      # Can be :xml, :json, or :html .
+      def set_deserialize_format(format)
+        @deserialize_format = format
+      end
+
+      # Sets the format for this resource.
+      # Can be :xml, :json, or :html .
+      def set_serialize_format(format)
+        @serialize_format = format
       end
 
 
@@ -291,8 +312,8 @@ module RestAdapter
       begin
         uri = self.entity_uri
         response = RestClient.get(uri, {
-            content_type: self.class.format,
-            accept: self.class.format
+            content_type: self.class.serialize_format,
+            accept: self.class.deserialize_format
         })
         # get deserializer
         self.class.deserialize(response)
@@ -310,8 +331,8 @@ module RestAdapter
       begin
         uri = self.entity_uri
         response = RestClient.get(uri, {
-            content_type: self.class.format,
-            accept: self.class.format
+            content_type: self.class.serialize_format,
+            accept: self.class.deserialize_format
         })
 
         obj = self.class.deserialize(response)
@@ -334,8 +355,8 @@ module RestAdapter
     def save(params={})
       # basic options
       options = {
-          accept: self.class.format,
-          content_type: self.class.format
+          accept: self.class.deserialize_format,
+          content_type: self.class.serialize_format
       }
       options = options.merge(params)
 
@@ -362,8 +383,8 @@ module RestAdapter
     def delete(params={})
       # basic options
       options = {
-          accept: self.class.format,
-          content_type: self.class.format
+          accept: self.class.deserialize_format,
+          content_type: self.class.serialize_format
       }
       options = options.merge(params)
       uri = self.entity_uri
@@ -387,18 +408,48 @@ module RestAdapter
         raise 'Not implemented'
       end
 
+      def available
+        @available
+      end
 
       # This class method deserializes the received response of a rest client
       # and delegates the object creation to its subclasses.
-      def deserialize(response)
+      def __deserialize(response)
         hash = Hash.from_xml(response)
         if not hash['list'].nil? # check if it's a list of resources
-          resources = hash['list'][self.resource_name_plural][self.resource_name]
+          @available = hash['list']['available'].to_i
+          @start = hash['list']['start'].to_i
+          @end = hash['list']['end'].to_i
+
+          if hash['list'][self.resource_name_plural][self.resource_name].kind_of?(Array)
+            resources = hash['list'][self.resource_name_plural][self.resource_name]
+          else
+            resources = [] << hash['list'][self.resource_name_plural][self.resource_name]
+          end
+
+
           objs = resources.map do |resource|
             self.create resource # call template method 'create'
           end
         else # otherwise it is a single resource
           obj = self.create hash[self.resource_name] # call template method 'create'
+        end
+      end
+
+      # This class method deserializes the received response of a rest client
+      # and delegates the object creation to its subclasses.
+      def deserialize(response)
+        hash = JSON.parse(response)
+        if not hash[self.resource_name_plural].nil? # check if it's a list of resources
+          @available = hash['available'].to_i
+          @start = hash['start'].to_i
+          @end = hash['end'].to_i
+          resources = hash[self.resource_name_plural]
+          objs = resources.map do |resource|
+            self.create resource # call template method 'create'
+          end
+        else # otherwise it is a single resource
+          obj = self.create hash # call template method 'create'
         end
       end
 
@@ -408,8 +459,8 @@ module RestAdapter
         begin
           uri = self.create_entity_uri(id)
           response = RestClient.get(uri, {
-              content_type: self.format,
-              accept: self.format
+              content_type: self.serialize_format,
+              accept: self.deserialize_format
           })
           self.deserialize(response)
         rescue Exception => e
@@ -437,8 +488,8 @@ module RestAdapter
         q = '?' + uri.query
 
         response = RestClient.get(self.collection_uri + q, {
-            content_type: self.format,
-            accept: self.format
+            content_type: self.serialize_format,
+            accept: self.deserialize_format
         })
         filter = params[:filter]
         results = self.deserialize(response)
@@ -503,7 +554,7 @@ module RestAdapter
       friends = proposed_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
     end
 
-    
+
     # Returns true if this user is befriended with the given 'another_user'.
     def befriended_with?(another_user)
       not self.partnerships.select {|p| p.associated_with?(another_user)}.empty?
@@ -585,16 +636,11 @@ module RestAdapter
             password: nil, #otherwise we get garbage, because default is a star (*)
             uri: params['uri'],
             real_name: params['realname'],
-            public_visible: params['publicvisible'].to_i
+            public_visible: params['publicvisible']
         }
 
         if not params['partnerships'].nil?
-          # really, really ugly
-          if params['partnerships']['partnership'].kind_of?(Array)
-            partnerships =  params['partnerships']['partnership'].map {|p| Partnership.create p }
-          else
-            partnerships = [Partnership.create(params['partnerships']['partnership'])]
-          end
+          partnerships =  params['partnerships'].map {|p| Partnership.create p }
           properties = properties.merge({partnerships: partnerships})
         end
 
@@ -633,8 +679,8 @@ module RestAdapter
       def authenticate(params)
         begin
           response = RestClient.get(self.base + self.site + '/authenticateduser/', {
-              content_type: self.format,
-              accept: self.format,
+              content_type: self.serialize_format,
+              accept: self.deserialize_format,
               authorization: Helper.basic_auth_encryption(params)
           })
           user = self.deserialize(response)
@@ -659,8 +705,8 @@ module RestAdapter
         begin
           uri = self.create_entity_uri(username)
           response = RestClient.get(uri, {
-              content_type: self.format,
-              accept: self.format
+              content_type: self.deserialize_format,
+              accept: self.deserialize_format
           })
           false
         rescue
@@ -681,6 +727,7 @@ module RestAdapter
                 :first_user, :second_user, :confirmed
     set_resource_path '/partnerships'
     set_resource 'partnership'
+
 
     alias_method :confirmed_by_first_user?, :confirmed_by_first_user
     alias_method :confirmed_by_second_user?, :confirmed_by_second_user
@@ -762,16 +809,16 @@ module RestAdapter
           # create a boolean lookup table to avoid error prone 'if comparisons' with usernames
           # use username as key values
           confirmed = {
-              params['user1']['username'] => (params['userconfirmed1']=='true'),
-              params['user2']['username'] => (params['userconfirmed2']=='true')
+              params['user1']['username'] => params['userconfirmed1'],
+              params['user2']['username'] => params['userconfirmed2']
           }
 
           properties = properties.merge({
                                             first_user: User.create(params['user1']),
                                             second_user: User.create(params['user2']),
                                             confirmed: confirmed,
-                                            confirmed_by_first_user: (params['userconfirmed1']=='true'),
-                                            confirmed_by_second_user: (params['userconfirmed2']=='true')
+                                            confirmed_by_first_user: params['userconfirmed1'],
+                                            confirmed_by_second_user: params['userconfirmed2']
                                        })
         else # if not extract user names from the uri
           first_user, second_user  = self.extract_user_names_from_uri(params['uri'])
