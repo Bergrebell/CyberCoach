@@ -2,16 +2,51 @@
 <html>
 <head>
   <title>CyberCoach</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => false %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => false %>
   <%= csrf_meta_tags %>
 </head>
 <body>
 
-<%= flash[:alert] if flash[:alert].present? %>
-<%= flash[:notice] if flash[:notice].present? %>
+<div class="uk-container uk-container-center">
+  <nav class="uk-navbar uk-margin">
+    <a href="<%= welcome_index_path %>" class="uk-navbar-brand">CyberCoach</a>
 
-<%= yield %>
+    <ul class="uk-navbar-nav">
+      <% if current_user.present? %>
+        <li<%= if params[:controller] == 'friends'; " class=uk-active" end %>><a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends</a></li>
+        <li<%= if params[:controller] == 'achievements'; " class=uk-active" end %>><a href="<%= achievements_url %>">Achievements</a></li>
+      <% end %>
+    </ul>
 
+      <div class="uk-navbar-flip uk-navbar-content">
+      <% if current_user.present? %>
+          Logged in as <strong><%= current_user.email %></strong>
+          <%= link_to "Logout", session_logout_url, class: 'uk-button' %>
+      <% else %>
+          <%= link_to "Sign up", new_user_url, :class => 'uk-link'  %> |
+          <%= link_to "Login", session_login_url, :class => 'uk-link'  %>
+      <% end %>
+      </div>
+
+
+  </nav>
+  <% # Display flash messages across the application %>
+  <% if flash[:notice] %>
+      <div class="uk-alert" data-uk-alert>
+        <a href="" class="uk-alert-close uk-close"></a>
+        <p><%= flash[:notice] %></p>
+      </div>
+  <% end %>
+  <% if flash[:alert] %>
+      <div class="uk-alert uk-alert-danger" data-uk-alert>
+        <a href="" class="uk-alert-close uk-close"></a>
+        <p><%= flash[:alert] %></p>
+      </div>
+  <% end %>
+
+  <%= yield %>
+
+</div>
 </body>
 </html>
