@@ -6,7 +6,12 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @users = RestAdapter::User.all
+    page = request.query_parameters[:page].nil? ? 1 : request.query_parameters[:page]
+    page = page.to_i
+    size = 5
+    @users = RestAdapter::User.all query: { size: size, start: (page-1)*size }
+    pages = (RestAdapter::User.available / size.to_f).ceil
+    @links =  (1..pages)
   end
 
   # GET /users/1
