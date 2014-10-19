@@ -51,6 +51,9 @@ gem 'spring',        group: :development
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+# UIKit CSS Framework
+gem 'uikit-sass-rails', '~> 1.2.0'
+
 # gems for heroku deployment
 gem 'rails_12factor'
 gem 'therubyracer'
