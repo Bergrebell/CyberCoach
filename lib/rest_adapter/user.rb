@@ -136,7 +136,8 @@ module RestAdapter
         }
 
         if not params['partnerships'].nil?
-          partnerships =  params['partnerships'].map {|p| Partnership.create p }
+          module_name = Module.nesting.last  # workaround corresponds to the prefix RestAdapter
+          partnerships =  params['partnerships'].map {|p| module_name::Partnership.create p }
           properties = properties.merge({partnerships: partnerships})
         end
 
