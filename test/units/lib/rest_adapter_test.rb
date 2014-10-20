@@ -1,5 +1,3 @@
-require 'test_helper'
-
 class TestRestAdapter  < ActiveSupport::TestCase
 
   test "base resource config" do

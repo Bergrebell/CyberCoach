@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'lib_helper'
 
 class TestConditionParser  < ActiveSupport::TestCase
 

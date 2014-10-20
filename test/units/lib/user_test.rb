@@ -1,4 +1,3 @@
-require 'test_helper'
 require 'pp'
 
 class TestRestAdapter < ActiveSupport::TestCase
