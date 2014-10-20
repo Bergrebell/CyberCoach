@@ -55,40 +55,5 @@ class User < ActiveRecord::Base
     @public_visible
   end
 
-  def ignore_username_validation=(param)
-    @ignore = param
-  end
-
-  def ignore_username_validation
-    @ignore
-  end
-
-  def new_record?
-    @new_record
-  end
-
-  def new_record=(param)
-    @new_record = param
-  end
-
-  # Authenticate user credentials against data on CyberCoach webservice.
-  # If user authentication succeeds a a lookalike user object is returned, otherwise it returns false.
-  #
-  def self.authenticate(username, password)
-    user = RestAdapter::User.authenticate(username: username, password: password)
-  end
-
-  # Checks if this user is logged in
-  #
-  def self.is_logged_in
-    session[:user].present?
-  end
-
-  # Validate against cyber coach if username is available.
-  def username_available
-    if not RestAdapter::User.username_available?(@username) and not ignore_username_validation
-      errors.add(:username,"Username is not available or invalid.")
-    end
-  end
 
 end
