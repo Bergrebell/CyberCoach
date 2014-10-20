@@ -1,3 +1,4 @@
+require 'addressable/uri'
 module RestAdapter
 
   # Helper modules

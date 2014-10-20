@@ -2,7 +2,6 @@ module RestAdapter
 
   # This class implements common instance and class methods
   # that all resources have in common.
-  require 'addressable/uri'
   class BaseResource < Resource
 
     # Fetches all details for this resource object and returns a object
