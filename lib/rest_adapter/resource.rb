@@ -55,6 +55,14 @@ module RestAdapter
       self.class.base + self.uri
     end
 
+    # Creates an entity uri with the given id.
+    # Example====
+    # resource.create_entity_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
+    #
+    def create_entity_uri
+      self.class.base + self.class.site + self.class.resource_path + '/' + id.to_s
+    end
+
 
     # Class methods for the resource class.
     # open eigenclass

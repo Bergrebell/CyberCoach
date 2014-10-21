@@ -1,28 +1,61 @@
 module RestAdapter
 
+  # Subscription implements an adapter for the resource Subscription
+  # from the Cyber Coach Server.
+
+  # It provides simple interface for retrieving, saving, updating
+  # and deleting Subscriptions.
+  #
   class Subscription < BaseResource
     # set subscription resource specific config values
-    set_id :id
 
     # getters and setters
-    attr_accessor :sport, :user, :partnership, :entries, :public_visible, :date_subscribed
+    attr_accessor :sport, :user, :partnership, :public_visible, :date_subscribed
 
     set_resource 'subscription'
-    set_resource_path users: '/users', partnerships: '/partnerships' # Hack alert!
+    set_resource_path users: '/users', partnerships: '/partnerships'
+
 
     # open eigenclass to override class methods from the base resource class.
     class << self
 
-      # Hack alert!
-      # Overrides 'create_entity_uri'.
-      # Takes a hash as argument which looks like this: {id: some id, path: :users or :partnerships }.
+      # This class method overrides 'create_entity_uri' form the base resource class.
+      # It creates a subscription entity uri.
+      #
+      # ==== Attributes
+      # The params hash accepts the following properties:
+      #
+      # * +path+
+      # * +id+
+      #
+      # ==== Examples
+      # create_entity_uri(path: :users, id: 'alex/Running') => 'base/site/users/alex/Running'
+      # create_entity_uri(path: :partnerships, id: 'alex;timon/Running') => 'base/site/users/alex;timon/Running'
+      #
       def create_entity_uri(params)
         path_key = params[:path]
         id = params[:id]
         base + site +  resource_path[path_key] + '/' + id
       end
 
-      # Overrides 'retrieve'
+
+      # This class method overrides 'retrieve' from the base resource class.
+      # Returns a subscription given a partnership, a user and a sport category.
+      #
+      # ==== Attributes
+      # The params hash accepts the following properties:
+      #
+      # * +partnership+   - a partnership object or a string that fully specifies a partnership
+      # * +user+          - a user object or a username
+      # * +first_user+    - a user object or a username
+      # * +second_user+   - a user object or a username
+      # * +sport+         - a string that specifies a sport category
+      #
+      # ==== Examples
+      # Subscription.retrieve(partnership: a partnership object, sport: 'Running') => Subscription
+      # Subscription.retrieve(partnership: 'alex;timon', sport: 'Running') => Subscription
+      # Subscription.retrieve(user: 'alex', sport: 'Running') => Subscription
+      # Subscription.retrieve(first_user: 'alex', second_user: 'timon', sport: 'Running') => Subscription
       #
       def retrieve(params)
         # preprocesses the provided params and creates a hash which looks like this:
@@ -33,19 +66,58 @@ module RestAdapter
 
     end
 
+    # This method overrides 'id' from the base resource class.
+    def id
+      if not defined? @id or @id.nil?
+        part = !user.nil? ? user.username : partnership.id
+        "#{part}/#{sport}"
+      else
+        @id
+      end
+    end
 
-    #create a subscription
+    # This method overrides 'uri' from the base resource class.
+    def uri
+      if not defined? @uri or @uri.nil?
+        key = !user.nil? ? :users : :partnerships
+        self.class.site + self.class.resource_path[key] + '/' + self.id
+      else
+        @uri
+      end
+    end
+
+
+    def create_entity_uri(id)
+      path_key = !user.nil? ? :users : :partnerships
+      self.class.base + self.class.site +  self.class.resource_path[path_key] + '/' + id
+    end
+
+
+    # This method creates a subscription.
+    #
+    # ==== Attributes
+    # The params hash accepts the following properties:
+    #
+    # * +date_subscribed+
+    # * +id+
+    # * +uri+
+    # * +sport+
+    # * +user+
+    # * +partnership+
+    # * +public_visible+
+    # * +entries+
+    #
     def initialize(params = {})
-      params = Hash[params.map {|k,v| [k.to_sym,v]}]
-      @date_subscribed = params[:datesubscribed]
+      @date_subscribed = params[:date_subscribed]
       @id = params[:id]
       @uri = params[:uri]
-      @public_visible = params[:publicvisible]
+      @public_visible = params[:public_visible]
       @sport = params[:sport]
       @user = params[:user]
       @partnership = params[:partnership]
       @entries = params[:entries]
     end
+
 
     # extract the prefix needed to set an id;
     # {username1};{username2} for partnership subscriptions;
@@ -58,7 +130,7 @@ module RestAdapter
     end
 
 
-    #returns all entries in this subscription
+    # This method returns a collection of entries.
     def entries
       entries = self.entries.map {|p| p.fetch }
     end
@@ -75,7 +147,8 @@ module RestAdapter
         properties = {
             uri: params['uri'],
             id: params['id'],
-            public_visible: params['publicvisible']
+            public_visible: params['publicvisible'],
+            date_created: params['datecreated']
         }
 
         if not params['user'].nil?
@@ -112,14 +185,31 @@ module RestAdapter
         hash.to_xml(root: 'subscription')
       end
 
+
       private
 
-      # Extreme hack alert!
-      # Parses the passed params hash and creates a valid subscription id based on the properties
-      # :user, :partnership, :sport, :second_user, :first_user
+
+      # This class method parses a hash called params.
+      # It returns a hash that looks as follows { id: some id, path: :users or :partnerships }.
       #
-      # It returns a hash which looks like this:
-      # { id: some id, path: :users or :partnerships}
+      # ==== Attributes
+      # The params hash accepts the following properties:
+      #
+      # * +partnership+   - a partnership object or a string that fully specifies a partnership
+      # * +user+          - a user object or a username
+      # * +first_user+    - a user object or a username
+      # * +second_user+   - a user object or a username
+      # * +sport+         - a string that specifies a sport category
+      #
+      # ==== Examples
+      # parse_params(user: 'alex', sport: 'Running')
+      #     => {path: :users, id: 'alex/Running'}
+      #
+      # parse_params(partnership: 'alex;timon', sport: 'Running')
+      #     => {path: :partnerships, id: 'alex;timon/Running'}
+      #
+      # parse_params(first_user: 'alex' second_user ;'timon', sport: 'Running')
+      #     => {path: :partnerships, id: 'alex;timon/Running'}
       #
       def parse_params(params)
         #TODO: replace all kind_of? calls with is_a? calls. Why? Because it's more concise and it sounds better.

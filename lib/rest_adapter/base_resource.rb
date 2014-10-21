@@ -60,12 +60,13 @@ module RestAdapter
       options = options.merge(params)
 
       begin
-        uri = self.class.create_entity_uri(self.id)
+        uri = self.create_entity_uri
         serialized_object = self.class.serialize(self)
         response = RestClient.put(uri, serialized_object, options)
         self.class.deserialize(response)
       rescue Exception => e
         puts e
+        raise e
         false
       end
     end

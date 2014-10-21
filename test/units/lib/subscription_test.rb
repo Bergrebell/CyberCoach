@@ -39,4 +39,17 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
 
   end
 
+  test "create a subscription" do
+    auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'
+    user = RestAdapter::User.retrieve 'alex'
+    subscription = RestAdapter::Subscription.new(user: user,
+                                                 sport: 'Running',
+                                                 public_visible: RestAdapter::Privacy::Public)
+
+    assert_equal '/CyberCoachServer/resources/users/alex/Running', subscription.uri
+    assert auth_proxy.valid?
+    res = auth_proxy.save(subscription)
+    pp res
+  end
+
 end
