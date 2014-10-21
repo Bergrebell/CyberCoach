@@ -15,7 +15,7 @@ module RestAdapter
 
       # Hack alert!
       # Overrides 'create_entity_uri'.
-      # It takes a hash which looks like this: {id: some id, path: :users or :partnerships }.
+      # Takes a hash as argument which looks like this: {id: some id, path: :users or :partnerships }.
       def create_entity_uri(params)
         path_key = params[:path]
         id = params[:id]
@@ -25,7 +25,7 @@ module RestAdapter
       # Overrides 'retrieve'
       #
       def retrieve(params)
-        # preprocess the provided params and creates a hash which looks like this:
+        # preprocesses the provided params and creates a hash which looks like this:
         # {id: some id, path: some path }
         id = parse_params(params)
         super(id)
