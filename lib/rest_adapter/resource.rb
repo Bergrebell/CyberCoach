@@ -71,6 +71,11 @@ module RestAdapter
       @@default_serialize_format = :xml #use json as default value for http header content-type
 
 
+      def module_name
+        Module.nesting.last
+      end
+
+
       # Template methods / Hook up methods
 
 

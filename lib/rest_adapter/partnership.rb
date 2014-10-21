@@ -72,6 +72,21 @@ module RestAdapter
     # open eigenclass
     class << self
 
+
+      def retrieve(params)
+        id = if params.is_a?(Hash) # check if hash
+               raise ArgumentError, 'Argument first_user / second user is missing.' if params[:first_user].nil? or params[:second_user].nil?
+               # support both usernames and users
+               first_user = params[:first_user].is_a?(String) ? params[:first_user] : params[:first_user].username
+               second_user = params[:second_user].is_a?(String) ? params[:second_user] : params[:second_user].username
+               "#{first_user};#{second_user}"
+             else # otherwise assume it's a string
+                params
+             end
+        super(id)
+      end
+
+
       def create(params)
         if not params.kind_of?(Hash)
           raise ArgumentError, 'Argument is not a hash'
@@ -95,8 +110,8 @@ module RestAdapter
           }
 
           properties = properties.merge({
-                                            first_user: User.create(params['user1']),
-                                            second_user: User.create(params['user2']),
+                                            first_user: module_name::User.create(params['user1']),
+                                            second_user: module_name::User.create(params['user2']),
                                             confirmed: confirmed,
                                             confirmed_by_first_user: params['userconfirmed1'],
                                             confirmed_by_second_user: params['userconfirmed2']
@@ -104,8 +119,8 @@ module RestAdapter
         else # if not extract user names from the uri
           first_user, second_user  = self.extract_user_names_from_uri(params['uri'])
           properties = properties.merge({
-                                            first_user: User.create('username' => first_user),
-                                            second_user: User.create('username' => second_user)
+                                            first_user: module_name::User.create('username' => first_user),
+                                            second_user: module_name::User.create('username' => second_user)
                                         })
         end
 

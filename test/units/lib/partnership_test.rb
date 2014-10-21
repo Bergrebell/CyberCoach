@@ -135,7 +135,19 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
 
   test "get a partnership" do
+    # first possibility
     partnership = RestAdapter::Partnership.retrieve 'alex;timon'
+    assert_not_nil partnership
+    assert partnership.id.is_a?(String)
+
+    # second possibility
+    partnership = RestAdapter::Partnership.retrieve first_user: 'alex', second_user: 'timon'
+    assert_not_nil partnership
+
+    # third possibility
+    alex = RestAdapter::User.retrieve 'alex'
+    timon = RestAdapter::User.retrieve 'timon'
+    partnership = RestAdapter::Partnership.retrieve first_user: alex, second_user: timon
     assert_not_nil partnership
   end
 
