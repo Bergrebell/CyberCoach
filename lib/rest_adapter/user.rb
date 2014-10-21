@@ -199,7 +199,7 @@ module RestAdapter
         end
         # try and error: check if username is already used... i'm feeling dirty...
         begin
-          uri = self.create_entity_uri(username)
+          uri = self.create_absolute_resource_uri(username)
           response = RestClient.get(uri, {
               content_type: self.deserialize_format,
               accept: self.deserialize_format

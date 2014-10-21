@@ -9,7 +9,7 @@ module RestAdapter
     #
     def fetch
       begin
-        uri = self.entity_uri
+        uri = self.absolute_uri
         response = RestClient.get(uri, {
             content_type: self.class.serialize_format,
             accept: self.class.deserialize_format
@@ -28,7 +28,7 @@ module RestAdapter
     #
     def fetch!
       begin
-        uri = self.entity_uri
+        uri = self.absolute_uri
         response = RestClient.get(uri, {
             content_type: self.class.serialize_format,
             accept: self.class.deserialize_format
@@ -60,7 +60,7 @@ module RestAdapter
       options = options.merge(params)
 
       begin
-        uri = self.create_entity_uri
+        uri = self.create_absolute_uri
         serialized_object = self.class.serialize(self)
         response = RestClient.put(uri, serialized_object, options)
         self.class.deserialize(response)
@@ -87,7 +87,7 @@ module RestAdapter
           content_type: self.class.serialize_format
       }
       options = options.merge(params)
-      uri = self.entity_uri
+      uri = self.absolute_uri
       begin
         response = RestClient.delete(uri, options)
         self.class.deserialize(response)
@@ -157,7 +157,7 @@ module RestAdapter
       # Returns a resource object with the provided id.
       def retrieve(id)
         begin
-          uri = self.create_entity_uri(id)
+          uri = self.create_absolute_resource_uri(id)
           response = RestClient.get(uri, {
               content_type: self.serialize_format,
               accept: self.deserialize_format

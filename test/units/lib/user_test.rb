@@ -13,7 +13,7 @@ class TestRestAdapter < ActiveSupport::TestCase
 
   test "create user entity uri" do
     should_be = 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources/users/alex'
-    entity_uri = RestAdapter::User.create_entity_uri 'alex'
+    entity_uri = RestAdapter::User.create_absolute_resource_uri 'alex'
     assert_equal should_be, entity_uri
   end
 
@@ -27,7 +27,6 @@ class TestRestAdapter < ActiveSupport::TestCase
     )
 
     assert_equal '/CyberCoachServer/resources/users/alex', user.uri
-    assert_equal 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources/users/alex', user.entity_uri
 
     assert_equal 'alex', user.username
     assert_equal 'test', user.password

@@ -32,7 +32,7 @@ module RestAdapter
       # create_entity_uri(path: :users, id: 'alex/Running') => 'base/site/users/alex/Running'
       # create_entity_uri(path: :partnerships, id: 'alex;timon/Running') => 'base/site/users/alex;timon/Running'
       #
-      def create_entity_uri(params)
+      def create_absolute_resource_uri(params)
         path_key = params[:path]
         id = params[:id]
         base + site +  resource_path[path_key] + '/' + id
@@ -87,7 +87,7 @@ module RestAdapter
     end
 
 
-    def create_entity_uri(id)
+    def create_absolute_uri
       path_key = !user.nil? ? :users : :partnerships
       self.class.base + self.class.site +  self.class.resource_path[path_key] + '/' + id
     end
