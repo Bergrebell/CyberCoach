@@ -136,7 +136,6 @@ module RestAdapter
         }
 
         if not params['partnerships'].nil?
-          module_name = Module.nesting.last  # workaround corresponds to the prefix RestAdapter
           partnerships =  params['partnerships'].map {|p| module_name::Partnership.create p }
           properties = properties.merge({partnerships: partnerships})
         end
@@ -200,7 +199,7 @@ module RestAdapter
         end
         # try and error: check if username is already used... i'm feeling dirty...
         begin
-          uri = self.create_entity_uri(username)
+          uri = self.create_absolute_resource_uri(username)
           response = RestClient.get(uri, {
               content_type: self.deserialize_format,
               accept: self.deserialize_format

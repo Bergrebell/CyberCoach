@@ -51,8 +51,16 @@ module RestAdapter
     # Example====
     # resource.entity_uri => http://www.blahhh.com/CyberCoachServer/resources/users/alex
     #
-    def entity_uri
+    def absolute_uri
       self.class.base + self.uri
+    end
+
+    # Creates an entity uri with the given id.
+    # Example====
+    # resource.create_entity_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
+    #
+    def create_absolute_uri
+      self.class.base + self.class.site + self.class.resource_path + '/' + id.to_s
     end
 
 
@@ -69,6 +77,11 @@ module RestAdapter
       @@site = '/CyberCoachServer/resources'
       @@default_deserialize_format = :json #use json as default value for http header accept
       @@default_serialize_format = :xml #use json as default value for http header content-type
+
+
+      def module_name
+        Module.nesting.last
+      end
 
 
       # Template methods / Hook up methods
@@ -169,7 +182,7 @@ module RestAdapter
       # Example====
       # Resource.create_entity_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
       #
-      def create_entity_uri(id)
+      def create_absolute_resource_uri(id)
         base + site + resource_path + '/' + id.to_s
       end
 
