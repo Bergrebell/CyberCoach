@@ -7,21 +7,7 @@ class FriendsController < ApplicationController
 
     users = RestAdapter::User::all query: { size: 10 }
     # Filter out users that are already associated in a partnership
-    proposals = []
-    users.each do |u|
-      add = true
-      current_user.partnerships.each do |p|
-        if p.associated_with?(u)
-          add = false
-          break
-        end
-      end
-      if add
-        proposals.push(u)
-      end
-    end
-
-    @proposals = proposals
+    @proposals = users.select { |user| current_user.not_befriended_with?(user) }
   end
 
 

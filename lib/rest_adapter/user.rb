@@ -56,6 +56,10 @@ module RestAdapter
       not self.partnerships.select {|p| p.associated_with?(another_user)}.empty?
     end
 
+    def not_befriended_with?(another_user)
+      not befriended_with?(another_user)
+    end
+
 
     #should we apply 'hidden lazy loading' on missing data ???
 
