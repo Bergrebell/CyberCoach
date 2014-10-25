@@ -36,6 +36,9 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
     assert_not_nil subscription.partnership.second_user
     assert_equal 'newuser4', subscription.partnership.first_user.username
     assert_equal 'newuser5', subscription.partnership.second_user.username
+    assert_equal 'newuser4', subscription.partnership.second_user.partnerships.first.first_user.username
+
+    assert subscription.partnership.second_user.partnerships.first.first_user.friends.size > 0
 
     assert_equal 'Soccer', subscription.sport.name
 

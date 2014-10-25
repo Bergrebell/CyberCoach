@@ -73,42 +73,6 @@ module RestAdapter
     # open eigenclass
     class << self
 
-      # This class method is called by the deserialize class method from the base resource class.
-      # It is responsible for creating a user object.
-      def __create(params)
-        if not params.kind_of?(Hash)
-          raise ArgumentError, 'Argument is not a hash'
-        end
-        properties =  params.dup
-        properties = properties.merge('password' => nil)
-        if not params['partnerships'].nil?
-          partnerships = params['partnerships'].map { |p| module_name::Partnership.create p }
-          properties = properties.merge({'partnerships' => partnerships})
-        end
-
-        super(properties)
-      end
-
-
-      def __serialize(user)
-        if not user.kind_of?(User)
-          raise ArgumentError, 'Argument must be of type user'
-        end
-
-        hash = {
-            email: user.email,
-            publicvisible: user.public_visible.to_s,
-            realname: user.real_name,
-        }
-
-        if not user.password.nil? and not user.password.empty?
-          hash = hash.merge({password: user.password})
-        end
-
-        hash.to_xml(root: 'user')
-      end
-
-
       # Authenticates a user against the cyber coach webservice.
       # It uses a hash as argument with the following properties:
       # params = {

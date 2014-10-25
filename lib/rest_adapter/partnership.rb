@@ -39,19 +39,6 @@ module RestAdapter
     end
 
 
-    # Creates a partnership object.
-    def __initialize(params)
-      # default value for all properties is nil!
-      @uri = params[:uri]
-      @public_visible = params[:public_visible]
-      @confirmed_by_first_user = params[:confirmed_by_first_user]
-      @confirmed_by_second_user = params[:confirmed_by_second_user]
-      @first_user = params[:first_user]
-      @second_user = params[:second_user]
-      @confirmed = params[:confirmed]
-    end
-
-
     # Returns true if the given user is associated with this partnership.
     def associated_with?(user)
       username = user.kind_of?(User) ? user.username : user # support usernames and user object
@@ -104,47 +91,6 @@ module RestAdapter
                params
              end
         super(id)
-      end
-
-
-      def __create(params)
-        if not params.kind_of?(Hash)
-          raise ArgumentError, 'Argument is not a hash'
-        end
-
-        properties = {
-            uri: params['uri'],
-            id: params['id'],
-            public_visible: params['publicvisible']
-        }
-
-        # check if user properties are present
-        if not params['user1'].nil? and not params['user2'].nil?
-          # this hack is dedicated to my dear friend julian pollack.
-          # awesome guy. i have learned a lot from him...
-          # create a boolean lookup table to avoid error prone 'if comparisons' with usernames
-          # use username as key values
-          confirmed = {
-              params['user1']['username'] => params['userconfirmed1'],
-              params['user2']['username'] => params['userconfirmed2']
-          }
-
-          properties = properties.merge({
-                                            first_user: module_name::User.create(params['user1']),
-                                            second_user: module_name::User.create(params['user2']),
-                                            confirmed: confirmed,
-                                            confirmed_by_first_user: params['userconfirmed1'],
-                                            confirmed_by_second_user: params['userconfirmed2']
-                                        })
-        else # if not extract user names from the uri
-          first_user, second_user = self.extract_user_names_from_uri(params['uri'])
-          properties = properties.merge({
-                                            first_user: module_name::User.create('username' => first_user),
-                                            second_user: module_name::User.create('username' => second_user)
-                                        })
-        end
-
-        new(properties)
       end
 
 

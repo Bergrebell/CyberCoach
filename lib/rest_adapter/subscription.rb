@@ -15,6 +15,16 @@ module RestAdapter
     set_resource 'subscription'
     set_resource_path users: '/users', partnerships: '/partnerships'
 
+    serialize_properties :public_visible
+    deserialize_properties :id, :uri, :partnership, :entries, :user, :public_visible, :date_subscribed, :date_created, :sport
+
+    after_deserialize do |params|
+      properties = Hash.new
+      properties.update({user: module_name::User.create(params['user'])}) if not params['user'].nil?
+      properties.update({partnership: module_name::Partnership.create(params['partnership'])}) if not params['partnership'].nil?
+      properties.update({sport: module_name::Sport.create(params['sport'])}) if not params['sport'].nil?
+      properties.update({entries: params['entries'].map { |p| module_name::Entry.create p }}) if not params['entries'].nil?
+    end
 
     # open eigenclass to override class methods from the base resource class.
     class << self
@@ -93,43 +103,6 @@ module RestAdapter
     end
 
 
-    # This method creates a subscription.
-    #
-    # ==== Attributes
-    # The params hash accepts the following properties:
-    #
-    # * +date_subscribed+
-    # * +id+
-    # * +uri+
-    # * +sport+
-    # * +user+
-    # * +partnership+
-    # * +public_visible+
-    # * +entries+
-    #
-    def initialize(params = {})
-      @date_subscribed = params[:date_subscribed]
-      @id = params[:id]
-      @uri = params[:uri]
-      @public_visible = params[:public_visible]
-      @sport = params[:sport]
-      @user = params[:user]
-      @partnership = params[:partnership]
-      @entries = params[:entries]
-    end
-
-
-    # extract the prefix needed to set an id;
-    # {username1};{username2} for partnership subscriptions;
-    # {username} for user subscriptions
-    def get_prefix
-      uri = self.uri
-      prefix = uri.split('/')[uri.length-2] # get the last but one segment in the uri path
-      prefix = prefix[0...-1] if prefix[-1] == '/' # remove last forward slash if present
-      return prefix
-    end
-
-
     # This method returns a collection of entries.
     def entries
       entries = self.entries.map {|p| p.fetch }
@@ -138,54 +111,6 @@ module RestAdapter
 
     # open eigenclass to define class specific class methods
     class << self
-
-      def create(params)
-        if not params.kind_of?(Hash)
-          raise ArgumentError, 'Argument is not a hash.'
-        end
-
-        pp params
-        properties = {
-            uri: params['uri'],
-            id: params['id'],
-            public_visible: params['publicvisible'],
-            date_created: params['datecreated']
-        }
-
-        if not params['user'].nil?
-          user =  module_name::User.create(params['user'])
-          properties = properties.merge({user: user})
-        end
-
-        if not params['partnership'].nil?
-          partnership = module_name::Partnership.create(params['partnership'])
-          properties = properties.merge({partnership: partnership})
-        end
-
-        if not params['sport'].nil?
-          sport =  module_name::Sport.create(params['sport'])
-          properties = properties.merge({sport: sport})
-        end
-
-        if not params['entries'].nil?
-          entries =  params['entries'].map {|p| module_name::Entry.create p }
-          properties = properties.merge({entries: entries})
-        end
-
-        new(properties)
-      end
-
-
-      def serialize(subscription)
-        if not subscription.kind_of?(Subscription)
-          raise ArgumentError, 'Argument must be of type subscription'
-        end
-        hash = {
-            publicvisible: subscription.public_visible
-        }
-        hash.to_xml(root: 'subscription')
-      end
-
 
       private
 
