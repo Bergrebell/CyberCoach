@@ -4,6 +4,48 @@ module RestAdapter
   # that all resources have in common.
   class BaseResource < Resource
 
+    def initialize(params={})
+      super(params)
+      create_lazy_loading_getters
+      inject_dependencies
+    end
+
+    private
+
+    def inject_dependencies
+      self.class.dependencies.each do |property,clazz|
+        if instance_variable_get("@#{property}").is_a?(Hash)
+          object = clazz.call(instance_variable_get("@#{property}"))
+          instance_variable_set("@#{property}",object)
+        elsif instance_variable_get("@#{property}").is_a?(Array)
+          objects = Array.new
+            instance_variable_get("@#{property}").each do |v|
+              (objects << clazz.call(v)) if v.is_a?(Hash)
+          end
+          instance_variable_set("@#{property}",objects) if not objects.empty?
+        end
+      end
+    end
+
+
+    # Creates lazy loading getters for properties that are configured as lazy properties.
+    def create_lazy_loading_getters
+      self.class.lazy_loading_properties.each do |property|
+        define_singleton_method(property) do
+          if  instance_variable_get("@#{property}").nil?
+            self.fetch!
+          end
+          if instance_variable_get("@#{property}").nil? and property[-1] == 's' # hack alert
+            []
+          else
+            instance_variable_get("@#{property}")
+          end
+        end
+      end
+    end
+
+    public
+
     # Fetches all details for this resource object and returns a object
     # containing all details.
     #
@@ -17,6 +59,7 @@ module RestAdapter
         # get deserializer
         self.class.deserialize(response)
       rescue Exception => e
+        raise e
         puts e
         false
       end
@@ -98,43 +141,80 @@ module RestAdapter
     end
 
 
+    def valid?
+      booleans = self.class.validators.map {|property,validator| validate(property) }
+      booleans.reduce {|acc,result| acc &&= result }
+    end
+
+
+    def validate(property)
+      variable_name = "@#{property}".to_sym
+      validator = self.class.validators[property]
+      !validator.nil? ? validator.call(instance_variable_get(variable_name)) : false
+    end
+
+
+    def serialize
+      self.class.serialize(self)
+    end
+
+
     # class methods for the user resource
     # open eigenclass
     class << self
 
-      # This class method creates a new resource given the parameters by the deserialize class method.
-      # Each class that subclasses this class MUST implement such a create class method.
-      def create(params)
-        raise 'Not implemented'
-      end
 
       def available
         @available
       end
 
-      # This class method deserializes the received response of a rest client
-      # and delegates the object creation to its subclasses.
-      def __deserialize(response)
-        hash = Hash.from_xml(response)
-        if not hash['list'].nil? # check if it's a list of resources
-          @available = hash['list']['available'].to_i
-          @start = hash['list']['start'].to_i
-          @end = hash['list']['end'].to_i
-
-          if hash['list'][self.resource_name_plural][self.resource_name].kind_of?(Array)
-            resources = hash['list'][self.resource_name_plural][self.resource_name]
-          else
-            resources = [] << hash['list'][self.resource_name_plural][self.resource_name]
-          end
+      # This class method defines on which properties lazy loading will be applied.
+      # Lazy loading on a property will automatically fetch the missing property.
+      #
+      def lazy_loading_on(*properties)
+        @lazy_loading_properties = properties
+      end
 
 
-          objs = resources.map do |resource|
-            self.create resource # call template method 'create'
-          end
-        else # otherwise it is a single resource
-          obj = self.create hash[self.resource_name] # call template method 'create'
+      # Returns a list of properties where lazy loading is applied.
+      #
+      def lazy_loading_properties
+        @lazy_loading_properties.nil? ? Array.new : @lazy_loading_properties
+      end
+
+
+      def present?(value)
+        not value.nil?
+      end
+
+      def validates(params)
+        @validators = Hash.new if @validators.nil?
+        params.each do |key,validator|
+          @validators[key] = validator if validator.is_a?(Proc)
+          @validators[key] = ->(property) { self.send(validator, property) } if validator.is_a?(Symbol)
         end
       end
+
+      def validators
+        @validators.nil? ? Hash.new : @validators
+      end
+
+
+      def serialize(object)
+        raise ArgumentError, 'Argument must be an object!' if not object.is_a?(Object)
+        filtered_properties, properties = Hash.new, object.as_hash
+        serializable_properties.each do |key|
+          string_key = key.to_s
+          mapped_key = string_key.tr('_', '') # automatically map public_visible to publicvisible
+          if not properties[string_key].nil? # do not serialize properties that are nil
+            validator = validators[key].nil? ? ->(x) {true} : validators[key] # use validator fun if available otherwise use true validator
+            #automatically map to a string
+            filtered_properties = filtered_properties.merge({mapped_key => properties[string_key].to_s}) if validator.call(key)
+          end
+        end
+        filtered_properties.to_xml(root: resource_name)
+      end
+
 
       # This class method deserializes the received response of a rest client
       # and delegates the object creation to its subclasses.
@@ -151,6 +231,46 @@ module RestAdapter
         else # otherwise it is a single resource
           obj = self.create hash # call template method 'create'
         end
+      end
+
+
+      # Creates an object of this resource.
+      def create(params)
+        hash = Hash.new
+        deserializable_properties.each do |key|
+          if key.is_a?(Hash)
+            key.each do |mapped_key, property_key|
+              mapped_string_key = mapped_key.to_s
+              hash = hash.merge({property_key => params[mapped_string_key]})
+            end
+          else
+            mapped_string_key = key.to_s.tr('_', '')
+            hash = hash.merge({key => params[mapped_string_key]})
+          end
+        end
+
+        sub_hash = after_deserializer.call(params)
+        hash = hash.merge(sub_hash) if not sub_hash.nil?
+
+        self.new hash # create object
+      end
+
+
+      def after_deserialize(&mapper)
+        @mapper = mapper
+      end
+
+      def after_deserializer
+        @mapper.nil? ? ->(x) { nil } : @mapper
+      end
+
+
+      def inject(dependencies)
+        @dependencies = Hash[dependencies.map {|key,clazz| [key, !clazz.is_a?(Proc) ? ->(x) {clazz.create(x)} : clazz] }]
+      end
+
+      def dependencies
+        @dependencies.nil? ? Array.new : @dependencies
       end
 
 

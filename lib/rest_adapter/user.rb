@@ -8,143 +8,89 @@ module RestAdapter
     set_resource_path '/users'
     set_resource 'user'
 
-    # getters and setters
-    attr_accessor :username, :password
+    deserialize_properties :uri, :username, :password, :email, :partnerships,
+                           :publicvisible => :public_visible, :realname => :real_name
+
+    #inject :partnerships => RestAdapter::Partnership
+
+    serialize_properties :password, :email, :real_name, :public_visible
+
+    attr_accessor :username, :password, :email, :real_name, :public_visible, :partnerships
+
+    lazy_loading_on :email, :real_name, :public_visible, :partnerships
+
+    validates :password => :password_validator, :username => :username_validator, :public_visible => :present?
+
+    after_deserialize do |params|
+      properties = { 'password' => nil }
+      if not params['partnerships'].nil?
+        partnerships = params['partnerships'].map { |p| module_name::Partnership.create p }
+        properties = properties.merge({'partnerships' => partnerships})
+      end
+      properties
+    end
 
 
-    # Creates a user object.
-    def initialize(params={})
-      # Support string keys too, because rails maps symbols to string keys...
-      params = Hash[params.map {|k,v| [k.to_sym,v]}]
-      # default value for all properties is nil
-      @username = params[:username]
-      @password = params[:password]
-      @email = params[:email]
-      @uri = params[:uri]
-      @real_name = params[:real_name]
-      @public_visible = params[:public_visible]
-      @partnerships = params[:partnerships]
+    def self.password_validator(password)
+      not password.nil? and password.length >= 4
+    end
+
+    def self.username_validator(username)
+      not username.nil? and username.length >= 4
     end
 
 
     # Returns all friends of this user.
     def friends
-      partnerships = self.partnerships.map {|p| p.fetch } # fetch all details
-      active_partnerships = partnerships.select {|p| p.active? } # filter, only get active partnerships
-      friends = active_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
+      partnerships = self.partnerships.map { |p| p.fetch } # fetch all details
+      active_partnerships = partnerships.select { |p| p.active? } # filter, only get active partnerships
+      friends = active_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
     end
 
 
     # Returns all received friend requests of this user.
     def received_friend_requests
-      partnerships = self.partnerships.map {|p| p.fetch } # fetch all details
-      proposed_partnerships = partnerships.select {|p| not p.confirmed_by?(self) } # filter, only get proposed partnerships
-      friends = proposed_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
+      partnerships = self.partnerships.map { |p| p.fetch } # fetch all details
+      proposed_partnerships = partnerships.select { |p| not p.confirmed_by?(self) } # filter, only get proposed partnerships
+      friends = proposed_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
     end
 
 
     # Returns all sent friend requests of this user.
     def sent_friend_requests
-      partnerships = self.partnerships.map {|p| p.fetch } # fetch all details
-      proposed_partnerships = partnerships.select {|p| p.confirmed_by?(self) and not p.active? }
-      friends = proposed_partnerships.map {|p| p.partner_of(self) } # get users instead of partnerships
+      partnerships = self.partnerships.map { |p| p.fetch } # fetch all details
+      proposed_partnerships = partnerships.select { |p| p.confirmed_by?(self) and not p.active? }
+      friends = proposed_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
     end
 
 
     # Returns true if this user is befriended with the given 'another_user'.
     def befriended_with?(another_user)
-      not self.partnerships.select {|p| p.associated_with?(another_user)}.empty?
+      not self.partnerships.select { |p| p.associated_with?(another_user) }.empty?
     end
 
-
-    #should we apply 'hidden lazy loading' on missing data ???
-
-    def partnerships
-      # if nil fetch some data
-      if @partnerships.nil?
-        self.fetch!
-      end
-      # if still nil, return empty list
-      if @partnerships.nil?
-        []
-      else
-        @partnerships
-      end
-    end
-
-
-    def partnerships=(partnerships)
-      @partnerships = partnerships
-    end
-
-
-    def email
-      if @email.nil?
-        self.fetch!
-      end
-      @email
-    end
-
-
-    def email=(email)
-      @email = email
-    end
-
-
-    def real_name
-      if @real_name.nil?
-        self.fetch!
-      end
-      @real_name
-    end
-
-
-    def real_name=(real_name)
-      @real_name = real_name
-    end
-
-
-    def public_visible
-      if @public_visible.nil?
-        self.fetch!
-      end
-      @public_visible
-    end
-
-
-    def public_visible=(public_visible)
-      @public_visible = public_visible
-    end
 
     # open eigenclass
     class << self
 
       # This class method is called by the deserialize class method from the base resource class.
       # It is responsible for creating a user object.
-      def create(params)
+      def __create(params)
         if not params.kind_of?(Hash)
           raise ArgumentError, 'Argument is not a hash'
         end
-
-        properties = {
-            username: params['username'],
-            email: params['email'],
-            password: nil, #otherwise we get garbage, because default is a star (*)
-            uri: params['uri'],
-            real_name: params['realname'],
-            public_visible: params['publicvisible']
-        }
-
+        properties =  params.dup
+        properties = properties.merge('password' => nil)
         if not params['partnerships'].nil?
-          partnerships =  params['partnerships'].map {|p| module_name::Partnership.create p }
-          properties = properties.merge({partnerships: partnerships})
+          partnerships = params['partnerships'].map { |p| module_name::Partnership.create p }
+          properties = properties.merge({'partnerships' => partnerships})
         end
 
-        new(properties)
+        super(properties)
       end
 
 
-      def serialize(user)
+      def __serialize(user)
         if not user.kind_of?(User)
           raise ArgumentError, 'Argument must be of type user'
         end
@@ -210,7 +156,7 @@ module RestAdapter
         end
       end
 
-    end  # end of eigenclass
+    end # end of eigenclass
 
   end # end of class User
 end

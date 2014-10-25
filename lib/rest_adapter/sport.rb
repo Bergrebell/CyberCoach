@@ -3,31 +3,12 @@ module RestAdapter
   # This class is responsible for adapting the resource sport..
   class Sport < BaseResource
 
-    # getters and setters
-    attr_reader :name, :id
+    set_id :name
     set_resource_path '/sports'
     set_resource 'sport'
-
-
-    def initialize(params)
-      @name = params[:name]
-      @id = params[:id]
-      @uri = params[:uri]
-    end
-
-
-    # open eigenclass
-    class << self
-
-      def create(params)
-        new({
-                name: params['name'],
-                id: params['id'],
-                uri: params['uri']
-            })
-      end
-
-    end # end of eigenclass
+    deserialize_properties :uri, :name, :id, :description
+    attr_accessor :name, :id, :description
+    lazy_loading_on :description
 
   end # end of class Sport
 end

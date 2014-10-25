@@ -46,6 +46,8 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
   test "retrieve partnerships over user object" do
     mike = RestAdapter::User.retrieve 'mikeShiva'
     partnerships = mike.partnerships
+    pp mike
+    pp partnerships
     assert_not_nil partnerships
     assert partnerships.size > 0
     partnership = partnerships.first

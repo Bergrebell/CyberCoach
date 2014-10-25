@@ -1,4 +1,4 @@
-class TestRestAdapter  < ActiveSupport::TestCase
+class TestResource  < ActiveSupport::TestCase
 
   test "base resource config" do
     assert_equal 'http://diufvm31.unifr.ch:8090', RestAdapter::BaseResource.base

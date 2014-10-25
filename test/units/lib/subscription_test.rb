@@ -28,6 +28,8 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
     # third possibility
     subscription = RestAdapter::Subscription.retrieve(first_user: 'newuser4', second_user: 'newuser5',
                                                       sport: 'Soccer')
+
+    pp subscription.partnership
     assert_not_nil subscription
     assert_not_nil subscription.partnership
     assert_not_nil subscription.partnership.first_user

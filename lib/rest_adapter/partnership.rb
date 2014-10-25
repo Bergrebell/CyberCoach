@@ -9,6 +9,26 @@ module RestAdapter
     set_resource_path '/partnerships'
     set_resource 'partnership'
 
+    deserialize_properties :id, :uri, :user1 => :first_user, :user2 => :second_user,
+                           :userconfirmed1 => :confirmed_by_first_user,
+                           :userconfirmed2 => :confirmed_by_second_user,
+                           :publicvisible => :public_visible
+
+    serialize_properties :public_visible
+
+    inject :first_user => module_name::User, :second_user => module_name::User
+
+    after_deserialize  do |params|
+      if not params['user1'].nil? and not params['user2'].nil?
+        {:confirmed => {params['user1']['username'] => params['userconfirmed1'],
+                        params['user2']['username'] => params['userconfirmed2']}
+        }
+      else
+        first_user, second_user = self.extract_user_names_from_uri(params['uri'])
+        { first_user: {'username' => first_user},
+          second_user: {'username' => second_user} }
+      end
+    end
 
     alias_method :confirmed_by_first_user?, :confirmed_by_first_user
     alias_method :confirmed_by_second_user?, :confirmed_by_second_user
@@ -20,7 +40,7 @@ module RestAdapter
 
 
     # Creates a partnership object.
-    def initialize(params)
+    def __initialize(params)
       # default value for all properties is nil!
       @uri = params[:uri]
       @public_visible = params[:public_visible]
@@ -81,13 +101,13 @@ module RestAdapter
                second_user = params[:second_user].is_a?(String) ? params[:second_user] : params[:second_user].username
                "#{first_user};#{second_user}"
              else # otherwise assume it's a string
-                params
+               params
              end
         super(id)
       end
 
 
-      def create(params)
+      def __create(params)
         if not params.kind_of?(Hash)
           raise ArgumentError, 'Argument is not a hash'
         end
@@ -117,7 +137,7 @@ module RestAdapter
                                             confirmed_by_second_user: params['userconfirmed2']
                                         })
         else # if not extract user names from the uri
-          first_user, second_user  = self.extract_user_names_from_uri(params['uri'])
+          first_user, second_user = self.extract_user_names_from_uri(params['uri'])
           properties = properties.merge({
                                             first_user: module_name::User.create('username' => first_user),
                                             second_user: module_name::User.create('username' => second_user)
@@ -125,17 +145,6 @@ module RestAdapter
         end
 
         new(properties)
-      end
-
-
-      def serialize(partnership)
-        if not partnership.kind_of?(Partnership)
-          raise ArgumentError, 'Argument must be of type partnership'
-        end
-        hash = {
-            publicvisible: partnership.public_visible
-        }
-        hash.to_xml(root: 'partnership')
       end
 
 

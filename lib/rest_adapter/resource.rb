@@ -5,6 +5,13 @@ module RestAdapter
   # implemented by the subclasses.
   class Resource
 
+    def initialize(params={})
+      props = Hash[params.map {|k,v| [k.to_sym,v]}]
+      props.each do |key,value|
+        instance_variable_set("@#{key}",value)
+      end
+    end
+
     # Returns an id of this resource.
     def id
       self.instance_variable_get("@#{self.class.id}")
@@ -137,6 +144,23 @@ module RestAdapter
 
 
       # Setter and getters for class variables.
+
+      def deserialize_properties(*properties)
+        @deserializable_properties = properties
+      end
+
+      def deserializable_properties
+        @deserializable_properties.nil? ? [] : @deserializable_properties
+      end
+
+
+      def serialize_properties(*properties)
+        @serializable_properties = properties
+      end
+
+      def serializable_properties
+        @serializable_properties.nil? ? [] : @serializable_properties
+      end
 
 
       # Sets the id variable for this resource class.

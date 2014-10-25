@@ -144,6 +144,7 @@ module RestAdapter
           raise ArgumentError, 'Argument is not a hash.'
         end
 
+        pp params
         properties = {
             uri: params['uri'],
             id: params['id'],
