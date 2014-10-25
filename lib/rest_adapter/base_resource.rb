@@ -49,9 +49,18 @@ module RestAdapter
     # Fetches all details for this resource object and returns a object
     # containing all details.
     #
-    def fetch
+    def fetch(options={}) # TODO: fix options
+      # if query is not set, use default
+      if options[:query].nil?
+        options = options.merge({query: {start: 0, size: 999}})
+      end
+
+      # build query
+      uri = Addressable::URI.new
+      uri.query_values = options[:query]
+      q = '?' + uri.query
       begin
-        uri = self.absolute_uri
+        uri = self.absolute_uri + q
         response = RestClient.get(uri, {
             content_type: self.class.serialize_format,
             accept: self.class.deserialize_format
@@ -69,9 +78,18 @@ module RestAdapter
     # Fetches all detail information of this resource object and modifies its internal properties
     # according the fetched details.
     #
-    def fetch!
+    def fetch!(options={}) # TODO: fix options
+      # if query is not set, use default
+      if options[:query].nil?
+        options = options.merge({query: {start: 0, size: 999}})
+      end
+
+      # build query
+      uri = Addressable::URI.new
+      uri.query_values = options[:query]
+      q = '?' + uri.query
       begin
-        uri = self.absolute_uri
+        uri = self.absolute_uri + q
         response = RestClient.get(uri, {
             content_type: self.class.serialize_format,
             accept: self.class.deserialize_format
@@ -275,9 +293,18 @@ module RestAdapter
 
 
       # Returns a resource object with the provided id.
-      def retrieve(id)
+      def retrieve(id,options={}) # TODO: fix options
+      # if query is not set, use default
+      if options[:query].nil?
+        options = options.merge({query: {start: 0, size: 999}})
+      end
+
+      # build query
+      uri = Addressable::URI.new
+      uri.query_values = options[:query]
+      q = '?' + uri.query
         begin
-          uri = self.create_absolute_resource_uri(id)
+          uri = self.create_absolute_resource_uri(id) + q
           response = RestClient.get(uri, {
               content_type: self.serialize_format,
               accept: self.deserialize_format
