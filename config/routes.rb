@@ -1,11 +1,7 @@
 Rails.application.routes.draw do
 
-  get 'friends/proposals'
-
-  get 'friends/requests'
-
   get 'friends/index'
-
+  post 'friends/confirm'
   post 'friends/create'
 
   get 'welcome/index'
