@@ -4,17 +4,13 @@ module RestAdapter
   # that all resources have in common.
   class BaseResource < Resource
 
+    include RestAdapter::Config::CyberCoach
     include RestAdapter::Behaviours::AutoConstructor
-    #include RestAdapter::Behaviours::LazyLoading
-
     include RestAdapter::Behaviours::AsHash
     include RestAdapter::Behaviours::Serializable
     include RestAdapter::Behaviours::Deserializable
-
-    include RestAdapter::Config::CyberCoach # must be included as last
     include RestAdapter::Behaviours::ActiveRecord
     include RestAdapter::Behaviours::Validator
-
 
 
     # class methods for the user resource
