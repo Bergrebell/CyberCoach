@@ -2,6 +2,7 @@ module RestAdapter
 
   # This class is responsible for adapting the resource sport..
   class Sport < BaseResource
+    include RestAdapter::Behaviours::LazyLoading
 
     set_id :name
     set_resource_path '/sports'
