@@ -1,17 +1,17 @@
 class FriendsController < ApplicationController
 
+  before_action :set_current_user
   
   def index
-    me = current_user
-    @friends = me.friends
-    @requests_received = me.received_friend_requests
+    @friends = @current_user.friends
+    @requests_received = @current_user.received_friend_requests
     users = RestAdapter::User.all query: {size: 10 }
-    @proposals = users.select {|u| me.not_befriended_with?(u)}
+    @proposals = users.select {|u| @current_user.not_befriended_with?(u)}
   end
 
 
   def proposals
-    @friend_proposals = current_user.sent_friend_requests
+    @friend_proposals = @me.sent_friend_requests
   end
 
 
@@ -42,7 +42,7 @@ class FriendsController < ApplicationController
     other_user = RestAdapter::User::retrieve params[:username]
 
     partnership = RestAdapter::Partnership.new(
-        first_user: current_user,
+        first_user: @me,
         second_user: other_user,
         public_visible: RestAdapter::Privacy::Public
     )
@@ -54,6 +54,12 @@ class FriendsController < ApplicationController
         format.html { redirect_to friends_index_url, alert: 'Friend request failed! Cyber Coach server is bitchy.'  }
       end
     end
+  end
+
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_current_user
+    @current_user = current_user
   end
 
 end

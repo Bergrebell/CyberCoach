@@ -18,21 +18,15 @@ module RestAdapter
     #
     def initialize(params)
       @auth_params = if not params[:user].nil?
-                       {
-                           username: params[:user].username,
-                           password: params[:user].password
-                       }
+                       { username: params[:user].username,
+                         password: params[:user].password }
                      else
-                       {
-                           username: params[:username],
-                           password: params[:password]
-                       }
+                       { username: params[:username],
+                         password: params[:password] }
                      end
-      @session = params[:session]
-
+      @session = params[:session].nil? ? Hash.new : params[:session]
       @subject = params[:subject]
       @auth_header = Helper.basic_auth_encryption(@auth_params)
-
     end
 
     # Checks if this AuthProxy object is valid in terms of the user credentials.
@@ -53,8 +47,10 @@ module RestAdapter
     def save(object=nil)
       params = {authorization: @auth_header}
       if not object.nil? #if object is nil, apply the op on the subject.
-        @session[:user][:friends] = nil if not @session[:user][:friends].nil?
-        @session[:user][:partnerships] = nil if not @session[:user][:partnerships].nil?
+        if not @session[:user].nil?
+          @session[:user][:friends] = nil if not @session[:user][:friends].nil?
+          @session[:user][:partnerships] = nil if not @session[:user][:partnerships].nil?
+        end
         object.save(params)
       elsif not @subject.nil?
         @subject.save(params)
