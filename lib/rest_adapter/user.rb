@@ -27,10 +27,10 @@ module RestAdapter
 
     after_deserialize do |params|
       properties = { 'password' => nil }
-      if not params['partnerships'].nil? and false
-        partnerships = params['partnerships'].map { |p| module_name::Partnership.create p }
-        properties = properties.merge({'partnerships' => partnerships})
-      end
+      #if not params['partnerships'].nil?
+      #  partnerships = params['partnerships'].map { |p| module_name::Partnership.create p }
+      #  properties = properties.merge({'partnerships' => partnerships})
+      #end
       properties
     end
 
@@ -63,7 +63,7 @@ module RestAdapter
     # Returns all friends of this user.
     def friends
       partnerships = self.partnerships.map do |p|
-        if p.is_a?(Hash) and false
+        if p.is_a?(Hash) # stupid hack
           RestAdapter::Partnership.create(p).fetch
         else
           p.fetch
@@ -77,7 +77,7 @@ module RestAdapter
     # Returns all received friend requests of this user.
     def received_friend_requests
       partnerships = self.partnerships.map do |p|
-        if p.is_a?(Hash) and false
+        if p.is_a?(Hash) # stupid hack
           RestAdapter::Partnership.create(p).fetch
         else
           p.fetch
@@ -91,7 +91,7 @@ module RestAdapter
     # Returns all sent friend requests of this user.
     def sent_friend_requests
       partnerships = self.partnerships.map do |p|
-        if p.is_a?(Hash) and false
+        if p.is_a?(Hash) # stupid hack
           RestAdapter::Partnership.create(p).fetch
         else
           p.fetch
@@ -105,7 +105,7 @@ module RestAdapter
     # Returns true if this user is befriended with the given 'another_user'.
     def befriended_with?(another_user)
       not self.partnerships.select { |p|
-        if p.is_a?(Hash) and false
+        if p.is_a?(Hash) # stupid hack
           RestAdapter::Partnership.create(p).associated_with?(another_user)
         else
           p.associated_with?(another_user)
