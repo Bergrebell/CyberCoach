@@ -1,0 +1,3 @@
+class Boxing < SportSession
+
+end
