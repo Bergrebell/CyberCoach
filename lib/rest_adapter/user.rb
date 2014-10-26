@@ -2,7 +2,6 @@ module RestAdapter
 
   # This class is responsible for adapting the resource user.
   class User < BaseResource
-
     # set user resource specific config values
     set_id :username
     set_resource_path '/users'
@@ -19,7 +18,9 @@ module RestAdapter
 
     lazy_loading_on :email, :real_name, :public_visible, :partnerships
 
-    validates :password => :password_validator, :username => :username_validator, :public_visible => :present?
+    serialize_if :password => :password_validator, :username => :username_validator,
+                 :real_name => :real_name_validator, :public_visible => :public_validator,
+                 :email => :email_validator
 
     after_deserialize do |params|
       properties = { 'password' => nil }
@@ -37,6 +38,22 @@ module RestAdapter
 
     def self.username_validator(username)
       not username.nil? and username.length >= 4
+    end
+
+    def self.public_validator(num)
+      begin # sorry ruby, but constants are just pain in the ass...
+        RestAdapter::Privacy.constants.map {|key| RestAdapter::Privacy.const_get(key) }.include?(num)
+      rescue
+        false
+      end
+    end
+
+    def self.real_name_validator(name)
+      not name.nil? and name.length >= 4
+    end
+
+    def self.email_validator(email)
+      not email.nil? and email.length >= 4
     end
 
 

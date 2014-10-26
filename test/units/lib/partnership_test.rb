@@ -22,7 +22,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
     # create auth proxy for mike
     auth_proxy = RestAdapter::AuthProxy.new username: 'mikeShiva', password: '12345'
-    assert auth_proxy.valid?
+    assert auth_proxy.authorized?
 
     # create a partnership
     partnership = RestAdapter::Partnership.new(
@@ -75,7 +75,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
     # create auth proxy for timon
     auth_proxy = RestAdapter::AuthProxy.new username: 'timon', password: 'scareface'
-    assert auth_proxy.valid?
+    assert auth_proxy.authorized?
 
     # create a partnership
     partnership = RestAdapter::Partnership.new(
@@ -101,7 +101,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
     # create auth proxy for timon
     auth_proxy = RestAdapter::AuthProxy.new username: 'timon', password: 'scareface'
-    assert auth_proxy.valid?
+    assert auth_proxy.authorized?
 
     # get the partnership
     partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'
@@ -123,7 +123,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
     # create auth proxy for timon
     auth_proxy = RestAdapter::AuthProxy.new username: 'mikeShiva', password: '12345'
-    assert auth_proxy.valid?
+    assert auth_proxy.authorized?
 
     # get the partnership
     partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'

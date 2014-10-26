@@ -5,7 +5,7 @@ module RestAdapter
   # implemented by the subclasses.
   class Resource
 
-    def initialize(params={})
+    def __initialize(params={})
       props = Hash[params.map {|k,v| [k.to_sym,v]}]
       props.each do |key,value|
         instance_variable_set("@#{key}",value)
@@ -28,31 +28,6 @@ module RestAdapter
         @uri
       end
     end
-
-    # Returns a hash representation of this resource.
-    # As argument it takes an optional hash with two properties :included_keys and :excluded_keys
-    # The hash is filtered according the two lists that are provided by :included_keys and :excluded_keys.
-    #
-    # Examples====
-    # user.as_hash(included_keys: [:username,:email]) => { username: 'blah', email: 'blah'}
-    # user.as_hash(excluded_keys: [:username,:email]) => hash does not have the properties username and email
-    #
-    def as_hash(params={})
-      # hack alert
-      json_string = self.to_json
-      hash = JSON.parse(json_string)
-      if not params[:included_keys].nil?
-        included_keys = Hash[params[:included_keys].map {|k,v| [k.to_s,v]}]
-        hash = hash.select { |key,_| included_keys.include? key }
-      end
-
-      if not params[:excluded_keys].nil?
-        excluded_keys = Hash[params[:excluded_keys].map {|k,v| [k.to_s,v]}]
-        hash = hash.select { |key,_| not excluded_keys.include? key }
-      end
-      hash
-    end
-
 
     # Returns the uri of a single resource entity.
     # Example====
@@ -78,13 +53,12 @@ module RestAdapter
       # create setters and getters for class variables
       attr_reader :resource_name, :resource_path, :id, :resource_name_plural
 
-      # Cyber coach basic config values.
-      # All subclasses share the same base, site and format variables.
-      @@base = 'http://diufvm31.unifr.ch:8090'
-      @@site = '/CyberCoachServer/resources'
-      @@default_deserialize_format = :json #use json as default value for http header accept
-      @@default_serialize_format = :xml #use json as default value for http header content-type
 
+      # All subclasses share the same base, site and format variables.
+      #@@base = 'http://diufvm31.unifr.ch:8090'
+      #@@site = '/CyberCoachServer/resources'
+      #@@deserialize_format = :json #use json as default value for http header accept
+      #@@serialize_format = :xml #use json as default value for http header content-type
 
       def module_name
         Module.nesting.last
@@ -93,75 +67,17 @@ module RestAdapter
 
       # Template methods / Hook up methods
 
-
-      # This class method serializes the passed object.
-      # Each subclass MUST implement this class method.
-      def serialize(object)
-        raise 'Not implemented!'
-      end
-
-
-      # This class method deserializes the passed object.
-      # Each subclass MUST implement this class method.
-      def deserialize(object)
-        raise 'Not implemented!'
-      end
-
-
       # Getters for meta class variables.
       def base
-        @@base
+        raise 'Not specified!'
       end
 
       def site
-        @@site
-      end
-
-      # Returns the format that is used.
-      # If format is not specified a default value is used.
-      def deserialize_format
-        !@deserialize_format.nil? ? @deserialize_format : @@default_deserialize_format
-      end
-
-
-      # Returns the format that is used.
-      # If not format is specified a default value is used.
-      def serialize_format
-        !@serialize_format.nil? ? @serialize_format : @@default_serialize_format
-      end
-
-      # Sets the format for this resource.
-      # Can be :xml, :json, or :html .
-      def set_deserialize_format(format)
-        @deserialize_format = format
-      end
-
-      # Sets the format for this resource.
-      # Can be :xml, :json, or :html .
-      def set_serialize_format(format)
-        @serialize_format = format
+        raise 'Not specified!'
       end
 
 
       # Setter and getters for class variables.
-
-      def deserialize_properties(*properties)
-        @deserializable_properties = properties
-      end
-
-      def deserializable_properties
-        @deserializable_properties.nil? ? [] : @deserializable_properties
-      end
-
-
-      def serialize_properties(*properties)
-        @serializable_properties = properties
-      end
-
-      def serializable_properties
-        @serializable_properties.nil? ? [] : @serializable_properties
-      end
-
 
       # Sets the id variable for this resource class.
       # Examples====

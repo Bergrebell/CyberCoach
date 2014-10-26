@@ -36,7 +36,7 @@ module RestAdapter
     # Checks if this AuthProxy object is valid in terms of the user credentials.
     # For validation an authentication request is performed.
     # Only for testing purposes!
-    def valid?
+    def authorized?
       module_name = Module.nesting.last  # workaround corresponds to the prefix RestAdapter
       (module_name::User.authenticate(@auth_params)) != false
     end

@@ -13,7 +13,7 @@ class TestAuthProxy  < ActiveSupport::TestCase
 
   test 'if auth proxy is valid' do
     auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'
-    assert auth_proxy.valid?
+    assert auth_proxy.authorized?
   end
 
 end

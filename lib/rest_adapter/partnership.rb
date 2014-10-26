@@ -6,6 +6,7 @@ module RestAdapter
     #getters and setters
     attr_reader :public_visible, :confirmed_by_first_user, :confirmed_by_second_user,
                 :first_user, :second_user, :confirmed
+
     set_resource_path '/partnerships'
     set_resource 'partnership'
 
@@ -15,6 +16,7 @@ module RestAdapter
                            :publicvisible => :public_visible
 
     serialize_properties :public_visible
+
 
     inject :first_user => module_name::User, :second_user => module_name::User
 
@@ -78,7 +80,6 @@ module RestAdapter
 
     # open eigenclass
     class << self
-
 
       def retrieve(params)
         id = if params.is_a?(Hash) # check if hash

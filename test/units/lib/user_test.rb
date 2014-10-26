@@ -93,6 +93,7 @@ class TestRestAdapter < ActiveSupport::TestCase
 
   test "authenticate user" do
     user = RestAdapter::User.authenticate username: 'asarteam1', password: 'scareface'
+    assert user
     pp user.as_hash
     assert user != false
     assert_equal 'asarteam1', user.username
@@ -101,6 +102,7 @@ class TestRestAdapter < ActiveSupport::TestCase
 
   test "user as hash" do
     user = RestAdapter::User.authenticate username: 'asarteam1', password: 'scareface'
+    assert user
     user_hash = user.as_hash
     assert user_hash
     assert_equal 'asarteam1', user_hash['username']
@@ -135,6 +137,7 @@ class TestRestAdapter < ActiveSupport::TestCase
     user.email = 'asarteam1@test.com'
 
     auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface'
+    assert auth_proxy.authorized?
     auth_proxy.save(user)
 
     test_user = RestAdapter::User.retrieve 'asarteam1'
@@ -148,10 +151,10 @@ class TestRestAdapter < ActiveSupport::TestCase
         email: 'dummy@test.com',
         password: 'dummy',
         real_name: 'dummy',
-        real_name: 'dummy',
         public_visible: RestAdapter::Privacy::Public
     )
 
+    pp user.serialize
     auth_proxy = RestAdapter::AuthProxy.new username: 'dummy', password: 'dummy'
 
     assert auth_proxy.save(user)

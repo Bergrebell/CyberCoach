@@ -52,7 +52,7 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
                                                  public_visible: RestAdapter::Privacy::Public)
 
     assert_equal '/CyberCoachServer/resources/users/alex/Running', subscription.uri
-    assert auth_proxy.valid?
+    assert auth_proxy.authorized?
     res = auth_proxy.save(subscription)
     pp res
   end

@@ -1,37 +1,24 @@
 require 'pp'
 class TestResource  < ActiveSupport::TestCase
 
-  test "validation should succeed" do
-    user = RestAdapter::User.new username: 'alex', password: 'dsfdsf', partnerships: []
-    assert user.validate(:password)
+  test "base resource config" do
+    assert_equal 'http://diufvm31.unifr.ch:8090', RestAdapter::BaseResource.base
+    assert_equal '/CyberCoachServer/resources', RestAdapter::BaseResource.site
+    assert_equal :json, RestAdapter::BaseResource.deserialize_format
+    assert_equal :xml, RestAdapter::BaseResource.serialize_format
+
+    assert_equal :json, RestAdapter::User.deserialize_format
+    assert_equal :xml, RestAdapter::User.serialize_format
   end
 
 
-  test "validation should fail" do
-    user = RestAdapter::User.new username: 'alex', password: '', partnerships: []
-    assert !user.validate(:password)
-    user = RestAdapter::User.new username: 'alex', password: nil, partnerships: []
-    assert !user.validate(:password)
-
-    user = RestAdapter::User.new username: 'alex', password: nil, partnerships: []
-    assert !user.validate(:public_visible)
-  end
-
-  test "valid? should succeed" do
-    user = RestAdapter::User.new username: 'alex', password: 'test', public_visible: RestAdapter::Privacy::Public
-    assert user.valid?
-  end
-
-  test "valid? should fail" do
-    user = RestAdapter::User.new username: 'alex', password: nil, partnerships: []
-    assert !user.valid?
-
-    user = RestAdapter::User.new username: '', password: nil, partnerships: []
-    assert !user.valid?
-
-    user = RestAdapter::User.new username: nil, password: nil, partnerships: []
-    assert !user.valid?
-
+  test "deseralize user" do
+    user = RestAdapter::User.retrieve 'asarteam1'
+    pp user
+    assert_not_nil user.username
+    assert_not_nil user.partnerships
+    assert_not_nil user.real_name
+    assert_nil user.password
   end
 
   test "serialize user" do
@@ -44,6 +31,40 @@ class TestResource  < ActiveSupport::TestCase
     assert_not_nil hash['user']
     assert hash['user'].keys.reduce { |acc,key| acc &&= ['password','email', 'publicvisible','realname'].include?(key) }
     assert hash['user'].reduce {|acc,(key,value)| acc &&= !value.nil? }
+  end
+
+  test "serialize should ignore nil values" do
+    user = RestAdapter::User.new(email: nil, password: nil,
+                                 partnerships: [], real_name: 'Alex',
+                                 public_visible: RestAdapter::Privacy::Public)
+    xml = user.serialize
+    hash = Hash.from_xml(xml)
+    pp xml
+    assert_nil hash['user']['email']
+    assert_nil hash['user']['password']
+    assert_equal 'Alex', hash['user']['realname']
+  end
+
+  test "serialize should ignore empty strings" do
+    user = RestAdapter::User.new(email: nil, password: '',
+                                 partnerships: [], real_name: '',
+                                 public_visible: RestAdapter::Privacy::Public)
+    xml = user.serialize
+    hash = user.as_hash
+    pp hash
+    pp xml
+
+  end
+
+
+  test "serialize should ignore * password " do
+    user = RestAdapter::User.new(email: nil, password: '*',
+                                 partnerships: [], real_name: '',
+                                 public_visible: RestAdapter::Privacy::Public)
+    xml = user.serialize
+    hash = user.as_hash
+    pp xml
+
   end
 
 
