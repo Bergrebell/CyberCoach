@@ -28,9 +28,11 @@ module RestAdapter
                            password: params[:password]
                        }
                      end
+      @session = params[:session]
 
       @subject = params[:subject]
       @auth_header = Helper.basic_auth_encryption(@auth_params)
+
     end
 
     # Checks if this AuthProxy object is valid in terms of the user credentials.
@@ -51,6 +53,8 @@ module RestAdapter
     def save(object=nil)
       params = {authorization: @auth_header}
       if not object.nil? #if object is nil, apply the op on the subject.
+        @session[:user][:friends] = nil if not @session[:user][:friends].nil?
+        @session[:user][:partnerships] = nil if not @session[:user][:partnerships].nil?
         object.save(params)
       elsif not @subject.nil?
         @subject.save(params)
@@ -92,6 +96,33 @@ module RestAdapter
       # So here the user object plays the role of the subject.
 
       @subject.send(name, *args, &block)
+    end
+
+    def partnerships
+      if @session[:user][:partnerships].nil?
+        @session[:user][:partnerships] =  @subject.partnerships.map {|p| p.as_hash}
+      end
+
+      if not @session[:user][:partnerships].nil?
+        @session[:user][:partnerships].map {|p| RestAdapter::Partnership.create p }
+      else
+        []
+      end
+
+    end
+
+
+    def friends
+      if @session[:user][:friends].nil?
+        @session[:user][:friends] =  @subject.friends.map{|f| f.as_hash}
+      end
+
+      if not @session[:user][:friends].nil?
+        @session[:user][:friends].map {|p| RestAdapter::User.create p }
+      else
+        []
+      end
+
     end
 
   end

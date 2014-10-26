@@ -5,8 +5,7 @@ module RestAdapter
   class BaseResource < Resource
 
     include RestAdapter::Behaviours::AutoConstructor
-    include RestAdapter::Behaviours::LazyLoading
-    include RestAdapter::Behaviours::DependencyInjector
+    #include RestAdapter::Behaviours::LazyLoading
 
     include RestAdapter::Behaviours::AsHash
     include RestAdapter::Behaviours::Serializable

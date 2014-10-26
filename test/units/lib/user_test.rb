@@ -136,7 +136,7 @@ class TestRestAdapter < ActiveSupport::TestCase
     user = RestAdapter::User.retrieve 'asarteam1'
     user.email = 'asarteam1@test.com'
 
-    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface'
+    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface', session: {:user => { :friends => nil, :partnerships => nil}}
     assert auth_proxy.authorized?
     auth_proxy.save(user)
 
@@ -155,7 +155,7 @@ class TestRestAdapter < ActiveSupport::TestCase
     )
 
     pp user.serialize
-    auth_proxy = RestAdapter::AuthProxy.new username: 'dummy', password: 'dummy'
+    auth_proxy = RestAdapter::AuthProxy.new username: 'dummy', password: 'dummy', session: {:user => { :friends => nil, :partnerships => nil}}
 
     assert auth_proxy.save(user)
 

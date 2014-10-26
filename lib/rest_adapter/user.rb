@@ -2,6 +2,9 @@ module RestAdapter
 
   # This class is responsible for adapting the resource user.
   class User < BaseResource
+    include RestAdapter::Behaviours::LazyLoading
+    include RestAdapter::Behaviours::DependencyInjector
+
     # set user resource specific config values
     set_id :username
     set_resource_path '/users'
@@ -9,8 +12,6 @@ module RestAdapter
 
     deserialize_properties :uri, :username, :password, :email, :partnerships,
                            :publicvisible => :public_visible, :realname => :real_name
-
-    #inject :partnerships => RestAdapter::Partnership
 
     serialize_properties :password, :email, :real_name, :public_visible
 
@@ -22,9 +23,11 @@ module RestAdapter
                  :real_name => :real_name_validator, :public_visible => :public_validator,
                  :email => :email_validator
 
+    inject :partnerships => RestAdapter::Partnership
+
     after_deserialize do |params|
       properties = { 'password' => nil }
-      if not params['partnerships'].nil?
+      if not params['partnerships'].nil? and false
         partnerships = params['partnerships'].map { |p| module_name::Partnership.create p }
         properties = properties.merge({'partnerships' => partnerships})
       end
@@ -59,7 +62,13 @@ module RestAdapter
 
     # Returns all friends of this user.
     def friends
-      partnerships = self.partnerships.map { |p| p.fetch } # fetch all details
+      partnerships = self.partnerships.map do |p|
+        if p.is_a?(Hash) and false
+          RestAdapter::Partnership.create(p).fetch
+        else
+          p.fetch
+        end
+      end # fetch all details
       active_partnerships = partnerships.select { |p| p.active? } # filter, only get active partnerships
       friends = active_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
     end
@@ -67,7 +76,13 @@ module RestAdapter
 
     # Returns all received friend requests of this user.
     def received_friend_requests
-      partnerships = self.partnerships.map { |p| p.fetch } # fetch all details
+      partnerships = self.partnerships.map do |p|
+        if p.is_a?(Hash) and false
+          RestAdapter::Partnership.create(p).fetch
+        else
+          p.fetch
+        end
+      end # fetch all details
       proposed_partnerships = partnerships.select { |p| not p.confirmed_by?(self) } # filter, only get proposed partnerships
       friends = proposed_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
     end
@@ -75,7 +90,13 @@ module RestAdapter
 
     # Returns all sent friend requests of this user.
     def sent_friend_requests
-      partnerships = self.partnerships.map { |p| p.fetch } # fetch all details
+      partnerships = self.partnerships.map do |p|
+        if p.is_a?(Hash) and false
+          RestAdapter::Partnership.create(p).fetch
+        else
+          p.fetch
+        end
+      end # fetch all details
       proposed_partnerships = partnerships.select { |p| p.confirmed_by?(self) and not p.active? }
       friends = proposed_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
     end
@@ -83,7 +104,17 @@ module RestAdapter
 
     # Returns true if this user is befriended with the given 'another_user'.
     def befriended_with?(another_user)
-      not self.partnerships.select { |p| p.associated_with?(another_user) }.empty?
+      not self.partnerships.select { |p|
+        if p.is_a?(Hash) and false
+          RestAdapter::Partnership.create(p).associated_with?(another_user)
+        else
+          p.associated_with?(another_user)
+        end
+      }.empty?
+    end
+
+    def not_befriended_with?(another_user)
+      !befriended_with?(another_user)
     end
 
 

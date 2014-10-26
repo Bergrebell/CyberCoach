@@ -2,7 +2,7 @@ module RestAdapter
 
   # This class is responsible for adapting the resource partnership.
   class Partnership < BaseResource
-
+    include RestAdapter::Behaviours::DependencyInjector
     #getters and setters
     attr_reader :public_visible, :confirmed_by_first_user, :confirmed_by_second_user,
                 :first_user, :second_user, :confirmed
@@ -16,19 +16,19 @@ module RestAdapter
                            :publicvisible => :public_visible
 
     serialize_properties :public_visible
-
-
-    inject :first_user => module_name::User, :second_user => module_name::User
+    inject :first_user => RestAdapter::User, :second_user => RestAdapter::User
 
     after_deserialize  do |params|
       if not params['user1'].nil? and not params['user2'].nil?
         {:confirmed => {params['user1']['username'] => params['userconfirmed1'],
-                        params['user2']['username'] => params['userconfirmed2']}
+                        params['user2']['username'] => params['userconfirmed2']},
+         #:first_user => module_name::User.create(params['user1']),
+         #:second_user => module_name::User.create(params['user2'])
         }
       else
         first_user, second_user = self.extract_user_names_from_uri(params['uri'])
-        { first_user: {'username' => first_user},
-          second_user: {'username' => second_user} }
+        { first_user: ({'username' => first_user}),
+          second_user: ({'username' => second_user}) }
       end
     end
 

@@ -2,26 +2,11 @@ class FriendsController < ApplicationController
 
   
   def index
-    @friends = current_user.friends
-    @requests_received = current_user.received_friend_requests
-
-    users = RestAdapter::User::all query: { size: 10 }
-    # Filter out users that are already associated in a partnership
-    proposals = []
-    users.each do |u|
-      add = true
-      current_user.partnerships.each do |p|
-        if p.associated_with?(u)
-          add = false
-          break
-        end
-      end
-      if add
-        proposals.push(u)
-      end
-    end
-
-    @proposals = proposals
+    me = current_user
+    @friends = me.friends
+    @requests_received = me.received_friend_requests
+    users = RestAdapter::User.all query: {size: 10 }
+    @proposals = users.select {|u| me.not_befriended_with?(u)}
   end
 
 

@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     if session[:user].present?
       # wrap user hash into a look-a-like user object
       user = RestAdapter::User.new(session[:user])
-      auth_proxy = RestAdapter::AuthProxy.new(user: user, subject: user)
+      auth_proxy = RestAdapter::AuthProxy.new(user: user, subject: user, session: session)
     else
       nil
     end
