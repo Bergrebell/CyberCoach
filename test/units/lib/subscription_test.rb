@@ -1,8 +1,12 @@
 require 'pp'
 class TestSubscriptionAdapter  < ActiveSupport::TestCase
 
+  test "retrieve a subscription over a uri" do
+      subscription = RestAdapter::Models::Subscription.retrieve('users/newuser4/Running')
+  end
+
   test "retrieve a subscription over a user" do
-    subscription = RestAdapter::Subscription.retrieve(user: 'newuser4', sport: 'Running')
+    subscription = RestAdapter::Models::Subscription.retrieve(user: 'newuser4', sport: 'Running')
     assert_not_nil subscription
     assert_not_nil subscription.user
 
@@ -15,21 +19,20 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
   test "retrieve a subscription over a partnership" do
 
     # first possibility
-    partnership = RestAdapter::Partnership.retrieve first_user: 'newuser4', second_user: 'newuser5'
+    partnership = RestAdapter::Models::Partnership.retrieve first_user: 'newuser4', second_user: 'newuser5'
     assert_not_nil partnership
 
-    subscription = RestAdapter::Subscription.retrieve(partnership: partnership, sport: 'Soccer')
+    subscription = RestAdapter::Models::Subscription.retrieve(partnership: partnership, sport: 'Soccer')
     assert_not_nil subscription
 
     # second possibility
-    subscription = RestAdapter::Subscription.retrieve(partnership: 'newuser4;newuser5', sport: 'Soccer')
+    subscription = RestAdapter::Models::Subscription.retrieve(partnership: 'newuser4;newuser5', sport: 'Soccer')
     assert_not_nil subscription
 
     # third possibility
-    subscription = RestAdapter::Subscription.retrieve(first_user: 'newuser4', second_user: 'newuser5',
+    subscription = RestAdapter::Models::Subscription.retrieve(first_user: 'newuser4', second_user: 'newuser5',
                                                       sport: 'Soccer')
 
-    pp subscription.partnership
     assert_not_nil subscription
     assert_not_nil subscription.partnership
     assert_not_nil subscription.partnership.first_user
@@ -46,8 +49,8 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
 
   test "create a subscription" do
     auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'
-    user = RestAdapter::User.retrieve 'alex'
-    subscription = RestAdapter::Subscription.new(user: user,
+    user = RestAdapter::Models::User.retrieve 'alex'
+    subscription = RestAdapter::Models::Subscription.new(user: user,
                                                  sport: 'Running',
                                                  public_visible: RestAdapter::Privacy::Public)
 

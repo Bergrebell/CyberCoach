@@ -33,8 +33,7 @@ module RestAdapter
     # For validation an authentication request is performed.
     # Only for testing purposes!
     def authorized?
-      module_name = Module.nesting.last  # workaround corresponds to the prefix RestAdapter
-      (module_name::User.authenticate(@auth_params)) != false
+      (Models::User.authenticate(@auth_params)) != false
     end
 
 

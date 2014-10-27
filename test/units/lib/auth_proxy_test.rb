@@ -2,7 +2,7 @@ require 'pp'
 class TestAuthProxy  < ActiveSupport::TestCase
 
   test "test auth proxy" do
-    user = RestAdapter::User.retrieve 'alex'
+    user = RestAdapter::Models::User.retrieve 'alex'
     user.email = 'alex.r@unifr.ch'
 
     auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'

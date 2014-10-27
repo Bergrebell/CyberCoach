@@ -144,7 +144,6 @@ module RestAdapter
             self.deserialize(response)
           rescue Exception => e
             puts e
-            raise e
             false
           end
         end

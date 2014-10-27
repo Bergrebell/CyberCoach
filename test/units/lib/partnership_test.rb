@@ -2,30 +2,30 @@ require 'pp'
 class TestPartnershipAdapter  < ActiveSupport::TestCase
 
   test "get all partnerships" do
-    partnerships = RestAdapter::Partnership.all
+    partnerships = RestAdapter::Models::Partnership.all
     assert_not_nil partnerships
     assert partnerships.size > 0
   end
 
 
   test "id of a partnership" do
-    mike = RestAdapter::User.retrieve 'mikeShiva'
-    timon = RestAdapter::User.retrieve 'timon'
+    mike = RestAdapter::Models::User.retrieve 'mikeShiva'
+    timon = RestAdapter::Models::User.retrieve 'timon'
 
-    partnership = RestAdapter::Partnership.new first_user: mike, second_user: timon
+    partnership = RestAdapter::Models::Partnership.new first_user: mike, second_user: timon
     assert_equal 'mikeshiva;timon', partnership.id
   end
 
   test "mike shiva proposes a partnership to timon" do
-    mike = RestAdapter::User.retrieve 'mikeShiva'
-    timon = RestAdapter::User.retrieve 'timon'
+    mike = RestAdapter::Models::User.retrieve 'mikeShiva'
+    timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for mike
     auth_proxy = RestAdapter::AuthProxy.new username: 'mikeShiva', password: '12345'
     assert auth_proxy.authorized?
 
     # create a partnership
-    partnership = RestAdapter::Partnership.new(
+    partnership = RestAdapter::Models::Partnership.new(
         first_user: mike,
         second_user: timon,
         public_visible: RestAdapter::Privacy::Public
@@ -33,7 +33,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
     assert auth_proxy.save(partnership)
 
-    test_partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'
+    test_partnership = RestAdapter::Models::Partnership.retrieve 'mikeshiva;timon'
 
     assert_not_nil test_partnership
 
@@ -44,7 +44,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
 
   test "retrieve partnerships over user object" do
-    mike = RestAdapter::User.retrieve 'mikeShiva'
+    mike = RestAdapter::Models::User.retrieve 'mikeShiva'
     partnerships = mike.partnerships
     pp mike
     pp partnerships
@@ -58,7 +58,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
 
   test "find mikeshiva's partnership" do
-    results = RestAdapter::Partnership.all filter: ->(p) { p.associated_with?('mikeshiva') and p.associated_with?('timon')}
+    results = RestAdapter::Models::Partnership.all filter: ->(p) { p.associated_with?('mikeshiva') and p.associated_with?('timon')}
     assert_not_nil results
     assert results.size > 0
     partnership = results.first
@@ -70,15 +70,15 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
 
   test "timon confirms partnership to mike shiva" do
-    mike = RestAdapter::User.retrieve 'mikeShiva'
-    timon = RestAdapter::User.retrieve 'timon'
+    mike = RestAdapter::Models::User.retrieve 'mikeShiva'
+    timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for timon
     auth_proxy = RestAdapter::AuthProxy.new username: 'timon', password: 'scareface'
     assert auth_proxy.authorized?
 
     # create a partnership
-    partnership = RestAdapter::Partnership.new(
+    partnership = RestAdapter::Models::Partnership.new(
         first_user: mike,
         second_user: timon,
         public_visible: RestAdapter::Privacy::Public
@@ -86,7 +86,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
     assert auth_proxy.save(partnership)
 
-    test_partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'
+    test_partnership = RestAdapter::Models::Partnership.retrieve 'mikeshiva;timon'
 
     assert_not_nil test_partnership
 
@@ -96,19 +96,19 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
 
   test "however, timon does not like mike shiva so he leaves the partnership" do
-    mike = RestAdapter::User.retrieve 'mikeShiva'
-    timon = RestAdapter::User.retrieve 'timon'
+    mike = RestAdapter::Models::User.retrieve 'mikeShiva'
+    timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for timon
     auth_proxy = RestAdapter::AuthProxy.new username: 'timon', password: 'scareface'
     assert auth_proxy.authorized?
 
     # get the partnership
-    partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'
+    partnership = RestAdapter::Models::Partnership.retrieve 'mikeshiva;timon'
 
     assert auth_proxy.delete(partnership)
 
-    test_partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'
+    test_partnership = RestAdapter::Models::Partnership.retrieve 'mikeshiva;timon'
     assert_not_nil test_partnership
 
     assert test_partnership.confirmed_by?(mike)
@@ -118,19 +118,19 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
 
   test "mike shiva is so sad that he wants to forget timon, so he also leaves the partnership" do
-    mike = RestAdapter::User.retrieve 'mikeShiva'
-    timon = RestAdapter::User.retrieve 'timon'
+    mike = RestAdapter::Models::User.retrieve 'mikeShiva'
+    timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for timon
     auth_proxy = RestAdapter::AuthProxy.new username: 'mikeShiva', password: '12345'
     assert auth_proxy.authorized?
 
     # get the partnership
-    partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'
+    partnership = RestAdapter::Models::Partnership.retrieve 'mikeshiva;timon'
 
     assert auth_proxy.delete(partnership)
 
-    test_partnership = RestAdapter::Partnership.retrieve 'mikeshiva;timon'
+    test_partnership = RestAdapter::Models::Partnership.retrieve 'mikeshiva;timon'
     assert test_partnership == false
 
   end
@@ -138,25 +138,25 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
 
   test "get a partnership" do
     # first possibility
-    partnership = RestAdapter::Partnership.retrieve 'alex;timon'
+    partnership = RestAdapter::Models::Partnership.retrieve 'alex;timon'
     assert_not_nil partnership
     assert partnership.id.is_a?(String)
 
     # second possibility
-    partnership = RestAdapter::Partnership.retrieve first_user: 'alex', second_user: 'timon'
+    partnership = RestAdapter::Models::Partnership.retrieve first_user: 'alex', second_user: 'timon'
     assert_not_nil partnership
 
     # third possibility
-    alex = RestAdapter::User.retrieve 'alex'
-    timon = RestAdapter::User.retrieve 'timon'
-    partnership = RestAdapter::Partnership.retrieve first_user: alex, second_user: timon
+    alex = RestAdapter::Models::User.retrieve 'alex'
+    timon = RestAdapter::Models::User.retrieve 'timon'
+    partnership = RestAdapter::Models::Partnership.retrieve first_user: alex, second_user: timon
     assert_not_nil partnership
   end
 
 
   test "filter partnerships" do
-    alex = RestAdapter::User.retrieve 'alex'
-    partnerships = RestAdapter::Partnership.all filter: -> (partnership) {partnership.associated_with?(alex)}
+    alex = RestAdapter::Models::User.retrieve 'alex'
+    partnerships = RestAdapter::Models::Partnership.all filter: -> (partnership) {partnership.associated_with?(alex)}
     assert_not_nil partnerships
     assert partnerships.size > 0
   end

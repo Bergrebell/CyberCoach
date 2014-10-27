@@ -2,18 +2,18 @@ require 'pp'
 class TestResource  < ActiveSupport::TestCase
 
   test "base resource config" do
-    assert_equal 'http://diufvm31.unifr.ch:8090', RestAdapter::BaseResource.base
-    assert_equal '/CyberCoachServer/resources', RestAdapter::BaseResource.site
-    assert_equal :json, RestAdapter::BaseResource.deserialize_format
-    assert_equal :xml, RestAdapter::BaseResource.serialize_format
+    assert_equal 'http://diufvm31.unifr.ch:8090', RestAdapter::Models::BaseResource.base
+    assert_equal '/CyberCoachServer/resources', RestAdapter::Models::BaseResource.site
+    assert_equal :json, RestAdapter::Models::BaseResource.deserialize_format
+    assert_equal :xml, RestAdapter::Models::BaseResource.serialize_format
 
-    assert_equal :json, RestAdapter::User.deserialize_format
-    assert_equal :xml, RestAdapter::User.serialize_format
+    assert_equal :json, RestAdapter::Models::User.deserialize_format
+    assert_equal :xml, RestAdapter::Models::User.serialize_format
   end
 
 
   test "deseralize user" do
-    user = RestAdapter::User.retrieve 'asarteam1'
+    user = RestAdapter::Models::User.retrieve 'asarteam1'
     pp user
     assert_not_nil user.username
     assert_not_nil user.partnerships
@@ -22,7 +22,7 @@ class TestResource  < ActiveSupport::TestCase
   end
 
   test "serialize user" do
-    user = RestAdapter::User.new(email: 'alex', password: 'dsfdsf',
+    user = RestAdapter::Models::User.new(email: 'alex', password: 'dsfdsf',
                                  partnerships: [], real_name: 'Alex',
                                  public_visible: RestAdapter::Privacy::Public)
     xml = user.serialize
@@ -34,7 +34,7 @@ class TestResource  < ActiveSupport::TestCase
   end
 
   test "serialize should ignore nil values" do
-    user = RestAdapter::User.new(email: nil, password: nil,
+    user = RestAdapter::Models::User.new(email: nil, password: nil,
                                  partnerships: [], real_name: 'Alex',
                                  public_visible: RestAdapter::Privacy::Public)
     xml = user.serialize
@@ -46,7 +46,7 @@ class TestResource  < ActiveSupport::TestCase
   end
 
   test "serialize should ignore empty strings" do
-    user = RestAdapter::User.new(email: nil, password: '',
+    user = RestAdapter::Models::User.new(email: nil, password: '',
                                  partnerships: [], real_name: '',
                                  public_visible: RestAdapter::Privacy::Public)
     xml = user.serialize
@@ -58,7 +58,7 @@ class TestResource  < ActiveSupport::TestCase
 
 
   test "serialize should ignore * password " do
-    user = RestAdapter::User.new(email: nil, password: '*',
+    user = RestAdapter::Models::User.new(email: nil, password: '*',
                                  partnerships: [], real_name: '',
                                  public_visible: RestAdapter::Privacy::Public)
     xml = user.serialize
@@ -69,7 +69,7 @@ class TestResource  < ActiveSupport::TestCase
 
 
   test "serialize partnership" do
-    user = RestAdapter::Partnership.new(public_visible: RestAdapter::Privacy::Public)
+    user = RestAdapter::Models::Partnership.new(public_visible: RestAdapter::Privacy::Public)
     xml = user.serialize
     pp xml
     hash = Hash.from_xml(xml)
