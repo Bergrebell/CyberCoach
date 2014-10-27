@@ -9,25 +9,9 @@ module RestAdapter
                   :entry_location, :entry_date, :entry_duration, :subscription,
                   :course_length, :course_type, :bicycle_type, :round_duration, :number_of_rounds
 
-    deserialize_properties :id, :subscription, :comment, :track, :datecreated => :date_created,
-                           :datemodified => :date_modified, :entrylocation => :entry_location,
-                           :entrydate => :entry_date, :entryduration => :entry_duration,
-                           :publicvisible => :public_visible,
 
-                           :roundduration => :round_duration, :numberofrounds => :number_of_rounds,
-
-                           :coursetype => :course_type, :courselength => :course_length,
-                           :bicycletype => :bicycle_type
-
-
-
-    serialize_properties :comment, :track, :entrylocation => :entry_location,
-                         :entryduration => :entry_duration, :publicvisible => :public_visible,
-
-                         :roundduration => :round_duration, :numberofrounds => :number_of_rounds,
-
-                         :coursetype => :course_type, :courselength => :course_length,
-                         :bicycletype => :bicycle_type
+    serialize_properties :comment, :track, :entry_location, :entry_duration, :public_visible,
+                         :round_duration, :number_of_rounds, :course_type, :course_length, :bicycle_type
 
     inject :subscription => RestAdapter::Subscription
 
