@@ -5,14 +5,7 @@ module RestAdapter
   # implemented by the subclasses.
   class Resource
 
-    def __initialize(params={})
-      props = Hash[params.map {|k,v| [k.to_sym,v]}]
-      props.each do |key,value|
-        instance_variable_set("@#{key}",value)
-      end
-    end
-
-    # Returns an id of this resource.
+     # Returns an id of this resource.
     def id
       self.instance_variable_get("@#{self.class.id}")
     end
