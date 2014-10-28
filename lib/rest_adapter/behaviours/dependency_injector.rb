@@ -18,16 +18,21 @@ module RestAdapter
 
         def inject_dependencies
           self.class.dependencies.each do |property,clazz|
-            if instance_variable_get("@#{property}").is_a?(Hash)
-              object = clazz.call(instance_variable_get("@#{property}"))
-              instance_variable_set("@#{property}",object)
-            elsif instance_variable_get("@#{property}").is_a?(Array)
-              objects = Array.new
-              instance_variable_get("@#{property}").each do |v|
-                (objects << clazz.call(v)) if v.is_a?(Hash)
-              end
-              instance_variable_set("@#{property}",objects) if not objects.empty?
+            variable_symbol = "@#{property}"
+            variable_value = instance_variable_get(variable_symbol)
+
+            case variable_value
+              when Array
+                objects = Array.new
+                instance_variable_get(variable_symbol).each do |v|
+                  (objects << clazz.call(v)) if v.is_a?(Hash)
+                end
+                instance_variable_set(variable_symbol,objects) if not objects.empty?
+              when Hash,Numeric,String
+                object = clazz.call(variable_value)
+                instance_variable_set(variable_symbol,object)
             end
+
           end
         end
 
@@ -37,12 +42,28 @@ module RestAdapter
       module ClassMethods
 
         def inject(dependencies)
-          @dependencies = Hash[dependencies.map {|key,clazz| [key, !clazz.is_a?(Proc) ? ->(x) {clazz.create(x)} : clazz] }]
+          mapped_injectors = dependencies.map do |key, injector|
+            injector_fun = case injector
+                         when Symbol
+                           ->(x) { self.send injector, x } # class method
+                         when Proc
+                           injector # closure
+                         when Class
+                           ->(x) { injector.create(x) }
+                         else
+                           raise 'Injector must be a class method, a proc or a class with class method create()'
+                       end
+
+            [key, injector_fun]
+          end
+          @dependencies = Hash[mapped_injectors]
         end
+
 
         def dependencies
           @dependencies.nil? ? Array.new : @dependencies
         end
+
 
       end
 
