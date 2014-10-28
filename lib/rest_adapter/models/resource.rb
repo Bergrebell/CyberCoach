@@ -15,9 +15,9 @@ module RestAdapter
 
       # Returns the uri of this resource without the base.
       # Example====
-      # resource.uri =>  /CyberCoachServer/resources/users/alex
+      # object.uri =>  /CyberCoachServer/resources/users/alex
       def uri
-        if not defined? @uri or @uri.nil?
+        if @uri.nil?
           self.class.site + self.class.resource_path + '/' + self.id
         else
           @uri
@@ -26,7 +26,7 @@ module RestAdapter
 
       # Returns the uri of a single resource entity.
       # Example====
-      # resource.entity_uri => http://www.blahhh.com/CyberCoachServer/resources/users/alex
+      # object.absolute_uri => http://www.blahhh.com/CyberCoachServer/resources/users/alex
       #
       def absolute_uri
         self.class.base + self.uri
@@ -34,7 +34,7 @@ module RestAdapter
 
       # Creates an entity uri with the given id.
       # Example====
-      # resource.create_entity_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
+      # object.create_absolute_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
       #
       def create_absolute_uri
         self.class.base + self.class.site + self.class.resource_path + '/' + id.to_s
@@ -44,17 +44,6 @@ module RestAdapter
       # Class methods for the resource class.
       # open eigenclass
       class << self
-
-        # create setters and getters for class variables
-        attr_reader :resource_name, :resource_path, :id, :resource_name_plural
-
-
-        # All subclasses share the same base, site and format variables.
-        #@@base = 'http://diufvm31.unifr.ch:8090'
-        #@@site = '/CyberCoachServer/resources'
-        #@@deserialize_format = :json #use json as default value for http header accept
-        #@@serialize_format = :xml #use json as default value for http header content-type
-
 
         # Template methods / Hook up methods
 
@@ -67,6 +56,9 @@ module RestAdapter
           raise 'Not specified!'
         end
 
+        def create(params)
+          raise 'Not implemented!'
+        end
 
         # Setter and getters for class variables.
 
@@ -80,12 +72,22 @@ module RestAdapter
         end
 
 
+        def id
+          @id
+        end
+
+
         # Sets the resource path for this resource class.
         # Example====
         # set_resource_path 'users' => '/users
         #
         def set_resource_path(resource_path)
           @resource_path = resource_path
+        end
+
+
+        def resource_path
+          @resource_path
         end
 
 
@@ -99,9 +101,18 @@ module RestAdapter
         end
 
 
+        def resource_name
+          @resource_name
+        end
+
+
+        def resource_name_plural
+          @resource_name_plural
+        end
+
         # Returns the collection uri of this resource.
         # Example====
-        # Resource.collection_uri => http://www.blahhh.com/CyberCoachServer/resources/users
+        # Class.collection_uri => http://www.blahhh.com/CyberCoachServer/resources/users
         #
         def collection_uri
           # base/site/path
@@ -111,7 +122,7 @@ module RestAdapter
 
         # Creates an entity uri with the given id.
         # Example====
-        # Resource.create_entity_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
+        # Class.create_absolute_resource_uri 'alex' => http://www.blahhh.com/CyberCoachServer/resources/users/alex
         #
         def create_absolute_resource_uri(id)
           base + site + resource_path + '/' + id.to_s
