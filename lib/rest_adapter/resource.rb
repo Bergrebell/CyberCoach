@@ -22,6 +22,7 @@ module RestAdapter
       end
     end
 
+
     # Returns a hash representation of this resource.
     # As argument it takes an optional hash with two properties :included_keys and :excluded_keys
     # The hash is filtered according the two lists that are provided by :included_keys and :excluded_keys.
