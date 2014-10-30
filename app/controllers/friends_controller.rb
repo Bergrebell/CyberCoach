@@ -11,7 +11,7 @@ class FriendsController < ApplicationController
 
 
   def proposals
-    @friend_proposals = @me.sent_friend_requests
+    @friend_proposals = current_user.sent_friend_requests
   end
 
 
@@ -42,7 +42,7 @@ class FriendsController < ApplicationController
     other_user = RestAdapter::User::retrieve params[:username]
 
     partnership = RestAdapter::Partnership.new(
-        first_user: @me,
+        first_user: current_user,
         second_user: other_user,
         public_visible: RestAdapter::Privacy::Public
     )

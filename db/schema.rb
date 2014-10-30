@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141026031353) do
+ActiveRecord::Schema.define(version: 20141026170438) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
@@ -43,6 +43,22 @@ ActiveRecord::Schema.define(version: 20141026031353) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at"
+
+  create_table "sport_session_participants", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "sport_session_id"
+    t.boolean  "confirmed"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sport_sessions", force: true do |t|
+    t.integer  "user_id"
+    t.string   "type"
+    t.integer  "cybercoach_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "name"

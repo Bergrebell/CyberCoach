@@ -1,4 +1,4 @@
-module Fascade
+module Facade
 
   class SportSession
     def self.method_missing(method, *args, &block)

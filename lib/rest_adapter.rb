@@ -8,4 +8,5 @@ module RestAdapter
     Public = 2
   end
 
+  extend Facade
 end

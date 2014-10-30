@@ -1,4 +1,4 @@
-module Fascade
+module Facade
 
   class User
 
