@@ -7,7 +7,7 @@ module RestAdapter
 
       set_resource_path users: '/users', partnerships: '/partnerships'
 
-      attr_accessor :cc_id, :type, :comment, :public_visible, :date_created, :date_modified,
+      attr_accessor :cc_id, :uri, :type, :comment, :public_visible, :date_created, :date_modified,
                     :entry_location, :entry_date, :entry_duration, :subscription,
                     :course_length, :course_type, :bicycle_type, :round_duration, :number_of_rounds
 
@@ -30,17 +30,20 @@ module RestAdapter
                            :round_duration, :number_of_rounds, :course_type, :course_length, :bicycle_type
 
 
-      DateTimeFormatter = ->(time) {Time.at(time/1000).to_datetime}
-
       inject :subscription => RestAdapter::Models::Subscription, :track => RestAdapter::Models::TrackProperty,
-             :entry_date => DateTimeFormatter, :date_created => DateTimeFormatter,
-             :date_modified => DateTimeFormatter
+             :entry_date => RestAdapter::Helper::DateTimeFormatter,
+             :date_created => RestAdapter::Helper::DateTimeFormatter,
+             :date_modified => RestAdapter::Helper::DateTimeFormatter
 
       module Type
         Running = 'entryrunning'
         Cycling = 'entrycycling'
         Boxing = 'entryboxing'
         Soccer = 'entrysoccer'
+      end
+
+      def initialize(params={})
+        super(params)
       end
 
       # This method overrides 'id' from the base resource class.

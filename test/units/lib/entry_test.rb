@@ -1,6 +1,8 @@
 require 'pp'
 class TestEntryAdapter  < ActiveSupport::TestCase
 
+  DateTimeFormatter = RestAdapter::Helper::DateTimeFormatter
+
   test "retrieve a running entry over a uri" do
     entry = RestAdapter::Models::Entry.retrieve '/users/newuser4/Running/22/'
     assert entry!= false
@@ -13,9 +15,9 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     assert_equal RestAdapter::Privacy::Public, entry.public_visible
     assert_equal 11900, entry.entry_duration
     assert_equal 7, entry.number_of_rounds
-    assert_equal 1412672016000, entry.date_created
-    assert_equal 1412672016000, entry.date_modified
-    assert_equal 1349166120000, entry.entry_date
+    assert_equal DateTimeFormatter.call(1412672016000), entry.date_created
+    assert_equal DateTimeFormatter.call(1412672016000), entry.date_modified
+    assert_equal DateTimeFormatter.call(1349166120000), entry.entry_date
     assert_not_nil entry.subscription
     pp entry.track
   end
@@ -31,9 +33,9 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     assert_equal 'Random text', entry.comment
     assert_equal RestAdapter::Privacy::Public, entry.public_visible
     assert_equal 11900, entry.entry_duration
-    assert_equal 1412672187000, entry.date_created
-    assert_equal 1412672187000, entry.date_modified
-    assert_equal 1347351720000, entry.entry_date
+    assert_equal DateTimeFormatter.call(1412672187000), entry.date_created
+    assert_equal DateTimeFormatter.call(1412672187000), entry.date_modified
+    assert_equal DateTimeFormatter.call(1347351720000), entry.entry_date
     assert_not_nil entry.subscription
   end
 
@@ -49,9 +51,9 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     assert_equal 'Random text', entry.comment
     assert_equal RestAdapter::Privacy::Public, entry.public_visible
     assert_equal 11900, entry.entry_duration
-    assert_equal 1412672187000, entry.date_created
-    assert_equal 1412672187000, entry.date_modified
-    assert_equal 1347351720000, entry.entry_date
+    assert_equal DateTimeFormatter.call(1412672187000), entry.date_created
+    assert_equal DateTimeFormatter.call(1412672187000), entry.date_modified
+    assert_equal DateTimeFormatter.call(1347351720000), entry.entry_date
     assert_not_nil entry.subscription
 
     # second possibility
@@ -77,9 +79,9 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     assert_equal RestAdapter::Privacy::Public, entry.public_visible
     assert_equal 11900, entry.entry_duration
     assert_equal 7, entry.number_of_rounds
-    assert_equal 1412672016000, entry.date_created
-    assert_equal 1412672016000, entry.date_modified
-    assert_equal 1349166120000, entry.entry_date
+    assert_equal DateTimeFormatter.call(1412672016000), entry.date_created
+    assert_equal DateTimeFormatter.call(1412672016000), entry.date_modified
+    assert_equal DateTimeFormatter.call(1349166120000), entry.entry_date
     assert_not_nil entry.subscription
 
     # second possibility
@@ -116,6 +118,8 @@ class TestEntryAdapter  < ActiveSupport::TestCase
 
 
   test "create an entry" do
+
+    assert false
     auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface'
     user = RestAdapter::Models::User.retrieve 'asarteam1'
     subscription = user.subscriptions.detect {|s| s.sport.name == 'Running'}
@@ -134,7 +138,7 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     entry.track = {:test => 'test'}
     assert entry.cc_id==nil
     entry_uri = auth_proxy.save(entry)
-    pp entry_uri
+    assert_not_nil entry_uri
   end
 
 
@@ -143,15 +147,26 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     entry = RestAdapter::Models::Entry.retrieve '/users/asarteam1/Running/73/'
     entry.comment = 'updated comment muhaaa'
     entry.track = {:test => 'test2'}
-    #entry.entry_date = nil
-    pp entry.cc_id
-    pp entry.uri
-    pp entry.create_absolute_uri
-    pp entry.serialize
+    assert_equal 73, entry.cc_id
+    assert_equal '/CyberCoachServer/resources/users/asarteam1/Running/73/', entry.uri
     entry_uri = auth_proxy.save(entry)
-    pp entry_uri
-
   end
 
+
+  test "initialize an entry using a setter to set property uri" do
+    uri = '/CyberCoachServer/resources/users/asarteam1/Running/93/'
+    entry = RestAdapter::Models::Entry.new
+    entry.uri = uri
+    entry.fetch!
+    pp entry
+  end
+
+
+  test "initialize an entry using a uri in constructor" do
+    uri = '/CyberCoachServer/resources/users/asarteam1/Running/93/'
+    entry = RestAdapter::Models::Entry.new uri: uri
+    entry.fetch!
+    pp entry
+  end
 
 end
