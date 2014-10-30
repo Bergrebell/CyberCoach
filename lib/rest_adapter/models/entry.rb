@@ -30,7 +30,11 @@ module RestAdapter
                            :round_duration, :number_of_rounds, :course_type, :course_length, :bicycle_type
 
 
-      inject :subscription => RestAdapter::Models::Subscription, :track => RestAdapter::Models::TrackProperty
+      DateTimeFormatter = ->(time) {Time.at(time/1000).to_datetime}
+
+      inject :subscription => RestAdapter::Models::Subscription, :track => RestAdapter::Models::TrackProperty,
+             :entry_date => DateTimeFormatter, :date_created => DateTimeFormatter,
+             :date_modified => DateTimeFormatter
 
       module Type
         Running = 'entryrunning'
@@ -77,7 +81,13 @@ module RestAdapter
 
 
       def save(params={})
-        params = params.merge({method: :post})
+        method = self.cc_id.nil? ? :post : :put
+
+        response_handler = proc do |response, request, result|
+          return response.headers[:location]
+        end
+
+        params = params.merge({method: method, deserialize: false, response_handler: response_handler})
         super(params)
       end
 

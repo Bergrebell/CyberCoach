@@ -107,6 +107,7 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     entry.track = {:test => 'test'}
     should_be = 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources/users/asarteam1/Running/'
     assert_equal should_be, entry.absolute_uri
+    assert_equal '/CyberCoachServer/resources/users/asarteam1/Running/', entry.uri
 
     pp entry.serialize
 
@@ -115,8 +116,8 @@ class TestEntryAdapter  < ActiveSupport::TestCase
 
 
   test "create an entry" do
-    auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'
-    user = RestAdapter::Models::User.retrieve 'alex'
+    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface'
+    user = RestAdapter::Models::User.retrieve 'asarteam1'
     subscription = user.subscriptions.detect {|s| s.sport.name == 'Running'}
     hash = {
         :type =>  RestAdapter::Models::Entry::Type::Running,
@@ -131,7 +132,25 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     }
     entry = RestAdapter::Models::Entry.new(hash)
     entry.track = {:test => 'test'}
-    assert auth_proxy.save(entry)
+    assert entry.cc_id==nil
+    entry_uri = auth_proxy.save(entry)
+    pp entry_uri
+  end
+
+
+  test "update an entry" do
+    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface'
+    entry = RestAdapter::Models::Entry.retrieve '/users/asarteam1/Running/73/'
+    entry.comment = 'updated comment muhaaa'
+    entry.track = {:test => 'test2'}
+    #entry.entry_date = nil
+    pp entry.cc_id
+    pp entry.uri
+    pp entry.create_absolute_uri
+    pp entry.serialize
+    entry_uri = auth_proxy.save(entry)
+    pp entry_uri
+
   end
 
 

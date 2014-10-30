@@ -73,14 +73,21 @@ module RestAdapter
               content_type: self.class.serialize_format,
           }
           method = [:put,:post].include?(params[:method]) ? params[:method] : :put # hack alert
+
+          # hack alert
+          default_response_handler = proc do |response, request, result|
+            return self.class.deserialize(response)
+          end
+          response_handler = params[:response_handler].nil? ? default_response_handler : params[:response_handler]
+
           params.delete(:method)
+          params.delete(:response_handler)
           options = options.merge(params)
 
           begin
             uri = self.create_absolute_uri
             serialized_object = self.serialize
-            response = RestClient.send method, uri, serialized_object, options
-            self.class.deserialize(response)
+            RestClient.send(method, uri, serialized_object, options, &response_handler)
           rescue Exception => e
             puts e
             false
