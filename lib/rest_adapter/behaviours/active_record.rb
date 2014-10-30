@@ -31,7 +31,6 @@ module RestAdapter
             # get deserializer
             self.class.deserialize(response)
           rescue Exception => e
-            raise e
             puts e
             false
           end
@@ -71,18 +70,19 @@ module RestAdapter
           # basic options
           options = {
               accept: self.class.deserialize_format,
-              content_type: self.class.serialize_format
+              content_type: self.class.serialize_format,
           }
+          method = [:put,:post].include?(params[:method]) ? params[:method] : :put # hack alert
+          params.delete(:method)
           options = options.merge(params)
 
           begin
             uri = self.create_absolute_uri
             serialized_object = self.serialize
-            response = RestClient.put(uri, serialized_object, options)
+            response = RestClient.send method, uri, serialized_object, options
             self.class.deserialize(response)
           rescue Exception => e
             puts e
-            raise e
             false
           end
         end

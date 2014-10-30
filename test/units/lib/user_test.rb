@@ -28,6 +28,7 @@ class TestRestAdapter < ActiveSupport::TestCase
 
     assert_equal '/CyberCoachServer/resources/users/alex', user.uri
 
+    assert_equal 'alex', user.id
     assert_equal 'alex', user.username
     assert_equal 'test', user.password
     assert_equal 'alex@test.com', user.email
@@ -132,7 +133,7 @@ class TestRestAdapter < ActiveSupport::TestCase
   end
 
 
-  test "update user" do
+  test "update a user" do
     user = RestAdapter::Models::User.retrieve 'asarteam1'
     user.email = 'asarteam1@test.com'
 
@@ -145,7 +146,7 @@ class TestRestAdapter < ActiveSupport::TestCase
   end
 
 
-  test "create and delete user" do
+  test "create and delete a user" do
     user = RestAdapter::Models::User.new(
         username: 'dummy',
         email: 'dummy@test.com',
@@ -186,6 +187,11 @@ class TestRestAdapter < ActiveSupport::TestCase
         assert user.save
       end
     end
+  end
+
+
+  test "retrive user asarteam1" do
+    user = RestAdapter::Models::User.retrieve 'asarteam1'
   end
 
 

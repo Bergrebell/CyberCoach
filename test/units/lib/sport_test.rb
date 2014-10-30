@@ -10,6 +10,7 @@ class TestSportAdapter  < ActiveSupport::TestCase
     sport = RestAdapter::Models::Sport.retrieve 'Soccer'
     assert_not_nil sport
     assert_equal 'Soccer', sport.name
+    assert_equal 'Soccer', sport.id
   end
 
 

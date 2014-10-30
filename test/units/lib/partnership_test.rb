@@ -43,7 +43,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
   end
 
 
-  test "retrieve partnerships over user object" do
+  test "retrieve partnerships over a user object" do
     mike = RestAdapter::Models::User.retrieve 'mikeShiva'
     partnerships = mike.partnerships
     pp mike

@@ -2,10 +2,11 @@ require 'pp'
 class TestEntryAdapter  < ActiveSupport::TestCase
 
   test "retrieve a running entry over a uri" do
-    entry = RestAdapter::Models::Entry.retrieve 'users/newuser4/Running/22/'
+    entry = RestAdapter::Models::Entry.retrieve '/users/newuser4/Running/22/'
+    assert entry!= false
     assert_equal RestAdapter::Models::Entry::Type::Running, entry.type
     assert_equal 600, entry.course_length
-    assert_equal 22, entry.id
+    assert_equal 22, entry.cc_id
     assert_equal '/CyberCoachServer/resources/users/newuser4/Running/22/', entry.uri
     assert_equal 'Lausanne', entry.entry_location
     assert_equal 'Random text', entry.comment
@@ -16,13 +17,15 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     assert_equal 1412672016000, entry.date_modified
     assert_equal 1349166120000, entry.entry_date
     assert_not_nil entry.subscription
+    pp entry.track
   end
 
 
   test "retrieve a soccer entry over a uri" do
-    entry = RestAdapter::Models::Entry.retrieve 'partnerships/newuser4;newuser5/Soccer/24/'
+    entry = RestAdapter::Models::Entry.retrieve '/partnerships/newuser4;newuser5/Soccer/24/'
+    assert entry!= false
     assert_equal RestAdapter::Models::Entry::Type::Soccer, entry.type
-    assert_equal 24, entry.id
+    assert_equal 24, entry.cc_id
     assert_equal '/CyberCoachServer/resources/partnerships/newuser4;newuser5/Soccer/24/', entry.uri
     assert_equal 'Düdingen', entry.entry_location
     assert_equal 'Random text', entry.comment
@@ -38,9 +41,9 @@ class TestEntryAdapter  < ActiveSupport::TestCase
   test "retrieve a soccer entry over a partnership or users" do
     # first possibility
     entry = RestAdapter::Models::Entry.retrieve partnership: 'newuser4;newuser5', sport: 'soccer', id: 24
-    assert_not_nil entry
+    assert entry!= false
     assert_equal RestAdapter::Models::Entry::Type::Soccer, entry.type
-    assert_equal 24, entry.id
+    assert_equal 24, entry.cc_id
     assert_equal '/CyberCoachServer/resources/partnerships/newuser4;newuser5/Soccer/24/', entry.uri
     assert_equal 'Düdingen', entry.entry_location
     assert_equal 'Random text', entry.comment
@@ -58,25 +61,16 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     entry = RestAdapter::Models::Entry.retrieve partnership: partnership, sport: 'soccer', id: 24
     assert_not_nil entry
 
-    # third possibility
-    entry = RestAdapter::Models::Entry.retrieve first_user: 'newuser4', second_user: 'newuser5', sport: 'soccer', id: 24
-    assert_not_nil entry
-
-    # fourth possibility
-    first_user = RestAdapter::Models::User.new username: 'newuser4'
-    second_user = RestAdapter::Models::User.new username: 'newuser5'
-    entry = RestAdapter::Models::Entry.retrieve first_user: first_user, second_user: second_user, sport: 'soccer', id: 24
-    assert_not_nil entry
-
   end
 
 
   test "retrieve a soccer entry over a user" do
     # first possibility
     entry = RestAdapter::Models::Entry.retrieve user: 'newuser4', sport: 'running', id: 22
+    assert entry!= false
     assert_equal RestAdapter::Models::Entry::Type::Running, entry.type
     assert_equal 600, entry.course_length
-    assert_equal 22, entry.id
+    assert_equal 22, entry.cc_id
     assert_equal '/CyberCoachServer/resources/users/newuser4/Running/22/', entry.uri
     assert_equal 'Lausanne', entry.entry_location
     assert_equal 'Random text', entry.comment
@@ -94,13 +88,50 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     assert_not_nil entry
   end
 
-  test "create an entry" do
+  test "serialize an entry" do
+    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface'
+    user = RestAdapter::Models::User.retrieve 'asarteam1'
+    subscription = user.subscriptions.detect {|s| s.sport.name == 'Running'}
+    hash = {
+        :type =>  RestAdapter::Models::Entry::Type::Running,
+        :course_length => 700,
+        :number_of_rounds => 7,
+        :entry_location => 'Bern',
+        :comment => 'Some comment',
+        :public_visible => RestAdapter::Privacy::Public,
+        :entry_duration => 10000,
+        :entry_date => DateTime.now,
+        :subscription => subscription
+    }
+    entry = RestAdapter::Models::Entry.new(hash)
+    entry.track = {:test => 'test'}
+    should_be = 'http://diufvm31.unifr.ch:8090/CyberCoachServer/resources/users/asarteam1/Running/'
+    assert_equal should_be, entry.absolute_uri
 
+    pp entry.serialize
+
+    #auth_proxy.save(entry)
+  end
+
+
+  test "create an entry" do
     auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'
     user = RestAdapter::Models::User.retrieve 'alex'
-
-
-
+    subscription = user.subscriptions.detect {|s| s.sport.name == 'Running'}
+    hash = {
+        :type =>  RestAdapter::Models::Entry::Type::Running,
+        :course_length => 700,
+        :number_of_rounds => 7,
+        :entry_location => 'Bern',
+        :comment => 'Some comment',
+        :public_visible => RestAdapter::Privacy::Public,
+        :entry_duration => 10000,
+        :entry_date => DateTime.now,
+        :subscription => subscription
+    }
+    entry = RestAdapter::Models::Entry.new(hash)
+    entry.track = {:test => 'test'}
+    assert auth_proxy.save(entry)
   end
 
 

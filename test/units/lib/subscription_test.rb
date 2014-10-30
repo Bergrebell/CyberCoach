@@ -2,10 +2,22 @@ require 'pp'
 class TestSubscriptionAdapter  < ActiveSupport::TestCase
 
   test "retrieve a subscription over a uri" do
-      subscription = RestAdapter::Models::Subscription.retrieve('users/newuser4/Running')
+      subscription = RestAdapter::Models::Subscription.retrieve('/users/newuser4/Running')
   end
 
   test "retrieve a subscription over a user" do
+    user = RestAdapter::Models::User.new username: 'newuser4'
+    subscription = RestAdapter::Models::Subscription.retrieve(user: user, sport: 'Running')
+    assert_not_nil subscription
+    assert_not_nil subscription.user
+
+    assert_equal 'newuser4', subscription.user.username
+    assert_equal 'Running', subscription.sport.name
+    assert_equal '/CyberCoachServer/resources/users/newuser4/Running/', subscription.uri
+  end
+
+
+  test "retrieve a subscription over a username" do
     subscription = RestAdapter::Models::Subscription.retrieve(user: 'newuser4', sport: 'Running')
     assert_not_nil subscription
     assert_not_nil subscription.user
@@ -16,22 +28,24 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
   end
 
 
+  test "retrieve a subscription over a user object" do
+    user = RestAdapter::Models::User.new username: 'newuser4'
+    subscriptions = user.subscriptions
+    assert_not_nil subscriptions
+    subscription = subscriptions.select {|s| s.sport.name == 'Running' }.first
+    assert_not_nil subscription.user
+    assert_equal 'newuser4', subscription.user.username
+    assert_equal 'Running', subscription.sport.name
+    assert_equal '/CyberCoachServer/resources/users/newuser4/Running/', subscription.uri
+  end
+
+
   test "retrieve a subscription over a partnership" do
-
-    # first possibility
-    partnership = RestAdapter::Models::Partnership.retrieve first_user: 'newuser4', second_user: 'newuser5'
-    assert_not_nil partnership
-
+    partnership  = RestAdapter::Models::Partnership.retrieve first_user: 'newuser4', second_user: 'newuser5'
     subscription = RestAdapter::Models::Subscription.retrieve(partnership: partnership, sport: 'Soccer')
-    assert_not_nil subscription
+    pp subscription
 
-    # second possibility
-    subscription = RestAdapter::Models::Subscription.retrieve(partnership: 'newuser4;newuser5', sport: 'Soccer')
     assert_not_nil subscription
-
-    # third possibility
-    subscription = RestAdapter::Models::Subscription.retrieve(first_user: 'newuser4', second_user: 'newuser5',
-                                                      sport: 'Soccer')
 
     assert_not_nil subscription
     assert_not_nil subscription.partnership
@@ -50,8 +64,9 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
   test "create a subscription" do
     auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'
     user = RestAdapter::Models::User.retrieve 'alex'
+    running = RestAdapter::Models::Sport.new name: 'Running'
     subscription = RestAdapter::Models::Subscription.new(user: user,
-                                                 sport: 'Running',
+                                                 sport: running,
                                                  public_visible: RestAdapter::Privacy::Public)
 
     assert_equal '/CyberCoachServer/resources/users/alex/Running', subscription.uri

@@ -2,7 +2,6 @@ module RestAdapter
   module Models
     # This class is responsible for adapting the resource partnership.
     class Partnership < BaseResource
-      include RestAdapter::Models::RetrievableWithParams::Partnership
       include RestAdapter::Behaviours::DependencyInjector
       #getters and setters
       attr_reader :public_visible, :confirmed_by_first_user, :confirmed_by_second_user,
@@ -17,7 +16,7 @@ module RestAdapter
                              :publicvisible => :public_visible
 
       serialize_properties :public_visible
-      inject :first_user => User, :second_user => User
+      inject :first_user => RestAdapter::Models::User, :second_user => RestAdapter::Models::User
 
       after_deserialize do |params|
         if not params['user1'].nil? and not params['user2'].nil?
@@ -81,6 +80,35 @@ module RestAdapter
 
       # open eigenclass
       class << self
+
+
+        # This class method overrides 'retrieve'.
+        # Returns a subscription given a partnership, a user and a sport category.
+        #
+        # ==== Attributes
+        # The params hash accepts the following properties:
+        #
+        # * +string+        - a string
+        # * +first_user+    - a user object or a username
+        # * +second_user+   - a user object or a username
+        #
+        # ==== Examples
+        # Partnership.retrieve('alex;timon', sport: 'Running') => Partnership
+        # Partnership.retrieve(first_user: 'alex', second_user: 'timon') => Partnership
+        #
+        def retrieve(params)
+          id = if params.is_a?(Hash) # check if hash
+                 raise ArgumentError, 'Argument first_user / second user is missing.' if params[:first_user].nil? or params[:second_user].nil?
+                 # support both usernames and users
+                 first_user = params[:first_user].is_a?(String) ? params[:first_user] : params[:first_user].username
+                 second_user = params[:second_user].is_a?(String) ? params[:second_user] : params[:second_user].username
+                 "#{first_user};#{second_user}"
+               else # otherwise assume it's a string
+                 params
+               end
+          super(id)
+        end
+
 
         # Returns a list containing two user names.
         def extract_user_names_from_uri(uri)
