@@ -13,7 +13,8 @@ module RestAdapter
       set_resource 'user'
 
       deserialize_properties :uri, :username, :password, :email, :partnerships, :subscriptions,
-                             :publicvisible => :public_visible, :realname => :real_name
+                             :publicvisible => :public_visible, :realname => :real_name,
+                             :datecreated => :date_created
 
       serialize_properties :password, :email, :real_name, :public_visible
 
@@ -25,7 +26,8 @@ module RestAdapter
                    :real_name => :real_name_validator, :public_visible => :public_validator,
                    :email => :email_validator
 
-      inject :partnerships => RestAdapter::Models::Partnership, :subscriptions => RestAdapter::Models::Subscription
+      inject :partnerships => RestAdapter::Models::Partnership, :subscriptions => RestAdapter::Models::Subscription,
+             :date_created => RestAdapter::Helper::DateTimeInjector
 
       after_deserialize do |params|
         properties = {'password' => nil}

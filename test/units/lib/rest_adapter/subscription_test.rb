@@ -32,7 +32,7 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
     user = RestAdapter::Models::User.new username: 'newuser4'
     subscriptions = user.subscriptions
     assert_not_nil subscriptions
-    subscription = subscriptions.select {|s| s.sport.name == 'Running' }.first
+    subscription = subscriptions.detect {|s| s.sport.name == 'Running' }
     assert_not_nil subscription.user
     assert_equal 'newuser4', subscription.user.username
     assert_equal 'Running', subscription.sport.name
@@ -61,18 +61,29 @@ class TestSubscriptionAdapter  < ActiveSupport::TestCase
 
   end
 
+
   test "create a subscription" do
-    auth_proxy = RestAdapter::AuthProxy.new username: 'alex', password: 'scareface'
-    user = RestAdapter::Models::User.retrieve 'alex'
+    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam2', password: 'scareface'
+    user = RestAdapter::Models::User.retrieve 'asarteam2'
     running = RestAdapter::Models::Sport.new name: 'Running'
     subscription = RestAdapter::Models::Subscription.new(user: user,
                                                  sport: running,
                                                  public_visible: RestAdapter::Privacy::Public)
 
-    assert_equal '/CyberCoachServer/resources/users/alex/Running', subscription.uri
+    assert_equal '/CyberCoachServer/resources/users/asarteam2/Running', subscription.uri
     assert auth_proxy.authorized?
     res = auth_proxy.save(subscription)
-    pp res
+  end
+
+
+  test "delete subscription" do
+    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam2', password: 'scareface'
+    user = RestAdapter::Models::User.retrieve 'asarteam2'
+    assert_not_nil user.subscriptions
+    subscription = user.subscriptions.detect {|s| s.sport.name == 'Running'}
+    assert_not_nil subscription
+    assert auth_proxy.authorized?
+    assert auth_proxy.delete(subscription)
   end
 
 end

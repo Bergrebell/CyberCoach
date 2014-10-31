@@ -40,6 +40,7 @@ class TestRestAdapter < ActiveSupport::TestCase
     user = RestAdapter::Models::User.retrieve 'asarteam1'
     assert_not_nil user
     assert_equal 'asarteam1', user.username
+    assert_equal nil, user.password
     assert_equal RestAdapter::Privacy::Public, user.public_visible
     assert_equal 'asarteam1', user.real_name
     assert_equal '/CyberCoachServer/resources/users/asarteam1/', user.uri

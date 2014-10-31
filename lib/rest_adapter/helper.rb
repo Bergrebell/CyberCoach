@@ -7,7 +7,7 @@ module RestAdapter
       'Basic ' + Base64.encode64("#{params[:username]}:#{params[:password]}")
     end
 
-    DateTimeFormatter = ->(time) {Time.at(time/1000).to_datetime}
+    DateTimeInjector = ->(time) {Time.at(time/1000).to_datetime}
   end
 
 end

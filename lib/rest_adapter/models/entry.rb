@@ -31,9 +31,9 @@ module RestAdapter
 
 
       inject :subscription => RestAdapter::Models::Subscription, :track => RestAdapter::Models::TrackProperty,
-             :entry_date => RestAdapter::Helper::DateTimeFormatter,
-             :date_created => RestAdapter::Helper::DateTimeFormatter,
-             :date_modified => RestAdapter::Helper::DateTimeFormatter
+             :entry_date => RestAdapter::Helper::DateTimeInjector,
+             :date_created => RestAdapter::Helper::DateTimeInjector,
+             :date_modified => RestAdapter::Helper::DateTimeInjector
 
       module Type
         Running = 'entryrunning'

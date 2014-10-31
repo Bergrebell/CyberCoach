@@ -1,7 +1,7 @@
 require 'pp'
 class TestEntryAdapter  < ActiveSupport::TestCase
 
-  DateTimeFormatter = RestAdapter::Helper::DateTimeFormatter
+  DateTimeFormatter = RestAdapter::Helper::DateTimeInjector
 
   test "retrieve a running entry over a uri" do
     entry = RestAdapter::Models::Entry.retrieve '/users/newuser4/Running/22/'
