@@ -103,7 +103,7 @@ module RestAdapter
         # Partnership.retrieve('alex;timon', sport: 'Running') => Partnership
         # Partnership.retrieve(first_user: 'alex', second_user: 'timon') => Partnership
         #
-        def retrieve(params)
+        def retrieve(params,options={})
           id = if params.is_a?(Hash) # check if hash
                  raise ArgumentError, 'Argument first_user / second user is missing.' if params[:first_user].nil? or params[:second_user].nil?
                  # support both usernames and users
@@ -113,7 +113,7 @@ module RestAdapter
                else # otherwise assume it's a string
                  params
                end
-          super(id)
+          super(id,options)
         end
 
 

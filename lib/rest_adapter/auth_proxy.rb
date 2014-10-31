@@ -3,6 +3,8 @@ module RestAdapter
   # An operation like save, update or delete applied on a object needs authentication.
   # To hide the details and to provide a common interface you can use a AuthProxy object.
   class AuthProxy
+
+    attr_reader :auth_header
     attr_accessor :subject
     # Creates AuthProxy object.
     # It takes as argument a hash with the following properties:

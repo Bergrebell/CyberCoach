@@ -41,7 +41,7 @@ class FriendsController < ApplicationController
   def create
     other_user = Facade::User::retrieve params[:username]
 
-    partnership = Facade::Partnership.new(
+    partnership = Facade::Partnership.create(
         first_user: current_user,
         second_user: other_user,
         public_visible: RestAdapter::Privacy::Public

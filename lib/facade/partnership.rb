@@ -4,21 +4,28 @@ module Facade
 
     attr_accessor :auth_proxy, :partnership
 
-    def initialize(params=nil)
-      @auth_proxy = self.class.get_auth_proxy params if not params.nil?
-      @partnership = RestAdapter::Models::Partnership.new params if not params.nil?
+    def initialize(params)
+      @auth_proxy = params[:auth_proxy]
+      @partnership = params[:partnership]
     end
 
+
+    # factory method
+    def self.create(params)
+      partnership = RestAdapter::Models::Partnership.new params
+      auth_proxy = get_auth_proxy params
+      self.new auth_proxy: auth_proxy, partnership: partnership
+    end
 
 
     def self.retrieve(params)
-      partnership = RestAdapter::Models::Partnership.new params
-      partnership.fetch!
-      p = self.new
-      p.partnership = partnership
-      p.auth_proxy = get_auth_proxy params
-      p
+      auth_proxy = get_auth_proxy params
+      auth_header = {authorization: auth_proxy.auth_header}
+      partnership = RestAdapter::Models::Partnership.retrieve(params, auth_header)
+
+      self.new auth_proxy: auth_proxy, partnership: partnership
     end
+
 
     def save
       if @auth_proxy.save(@partnership)
