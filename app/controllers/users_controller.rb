@@ -9,8 +9,8 @@ class UsersController < ApplicationController
     page = request.query_parameters[:page].nil? ? 1 : request.query_parameters[:page]
     page = page.to_i
     size = 5
-    @users = RestAdapter::User.all query: { size: size, start: (page-1)*size }
-    pages = (RestAdapter::User.available / size.to_f).ceil
+    @users = Facade::User.all query: { size: size, start: (page-1)*size }
+    pages = (Facade::User.available / size.to_f).ceil
     @links =  (1..pages)
   end
 
@@ -46,36 +46,27 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     # create a cyber coach user
-    cc_user = RestAdapter::User.new user_params
-    # create a fake user only for validating
-    @user = User.new user_params
-    respond_to do |format|
-      if @user.valid? and cc_user.save # if validation is ok, try to create the user
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
-        format.json { render :show, status: :created, location: @user }
+    @user = Facade::User.create user_params
+
+      if @user.save # if validation is ok, try to create the user
+        session[:username] = @user.username
+        session[:password] = @user.password
+        redirect_to welcome_index_path, notice: 'User was successfully created.'
       else
         flash[:notice] = 'Could not register. Cyber coach server is bitchy today!'
-        format.html { render :new }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        render :new
       end
-    end
   end
 
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
-    respond_to do |format|
-      @user = User.new user_params
-      cc_user = RestAdapter::User.new user_params
-      if @user.valid?(context: :update) and auth_proxy.save(cc_user)
-        session[:user] = cc_user.as_hash
-        format.html { redirect_to welcome_index_path, notice: 'User was successfully updated.' }
-        format.json { render :show, status: :ok, location: @user }
+      if current_user.update(user_params)
+        redirect_to welcome_index_path, notice: 'User was successfully updated.'
       else
-        format.html { render :edit }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
+        @user = current_user
+        render :edit
       end
-    end
   end
 
   # DELETE /users/1
@@ -91,12 +82,11 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = RestAdapter::User.retrieve(params[:id])
+      @user = Facade::User.retrieve(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      user_params = params.require(:user).permit(:username,:password,:password_confirmation,:email,:real_name)
-      user_params = user_params.merge({public_visible: RestAdapter::Privacy::Public})
+      params.require(:user).permit(:username,:password,:password_confirmation,:email,:real_name)
     end
 end

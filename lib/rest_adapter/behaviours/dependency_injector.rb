@@ -29,8 +29,13 @@ module RestAdapter
                 end
                 instance_variable_set(variable_symbol,objects) if not objects.empty?
               when Hash,Numeric,String
-                object = clazz.call(variable_value)
-                instance_variable_set(variable_symbol,object)
+                begin
+                  object = clazz.call(variable_value)
+                  instance_variable_set(variable_symbol,object)
+                rescue
+                  puts 'error with property ' + property.to_s + ' has value: ' + variable_value.class.name
+                end
+
             end
 
           end

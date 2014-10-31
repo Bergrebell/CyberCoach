@@ -43,8 +43,9 @@ module RestAdapter
 
       # Returns true if the given user is associated with this partnership.
       def associated_with?(user)
-        username = user.kind_of?(User) ? user.username : user # support usernames and user object
+        username = !user.is_a?(String) ? user.username : user # support usernames and user object
         user_names = self.class.extract_user_names_from_uri(self.uri)
+        puts user_names
         user_names.include?(username)
       end
 
@@ -64,7 +65,13 @@ module RestAdapter
 
       # Returns the partner of this user in this partnership.
       def partner_of(user)
-        partner = self.first_user.username == user.username ? self.second_user : self.first_user
+        partner = if self.first_user.username == user.username
+                    self.second_user
+                  elsif self.second_user.username == user.username
+                    self.first_user
+                  else
+                    raise Error, 'Partner of a user could not be determined!'
+                  end
       end
 
 

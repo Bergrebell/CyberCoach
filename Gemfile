@@ -10,6 +10,7 @@ ruby '2.1.2'
 # Use sqlite for development
 group :development do
   gem 'sqlite3'
+  gem 'rspec-rails'
 end
 
 # Guess what? Use posgres for production

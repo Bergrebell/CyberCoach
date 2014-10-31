@@ -101,6 +101,7 @@ module RestAdapter
       end
 
       module InstanceMethods
+
         # This method overrides 'id' from the base resource class.
         def id
           if @id.nil? #if id is not available try to build one using the properties
@@ -116,8 +117,7 @@ module RestAdapter
         # This method overrides 'uri' from the base resource class.
         def uri
           if @uri.nil? #if uri is not available try to build one using the properties
-            resource_path_key = !user.nil? ? :users : :partnerships
-            self.class.site + self.class.resource_path[resource_path_key] + '/' + self.id
+            self.class.site + self.resource_path + '/' + self.id
           else
             @uri
           end
@@ -126,10 +126,18 @@ module RestAdapter
 
         # This method overrides 'create_absolute_uri' from the base resource class.
         def create_absolute_uri
-          resource_path_key = !user.nil? ? :users : :partnerships
-          self.class.base + self.class.site + self.class.resource_path[resource_path_key] + '/' + id
+          self.class.base + self.class.site + self.resource_path + '/' + id
         end
+
+
+        def resource_path
+          resource_path_key = !user.nil? ? :users : :partnerships
+          self.class.resource_path[resource_path_key]
+        end
+
+
       end
+
 
 
       extend ClassMethods

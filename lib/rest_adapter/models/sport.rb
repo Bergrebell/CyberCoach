@@ -12,6 +12,15 @@ module RestAdapter
       attr_accessor :name, :description, :cc_id
       lazy_loading_on :description
 
+      module Type
+        Running = RestAdapter::Models::Sport.new name: 'Running'
+        Boxing = RestAdapter::Models::Sport.new name: 'Boxing'
+        Soccer = RestAdapter::Models::Sport.new name: 'Soccer'
+        Cycling = RestAdapter::Models::Sport.new name: 'Cycling'
+      end
+
+      Types = [Type::Running,Type::Boxing,Type::Soccer,Type::Cycling]
+
     end # end of class Sport
   end
 end

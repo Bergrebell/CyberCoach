@@ -3,7 +3,7 @@ module RestAdapter
   # An operation like save, update or delete applied on a object needs authentication.
   # To hide the details and to provide a common interface you can use a AuthProxy object.
   class AuthProxy
-    attr_accessor :subject, :auth_params
+    attr_accessor :subject
     # Creates AuthProxy object.
     # It takes as argument a hash with the following properties:
     # { :username => a username,
@@ -17,14 +17,10 @@ module RestAdapter
     # The property :subject is optional.
     #
     def initialize(params)
-      @auth_params = if not params[:user].nil?
-                       { username: params[:user].username,
-                         password: params[:user].password }
-                     else
-                       { username: params[:username],
-                         password: params[:password] }
-                     end
-      @session = params[:session].nil? ? Hash.new : params[:session]
+      # garbage in, garbage out
+      @invalid = params[:username].nil? or params[:password].nil? ? true : false
+      @auth_params = { username: params[:username],
+                       password: params[:password] }
       @subject = params[:subject]
       @auth_header = Helper.basic_auth_encryption(@auth_params)
     end
@@ -33,6 +29,7 @@ module RestAdapter
     # For validation an authentication request is performed.
     # Only for testing purposes!
     def authorized?
+      return false if @invalid
       (Models::User.authenticate(@auth_params)) != false
     end
 
@@ -44,12 +41,9 @@ module RestAdapter
     # auth_proxy.save(user)
     #
     def save(object=nil)
+      return false if @invalid
       params = {authorization: @auth_header}
       if not object.nil? #if object is nil, apply the op on the subject.
-        if not @session[:user].nil?
-          @session[:user][:friends] = nil if not @session[:user][:friends].nil?
-          @session[:user][:partnerships] = nil if not @session[:user][:partnerships].nil?
-        end
         object.save(params)
       elsif not @subject.nil?
         @subject.save(params)
@@ -65,6 +59,7 @@ module RestAdapter
     # auth_proxy.delete(user)
     #
     def delete(object=nil)
+      return false if @invalid
       params = {authorization: @auth_header}
       if not object.nil? #if object is nil, apply the op on the subject.
         object.delete(params)
@@ -91,33 +86,6 @@ module RestAdapter
       # So here the user object plays the role of the subject.
 
       @subject.send(name, *args, &block)
-    end
-
-    def partnerships
-      if @session[:user][:partnerships].nil?
-        @session[:user][:partnerships] =  @subject.partnerships.map {|p| p.as_hash}
-      end
-
-      if not @session[:user][:partnerships].nil?
-        @session[:user][:partnerships].map {|p| RestAdapter::Partnership.create p }
-      else
-        []
-      end
-
-    end
-
-
-    def friends
-      if @session[:user][:friends].nil?
-        @session[:user][:friends] =  @subject.friends.map{|f| f.as_hash}
-      end
-
-      if not @session[:user][:friends].nil?
-        @session[:user][:friends].map {|p| RestAdapter::User.create p }
-      else
-        []
-      end
-
     end
 
   end

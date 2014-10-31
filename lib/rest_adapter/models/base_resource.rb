@@ -12,7 +12,6 @@ module RestAdapter
       include RestAdapter::Behaviours::Serializable
       include RestAdapter::Behaviours::Deserializable
       include RestAdapter::Behaviours::ActiveRecord
-      include RestAdapter::Behaviours::Validator
 
 
       # class methods for the user resource

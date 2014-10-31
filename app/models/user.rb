@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
 
   validates :password, presence: true, confirmation: true, length: { within: 4..10 }
   validates :real_name, presence: true
-  validate :username_available, on: :create
+  validates :username, presence: true, length: { within: 4..10 }
   validates :email, email_format: { message: "Doesn't look like an email address!" }
 
   # create some virtual attributes

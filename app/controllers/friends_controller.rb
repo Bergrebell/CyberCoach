@@ -1,12 +1,12 @@
 class FriendsController < ApplicationController
 
-  before_action :set_current_user
-  
+  before_action :require_login
+
   def index
-    @friends = @current_user.friends
-    @requests_received = @current_user.received_friend_requests
-    users = RestAdapter::User.all query: {size: 10 }
-    @proposals = users.select {|u| @current_user.not_befriended_with?(u)}
+    @friends = current_user.friends
+    @requests_received = current_user.received_friend_requests
+    users = Facade::User.all query: {size: 10 }
+    @proposals = current_user.friend_proposals(users)
   end
 
 
@@ -19,13 +19,13 @@ class FriendsController < ApplicationController
   # POST
   #
   def confirm
-    other_user = RestAdapter::User::retrieve params[:username]
-    partnership = RestAdapter::Partnership.retrieve(
+    other_user = Facade::User::retrieve params[:username]
+    partnership = Facade::Partnership.retrieve(
       first_user: other_user,
       second_user: current_user,
     )
     if partnership.present?
-      if auth_proxy.save(partnership)
+      if partnership.save
         redirect_to friends_index_url, notice: 'You are now friend with %s' % params[:username] and return
       else
         redirect_to friends_index_url, alert: 'Could not confirm friend request' and return
@@ -39,16 +39,16 @@ class FriendsController < ApplicationController
   # POST
   #
   def create
-    other_user = RestAdapter::User::retrieve params[:username]
+    other_user = Facade::User::retrieve params[:username]
 
-    partnership = RestAdapter::Partnership.new(
+    partnership = Facade::Partnership.new(
         first_user: current_user,
         second_user: other_user,
         public_visible: RestAdapter::Privacy::Public
     )
 
     respond_to do |format|
-      if auth_proxy.save(partnership) # if validation is ok, try to create the partnership
+      if partnership.save # if validation is ok, try to create the partnership
         format.html { redirect_to friends_index_url, notice: 'Friend request is sent to %s.' % params[:username]  }
       else
         format.html { redirect_to friends_index_url, alert: 'Friend request failed! Cyber Coach server is bitchy.'  }
@@ -57,9 +57,5 @@ class FriendsController < ApplicationController
   end
 
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_current_user
-    @current_user = current_user
-  end
 
 end

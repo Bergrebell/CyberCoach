@@ -114,24 +114,7 @@ class TestRestAdapter < ActiveSupport::TestCase
   end
 
 
-  test "if user name is available" do
 
-    # a name that is too short, should fail
-    check = RestAdapter::Models::User.username_available?('mor')
-    assert check==false
-
-    # a name that is already taken, should fail
-    check = RestAdapter::Models::User.username_available?('asarteam1')
-    assert check==false
-
-    # invalid name should fail
-    check = RestAdapter::Models::User.username_available?('moritz___')
-    assert check==false
-
-    # should succeed
-    check = RestAdapter::Models::User.username_available?('reallystupidlongname')
-    assert check==true
-  end
 
 
   test "update a user" do

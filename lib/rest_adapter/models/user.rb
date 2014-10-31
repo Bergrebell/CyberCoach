@@ -64,61 +64,8 @@ module RestAdapter
       end
 
 
-      # Returns all friends of this user.
-      def friends
-        partnerships = self.partnerships.map do |p|
-          if p.is_a?(Hash) # stupid hack
-            RestAdapter::Partnership.create(p).fetch
-          else
-            p.fetch
-          end
-        end # fetch all details
-        active_partnerships = partnerships.select { |p| p.active? } # filter, only get active partnerships
-        friends = active_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
-      end
-
-
-      # Returns all received friend requests of this user.
-      def received_friend_requests
-        partnerships = self.partnerships.map do |p|
-          if p.is_a?(Hash) # stupid hack
-            RestAdapter::Partnership.create(p).fetch
-          else
-            p.fetch
-          end
-        end # fetch all details
-        proposed_partnerships = partnerships.select { |p| not p.confirmed_by?(self) } # filter, only get proposed partnerships
-        friends = proposed_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
-      end
-
-
-      # Returns all sent friend requests of this user.
-      def sent_friend_requests
-        partnerships = self.partnerships.map do |p|
-          if p.is_a?(Hash) # stupid hack
-            RestAdapter::Partnership.create(p).fetch
-          else
-            p.fetch
-          end
-        end # fetch all details
-        proposed_partnerships = partnerships.select { |p| p.confirmed_by?(self) and not p.active? }
-        friends = proposed_partnerships.map { |p| p.partner_of(self) } # get users instead of partnerships
-      end
-
-
-      # Returns true if this user is befriended with the given 'another_user'.
-      def befriended_with?(another_user)
-        not self.partnerships.select { |p|
-          if p.is_a?(Hash) # stupid hack
-            RestAdapter::Partnership.create(p).associated_with?(another_user)
-          else
-            p.associated_with?(another_user)
-          end
-        }.empty?
-      end
-
-      def not_befriended_with?(another_user)
-        !befriended_with?(another_user)
+      def fetch_partnerships
+        @partnerships = self.partnerships.map { |p| p.fetch }
       end
 
 
@@ -152,11 +99,11 @@ module RestAdapter
 
         # Checks if a username is available on the cyber coach webservice.
         # Returns false if the username is already taken or the username is not a alphanumeric string
-        # with at least 4 letters. Otherwise it returns true.
+        # with at least one letter. Otherwise it returns true.
         #
         def username_available?(username)
           # check if username is alphanumeric and that it contains at least four letters
-          if  not /^[a-zA-Z0-9]{4,}$/ =~ username
+          if  not /^[a-zA-Z0-9]{1,}$/ =~ username
             return false
           end
           # try and error: check if username is already used... i'm feeling dirty...

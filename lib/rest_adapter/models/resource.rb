@@ -41,6 +41,11 @@ module RestAdapter
       end
 
 
+      def resource_path
+        self.class.resource_path
+      end
+
+
       # Class methods for the resource class.
       # open eigenclass
       class << self

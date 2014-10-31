@@ -125,25 +125,36 @@ module RestAdapter
 
         def parse_retrieve_params(params)
           if params.is_a?(Hash) # check if hash
-            raise Error, ':sport key is missing' if params[:sport].nil?
-            sport = params[:sport].is_a?(String) ? params[:sport] : params[:sport].id
-            path_key, user_partnership_id = if not params[:partnership].nil?
-                                              partnership_id = if params[:partnership].is_a?(String)
-                                                                 params[:partnership]
-                                                               else
-                                                                 params[:partnership].id
-                                                               end
-                                              [:partnerships, partnership_id]
-                                            elsif not params[:user].nil?
-                                              user_id = if params[:user].is_a?(String)
-                                                          params[:user]
-                                                        else
-                                                          params[:user].id
-                                                        end
-                                              [:users, user_id]
-                                            end
-            user_partnership_path = resource_path[path_key] # get the right path that is associated with the path key
-            "#{user_partnership_path}/#{user_partnership_id}/#{sport}"
+            if not params[:sport].nil?
+              sport = params[:sport].is_a?(String) ? params[:sport] : params[:sport].id
+              path_key, user_partnership_id = if not params[:partnership].nil?
+                                                partnership_id = if params[:partnership].is_a?(String)
+                                                                   params[:partnership]
+                                                                 else
+                                                                   params[:partnership].id
+                                                                 end
+                                                [:partnerships, partnership_id]
+                                              elsif not params[:user].nil?
+                                                user_id = if params[:user].is_a?(String)
+                                                            params[:user]
+                                                          else
+                                                            params[:user].id
+                                                          end
+                                                [:users, user_id]
+                                              else
+                                                raise Error, ':partnership or :user params are missing!'
+                                              end
+              user_partnership_path = resource_path[path_key] # get the right path that is associated with the path key
+              "#{user_partnership_path}/#{user_partnership_id}/#{sport}"
+            elsif not params[:subscription].nil?
+              if params[:subscription].is_a?(String)
+                params[:subscription]
+              else
+                "#{params[:subscription].resource_path}/#{params[:subscription].id}"
+              end
+            else
+              raise Error, ':sport or :subscription params are missing!'
+            end
           else #otherwise assume its a string
             params
           end
