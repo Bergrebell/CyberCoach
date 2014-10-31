@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   skip_before_action :require_login
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  
   before_action :require_login, only: [:update, :edit]
 
   # GET /users
@@ -17,6 +17,7 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
+    @user = Facade::User.retrieve(params[:id])
   end
 
   # GET /users/new
@@ -27,15 +28,7 @@ class UsersController < ApplicationController
   # GET /users/1/edit
   def edit
     if params[:id] == current_user.username
-      user_hash = @user.as_hash(included_keys: [
-          :username,
-          :public_visible,
-          :real_name,
-          :email,
-          :password,
-          :password_confirmation
-      ])
-      @user = User.new(user_hash)
+      @user = current_user
     else
       flash[:notice] = 'Hey buddy! You cannot change an account of someone else!'
       redirect_to welcome_index_path
@@ -48,6 +41,7 @@ class UsersController < ApplicationController
     # create a cyber coach user
     @user = Facade::User.create user_params
     if @user.save # if validation is ok, try to create the user
+      # auto login, after registration
       session[:username] = @user.username
       session[:password] = @user.password
       redirect_to welcome_index_path, notice: 'User was successfully created.'
@@ -71,18 +65,14 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    @user.destroy
+    @user = Facade::User.retrieve(params[:id])
+    #do nothing for now: @user.delete
     respond_to do |format|
       format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
-  private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_user
-    @user = Facade::User.retrieve(params[:id])
-  end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def user_params
