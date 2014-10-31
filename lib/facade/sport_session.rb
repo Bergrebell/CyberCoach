@@ -1,11 +1,68 @@
 module Facade
 
   class SportSession
-    def self.method_missing(method, *args, &block)
-      puts "#{method} called"
 
-      Models::User.send method, *args, &block
+    def initialize(params)
+      @cc_entry = params[:cc_entry]
+      @auth_proxy = params[:auth_proxy]
+      @rails_sport_session = params[:rails_sport_session]
     end
+
+    
+    def self.create(params)
+      # hidden dependencies
+      cc_sport = RestAdapter::Models::Sport.new name: params[:type]
+      auth_proxy = params[:cc_user].auth_proxy
+      cc_subscription = RestAdapter::Models::Subscription.retrieve sport: cc_sport, user: params[:cc_user]
+      cc_entry = RestAdapter::Models::Entry.new params.merge(subscription: cc_subscription, :public_visible => RestAdapter::Privacy::Public)
+      rails_sport_session =  ::SportSession.new params[:user_id]
+
+      # inject dependencies
+      self.new cc_entry: cc_entry, cc_user: cc_user,
+               cc_subscription: cc_subscription, rails_sport_session: rails_sport_session,
+               auth_proxy: auth_proxy
+    end
+
+
+    def save
+      if entry_uri = @auth_proxy.save(@cc_entry)
+        @rails_sport_session.cybercoach_uri = entry_uri
+        @rails_sport_session.save
+        true
+      else
+        false
+      end
+    end
+
+    def update
+
+    end
+
+
+    def delete
+
+    end
+
+
+    def self.method_missing(method, *args, &block)
+      begin
+        Models::Models::Entry.send method, *args, &block
+      rescue
+        ::SportSession.send method, *args, &block
+      end
+    end
+
+
+
+    def method_missing(method, *args, &block)
+      begin
+        @cc_entry.send method, *args, &block
+      rescue
+        @rails_sport_session.send method, *args, &block
+      end
+    end
+
+
   end
 
 end
