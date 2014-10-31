@@ -37,13 +37,13 @@ class TestRestAdapter < ActiveSupport::TestCase
 
 
   test "retrieve a user" do
-    user = RestAdapter::Models::User.retrieve 'asarteam1'
+    user = RestAdapter::Models::User.retrieve 'asarteam0'
     assert_not_nil user
-    assert_equal 'asarteam1', user.username
+    assert_equal 'asarteam0', user.username
     assert_equal nil, user.password
     assert_equal RestAdapter::Privacy::Public, user.public_visible
-    assert_equal 'asarteam1', user.real_name
-    assert_equal '/CyberCoachServer/resources/users/asarteam1/', user.uri
+    assert_equal 'asarteam0', user.real_name
+    assert_equal '/CyberCoachServer/resources/users/asarteam0/', user.uri
   end
 
 
@@ -61,56 +61,56 @@ class TestRestAdapter < ActiveSupport::TestCase
 
 
   test "filter users" do
-    friends = ['asarteam1','asarteam2','asarteam3','asarteam4','asarteam5']
+    friends = ['asarteam0','asarteam2','asarteam3','asarteam4','asarteam5']
     users = RestAdapter::Models::User.all filter: ->(user) { friends.include?(user.username) }
     assert_equal 5, users.size
   end
 
 
   test "fetch details of a user" do
-    users = RestAdapter::Models::User.all filter: ->(user) { user.username == 'asarteam1' }
+    users = RestAdapter::Models::User.all filter: ->(user) { user.username == 'asarteam0' }
     user = users.first
     user.fetch!
-    assert_equal 'asarteam1', user.real_name
+    assert_equal 'asarteam0', user.real_name
     assert_equal RestAdapter::Privacy::Public, user.public_visible
   end
 
 
   test "fetch details of a user in functional way" do
-    users = RestAdapter::Models::User.all filter: ->(user) { user.username == 'asarteam1' }
+    users = RestAdapter::Models::User.all filter: ->(user) { user.username == 'asarteam0' }
     user = users.first
     user = user.fetch
-    assert_equal 'asarteam1', user.real_name
+    assert_equal 'asarteam0', user.real_name
     assert_equal RestAdapter::Privacy::Public, user.public_visible
   end
 
 
   test "lazy loading on user object" do
-    users = RestAdapter::Models::User.all filter: ->(user) { user.username == 'asarteam1' }
+    users = RestAdapter::Models::User.all filter: ->(user) { user.username == 'asarteam0' }
     user = users.first
-    assert_equal 'asarteam1', user.real_name
+    assert_equal 'asarteam0', user.real_name
     assert_equal RestAdapter::Privacy::Public, user.public_visible
   end
 
 
   test "authenticate user" do
-    user = RestAdapter::Models::User.authenticate username: 'asarteam1', password: 'scareface'
+    user = RestAdapter::Models::User.authenticate username: 'asarteam0', password: 'scareface'
     assert user
     pp user.as_hash
     assert user != false
-    assert_equal 'asarteam1', user.username
+    assert_equal 'asarteam0', user.username
   end
 
 
   test "user as hash" do
-    user = RestAdapter::Models::User.authenticate username: 'asarteam1', password: 'scareface'
+    user = RestAdapter::Models::User.authenticate username: 'asarteam0', password: 'scareface'
     assert user
     user_hash = user.as_hash
     assert user_hash
-    assert_equal 'asarteam1', user_hash['username']
-    assert_equal 'asarteam1', user_hash['real_name']
+    assert_equal 'asarteam0', user_hash['username']
+    assert_equal 'asarteam0', user_hash['real_name']
     assert_equal 2, user_hash['public_visible']
-    assert_equal 'asarteam1@test.com', user_hash['email']
+    assert_equal 'asarteam0@test.com', user_hash['email']
   end
 
 
@@ -118,15 +118,15 @@ class TestRestAdapter < ActiveSupport::TestCase
 
 
   test "update a user" do
-    user = RestAdapter::Models::User.retrieve 'asarteam1'
-    user.email = 'asarteam1@test.com'
+    user = RestAdapter::Models::User.retrieve 'asarteam0'
+    user.email = 'asarteam0@test.com'
 
-    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam1', password: 'scareface', session: {:user => { :friends => nil, :partnerships => nil}}
+    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam0', password: 'scareface', session: {:user => { :friends => nil, :partnerships => nil}}
     assert auth_proxy.authorized?
     auth_proxy.save(user)
 
-    test_user = RestAdapter::Models::User.retrieve 'asarteam1'
-    assert_equal 'asarteam1@test.com', test_user.email
+    test_user = RestAdapter::Models::User.retrieve 'asarteam0'
+    assert_equal 'asarteam0@test.com', test_user.email
   end
 
 
@@ -174,8 +174,8 @@ class TestRestAdapter < ActiveSupport::TestCase
   end
 
 
-  test "retrive user asarteam1" do
-    user = RestAdapter::Models::User.retrieve 'asarteam1'
+  test "retrive user asarteam0" do
+    user = RestAdapter::Models::User.retrieve 'asarteam0'
   end
 
 
