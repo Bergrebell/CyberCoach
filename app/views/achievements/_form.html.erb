@@ -21,7 +21,7 @@
   </div>
   <div class="field">
     <%= f.label :category_id %><br>
-    <%= f.select(:category_id, options_for_select(RestAdapter::Sport.all.map { |s| [s.name,s.id]})) %>
+    <%= f.select(:category_id, options_for_select(RestAdapter::Models::Sport::Types.map { |s| [s.name,s.id]})) %>
   </div>
   <div class="actions">
     <%= f.submit %>
