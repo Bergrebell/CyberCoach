@@ -45,7 +45,6 @@ module RestAdapter
       def associated_with?(user)
         username = !user.is_a?(String) ? user.username : user # support usernames and user object
         user_names = self.class.extract_user_names_from_uri(self.uri)
-        puts user_names
         user_names.include?(username)
       end
 
@@ -98,10 +97,13 @@ module RestAdapter
         # * +string+        - a string
         # * +first_user+    - a user object or a username
         # * +second_user+   - a user object or a username
+        # * =options+       - an optional hash for options
         #
         # ==== Examples
         # Partnership.retrieve('alex;timon', sport: 'Running') => Partnership
         # Partnership.retrieve(first_user: 'alex', second_user: 'timon') => Partnership
+        # Partnership.retrieve('alex;timon', {authorization: 'Basic Bksdjfkjskldfj='} ) => Partnership
+        # Partnership.retrieve({first_user: 'alex', second_user: 'timon'}, {authorization: 'Basic Bksdjfkjskldfj='} ) => Partnership
         #
         def retrieve(params,options={})
           id = if params.is_a?(Hash) # check if hash
