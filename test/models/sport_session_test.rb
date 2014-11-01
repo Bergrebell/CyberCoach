@@ -28,7 +28,7 @@ class SportSessionTest < ActiveSupport::TestCase
   boxing.invite([alex.id])
 
   # Alex does confirm the invitation, if not confirmed, the user has not participated at the event
-  p = alex.sport_session_participants.where(:sport_session_id => boxing.id)
+  p = alex.sport_session_participants.find_by(:sport_session_id => boxing.id)
   p.confirmed = true
   p.save()
 

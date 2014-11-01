@@ -7,7 +7,7 @@ class SportSession < ActiveRecord::Base
   #
   def invite(user_ids)
     user_ids.each do |user_id|
-      p = new SportSessionParticipant(:user_id => user_id, :sport_session_id => self.id)
+      p = SportSessionParticipant.new(:user_id => user_id, :sport_session_id => self.id)
       p.save()
     end
   end
