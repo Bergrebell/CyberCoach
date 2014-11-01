@@ -37,6 +37,7 @@ module RestAdapter
         end
       end
 
+
       class << self
         # This class method overrides 'retrieve'.
         # Returns a subscription given a partnership, a user and a sport category.
@@ -47,14 +48,18 @@ module RestAdapter
         # * +partnership+   - a partnership object
         # * +user+          - a user object
         # * +sport+         - a string that specifies a sport category
+        # * +options+       - an optional hash for options
         #
         # ==== Examples
         # Subscription.retrieve(partnership: a partnership object, sport: 'Running') => Subscription
         # Subscription.retrieve(user: a user object, sport: 'Running') => Subscription
+        # Subscription.retrieve('/users/newuser4/Running') => Subscription
+        # Subscription.retrieve('/users/newuser4/Running', {authorization: 'Basic Bksdjfkjskldfj='} ) => Subscription
+        # Subscription.retrieve({user: a user object, sport: 'Running'}, {authorization: 'Basic Bksdjfkjskldfj='} ) => Subscription
         #
-        def retrieve(params)
+        def retrieve(params, options={})
           resource_path_id = parse_retrieve_params(params)
-          super(resource_path_id)
+          super(resource_path_id, options)
         end
 
       end

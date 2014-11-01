@@ -6,12 +6,39 @@ module RestAdapter
 
       def self.included(base)
         base.send :include, InstanceMethods
-        base.extend ClassMethods, Helper
+        base.extend ClassMethods
 
         # Required class methods (preconditions) which must be implemented for using this behaviour.
         raise 'ActiveRecord#deserialize() is not implemented! Precondition is not satisfied.' if not defined? base.deserialize
         raise 'ActiveRecord#serialize_format() is not implemented! Precondition is not satisfied.' if not defined? base.serialize_format
         raise 'ActiveRecord#deserialize_format() is not implemented! Precondition is not satisfied.' if not defined? base.deserialize_format
+      end
+
+      # module helper class methods
+
+      def self.parse_query_options(options)
+        # if query is not set, use default
+        if options[:query].nil?
+          options = options.merge({query: {start: 0, size: 999}})
+        end
+
+        # build query
+        uri = Addressable::URI.new
+        uri.query_values = options[:query]
+        q = '?' + uri.query
+      end
+
+
+      def self.get_basic_options
+        {content_type: self.serialize_format,
+         accept: self.deserialize_format}
+      end
+
+
+      def self.get_default_response_handler
+        proc do |response, request, result|
+          return self.deserialize(response)
+        end
       end
 
 
@@ -21,13 +48,11 @@ module RestAdapter
         # containing all details.
         #
         def fetch(options={})
-          q = self.class.parse_query_options(options)
+          q = ActiveRecord.parse_query_options(options)
           begin
             uri = self.absolute_uri + q
-            response = RestClient.get(uri, {
-                content_type: self.class.serialize_format,
-                accept: self.class.deserialize_format
-            })
+            options = self.class.get_basic_options
+            response = RestClient.get(uri, options)
             # get deserializer
             self.class.deserialize(response)
           rescue Exception => e
@@ -41,13 +66,11 @@ module RestAdapter
         # according the fetched details.
         #
         def fetch!(options={})
-          q = self.class.parse_query_options(options)
+          q = self.parse_query_options(options)
           begin
             uri = self.absolute_uri + q
-            response = RestClient.get(uri, {
-                content_type: self.class.serialize_format,
-                accept: self.class.deserialize_format
-            })
+            options = self.class.get_basic_options
+            response = RestClient.get(uri, options)
 
             obj = self.class.deserialize(response)
             variables = obj.instance_variables
@@ -66,23 +89,17 @@ module RestAdapter
         # Pass modified objects  to the AuthProxy object and apply the save operation on
         # the AuthProxy object.
         #
-        def save(params={})
+        def save(options={})
+          options = options.dup
           # basic options
-          options = {
-              accept: self.class.deserialize_format,
-              content_type: self.class.serialize_format,
-          }
-          method = [:put,:post].include?(params[:method]) ? params[:method] : :put # hack alert
+          basic_options = ActiveRecord.get_basic_options
+          method = [:put,:post].include?(options[:method]) ? options[:method] : :put # hack alert
 
-          # hack alert
-          default_response_handler = proc do |response, request, result|
-            return self.class.deserialize(response)
-          end
-          response_handler = params[:response_handler].nil? ? default_response_handler : params[:response_handler]
+          response_handler = options[:response_handler].nil? ? ActiveRecord.get_default_response_handler : options[:response_handler]
 
-          params.delete(:method)
-          params.delete(:response_handler)
-          options = options.merge(params)
+          options.delete(:method)
+          options.delete(:response_handler)
+          options = basic_options.merge(options)
 
           begin
             uri = self.create_absolute_uri
@@ -122,32 +139,26 @@ module RestAdapter
       end
 
 
-      module Helper
-        def parse_query_options(options)
-          # if query is not set, use default
-          if options[:query].nil?
-            options = options.merge({query: {start: 0, size: 999}})
-          end
 
-          # build query
-          uri = Addressable::URI.new
-          uri.query_values = options[:query]
-          q = '?' + uri.query
-        end
-      end
 
 
       module ClassMethods
 
         # Returns a resource object with the provided id.
         def retrieve(id, options={})
-          q = parse_query_options(options)
+          q = ActiveRecord.parse_query_options(options)
+          options = options.dup
+          options.delete(:query)
+          basic_options = {
+              content_type: self.serialize_format,
+              accept: self.deserialize_format
+          }
+
+          basic_options = options.merge(basic_options)
+
           begin
             uri = self.create_absolute_resource_uri(id) + q
-            response = RestClient.get(uri, {
-                content_type: self.serialize_format,
-                accept: self.deserialize_format
-            })
+            response = RestClient.get(uri,basic_options)
             self.deserialize(response)
           rescue Exception => e
             puts e
@@ -163,11 +174,13 @@ module RestAdapter
             params = params.merge({filter: ->(x) { true }})
           end
 
-          q = parse_query_options(params)
-          response = RestClient.get(self.collection_uri + q, {
+          basic_options = {
               content_type: self.serialize_format,
               accept: self.deserialize_format
-          })
+          }
+
+          q = ActiveRecord.parse_query_options(params)
+          response = RestClient.get(self.collection_uri + q,basic_options)
           filter = params[:filter]
           results = self.deserialize(response)
           results = results.select { |item| filter.call(item) } #filter the results
