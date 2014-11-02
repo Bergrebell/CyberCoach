@@ -8,7 +8,7 @@ class RunningsController < ApplicationController
   end
 
   def new
-    @running = Running.new
+
   end
 
 
@@ -21,17 +21,15 @@ class RunningsController < ApplicationController
   end
 
 
-  # POST /users
-  # POST /users.json
+  # POST /runnings
   def create
-    # create a cyber coach user
     entry_params = params.merge({facade_user: current_user, type: 'Running'})
     entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
     @entry = Facade::SportSession.create entry_params
-    if auth_proxy.save(@entry) # if validation is ok, try to create the user
-      redirect_to welcome_index_path, notice: 'User was successfully created. '
+    if auth_proxy.save(@entry)
+      redirect_to runnings_url, notice: 'Running session successfully created'
     else
-      flash[:notice] = 'Could not register. Cyber coach server is bitchy today!'
+      flash[:notice] = 'Unable to create Running session'
       render :new
     end
   end
@@ -42,7 +40,7 @@ class RunningsController < ApplicationController
     entry_params = sport_session_params.merge({facade_user: current_user, type: 'Running'})
     @running.update_attributes(entry_params)
     if auth_proxy.update(@running)
-      redirect_to welcome_index_path, notice: 'User was successfully updated.'
+      redirect_to runnings_url, notice: 'Running session successfully updated'
     else
       render :edit
     end
