@@ -2,7 +2,7 @@ module Facade
 
   class SportSession
 
-    def initialize(params)
+    def initialize(params={})
       @cc_entry = params[:cc_entry]
       @rails_sport_session = params[:rails_sport_session]
     end
@@ -26,7 +26,7 @@ module Facade
       if entry_uri = @cc_entry.save(params)
         @rails_sport_session.cybercoach_uri = entry_uri
         @rails_sport_session.save
-        true
+        entry_uri
       else
         false
       end
@@ -41,6 +41,40 @@ module Facade
 
     end
 
+
+    def self.wrap(sport_session)
+      cc_entry = RestAdapter::Models::Entry.retrieve sport_session.cybercoach_uri
+      self.new rails_sport_session: sport_session, cc_entry: cc_entry
+    end
+
+
+    def id
+      @rails_sport_session.id
+    end
+
+    def cc_id
+      @cc_entry.id
+    end
+
+    def method_missing(method, *args, &block)
+      begin
+        @cc_entry.send method, *args, &block
+      rescue
+        @rails_sport_session.send method, *args, &block
+      end
+    end
+
+
+    # map where, find etc from rails....good luck...it might bite you!!!!!
+    def self.method_missing(method, *args, &block)
+      result = ::SportSession.send method, *args, &block
+      case result
+        when ::ActiveRecord::Relation
+          result.map {|r| wrap(r) }
+        else
+          wrap(result)
+      end
+    end
 
 
 

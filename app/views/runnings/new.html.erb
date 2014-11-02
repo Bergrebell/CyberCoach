@@ -1,11 +1,11 @@
 <h2>Create a Running Session</h2>
 
-<form class="uk-form uk-form-stacked" method="post" action="<%= new_running_url %>">
+<form class="uk-form uk-form-stacked" method="post" action="<%= runnings_path %>">
   <div class="uk-form-row">
     <label class="uk-form-label" for="date">Date</label>
     <div class="uk-form-controls uk-form-icon">
       <i class="uk-icon-calendar"></i>
-      <input type="datetime" name="date" id="date">
+      <input type="datetime" name="date" id="entry_date">
     </div>
   </div>
   <div class="uk-form-row">
@@ -30,6 +30,18 @@
     <label class="uk-form-label" for="course_type">Course Type</label>
     <div class="uk-form-controls">
       <input type="text" name="course_type" id="course_type">
+    </div>
+  </div>
+  <div class="uk-form-row">
+    <label class="uk-form-label" for="number_of_rounds">Number of rounds</label>
+    <div class="uk-form-controls">
+      <input type="text" name="number_of_rounds" id="number_of_rounds">
+    </div>
+  </div>
+  <div class="uk-form-row">
+    <label class="uk-form-label" for="comment">Comment</label>
+    <div class="uk-form-controls">
+      <textarea name="comment" id="comment"> </textarea>
     </div>
   </div>
   <% #This adds the needed field for the CRSF protection to the form %>

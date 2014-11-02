@@ -1,4 +1,21 @@
 <h1>Front-Page Sport Sessions</h1>
 
-<a href="<%= new_running_url  %>">Create Running Session</a>
+<a href="<%= new_running_url %>">Create Running Session</a>
+
+<% @sessions.each do |session| %>
+
+    <p>
+
+      <%= link_to "id #{session.id}", action: 'show', id: session.id %> <br>
+      date-created: <%= session.date_created.strftime  '%Y %m %d, %T' %> <br>
+      type: <%= session.type %> <br>
+      uri: <%= session.uri %> <br>
+      comment: <%= session.comment %> <br>
+      course-type <%= session.course_type %> <br>
+      number of rounds <%= session.number_of_rounds %> <br>
+      entry-location <%= session.entry_location %> <br>
+      entry-duration <%= session.entry_duration %> <br>
+
+    </p>
+<% end %>
 

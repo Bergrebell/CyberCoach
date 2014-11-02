@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   get 'friends/index'
   get 'sport_sessions/index'
+  get 'sport_sessions/show'
   post 'friends/confirm'
   post 'friends/create'
 

@@ -90,6 +90,9 @@ module Facade
       end
     end
 
+    def id
+      @rails_user.id
+    end
 
     def friend_proposals(users)
       @cc_user.fetch! #update user and also its list of partnerships
@@ -188,11 +191,6 @@ module Facade
         ::User.send method, *args, &block
       end
     end
-
-    def to_r
-      @rails_user
-    end
-
 
   end
 

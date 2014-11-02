@@ -174,6 +174,7 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     entry.track = {:test => 'test'}
     assert entry.cc_id==nil
     entry_uri = auth_proxy.save(entry)
+    puts 'entry_uri:' + entry_uri
     assert_not_nil entry_uri
   end
 

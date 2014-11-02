@@ -2,9 +2,11 @@ class SportSessionsController < ApplicationController
 
 
   def index
+    @sessions = Facade::SportSession.where user_id: current_user.id # pretty cool hehehe...don't get used to it :-)
+  end
 
-
-
+  def show
+    @session = Facade::SportSession.find_by id: params[:id]
   end
 
 

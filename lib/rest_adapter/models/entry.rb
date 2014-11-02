@@ -123,7 +123,7 @@ module RestAdapter
             user_partnership_id = parse_retrieve_params(params)
             "#{user_partnership_id}/#{id}"
           else
-            params
+            params.gsub(self.site,'')
           end
           super(resource_id)
         end
