@@ -17,7 +17,7 @@ module Facade
     def self.create(params={})
       params = params.merge(public_visible: RestAdapter::Privacy::Public) # always use public
       cc_user = RestAdapter::Models::User.new(params)
-      auth_proxy = RestAdapter::AuthProxy.new username: cc_user.username, password: cc_user.password
+      auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password
       rails_user = ::User.new params.merge(name: params[:username]) # please change the rails model!!!
       self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
     end
@@ -25,7 +25,7 @@ module Facade
     # factory method
     def self.wrap(params={})
       cc_user = RestAdapter::Models::User.authenticate(params)
-      auth_proxy = RestAdapter::AuthProxy.new username: cc_user.username, password: cc_user.password
+      auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password
       rails_user = ::User.find_by name: cc_user.username
       self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
     end
@@ -62,7 +62,7 @@ module Facade
       end
 
       if @auth_proxy.authorized? and @rails_user.valid? and @auth_proxy.save(@cc_user)
-        @auth_proxy = RestAdapter::AuthProxy.new username: @cc_user.username, password: @cc_user.password
+        @auth_proxy = RestAdapter::Proxy::Auth.new username: @cc_user.username, password: @cc_user.password
       end
     end
 
@@ -160,7 +160,7 @@ module Facade
 
     def self.authenticate(params)
       if cc_user = RestAdapter::Models::User.authenticate(params)
-        auth_proxy = RestAdapter::AuthProxy.new username: cc_user.username, password: cc_user.password, subject: cc_user
+        auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password, subject: cc_user
         rails_user = if (check_user = ::User.find_by name: cc_user.username)
                        check_user
                      else
