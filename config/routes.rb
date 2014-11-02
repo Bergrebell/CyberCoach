@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
   get 'friends/index'
+  get 'sport_sessions/index'
   post 'friends/confirm'
   post 'friends/create'
 
@@ -17,6 +18,8 @@ Rails.application.routes.draw do
   resources :credits
 
   resources :users
+
+  resources :runnings
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
