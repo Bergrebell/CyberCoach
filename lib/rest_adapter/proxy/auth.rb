@@ -6,7 +6,8 @@ module RestAdapter
     class Auth
 
       attr_reader :auth_header
-      attr_accessor :subject
+      attr_reader :http_auth_header
+
       # Creates AuthProxy object.
       # It takes as argument a hash with the following properties:
       # { :username => a username,
@@ -22,10 +23,11 @@ module RestAdapter
       def initialize(params)
         # garbage in, garbage out
         @invalid = params[:username].nil? or params[:password].nil? ? true : false
-        @auth_params = { username: params[:username],
-                         password: params[:password] }
-        @subject = params[:subject]
-        @auth_header = Helper.basic_auth_encryption(@auth_params)
+        @username = params[:username]
+        @password = params[:password]
+        @real_subject = params[:subject]
+        @auth_header = Helper.basic_auth_encryption(username: @username, password: @password)
+        @http_auth_header = {authorization: @auth_header}
       end
 
       # Checks if this AuthProxy object is valid in terms of the user credentials.
@@ -33,7 +35,7 @@ module RestAdapter
       # Only for testing purposes!
       def authorized?
         return false if @invalid
-        (Models::User.authenticate(@auth_params)) != false
+        (Models::User.authenticate(username: @username, password: @password)) != false
       end
 
 
@@ -45,11 +47,11 @@ module RestAdapter
       #
       def save(object=nil)
         return false if @invalid
-        params = {authorization: @auth_header}
+
         if not object.nil? #if object is nil, apply the op on the subject.
-          object.save(params)
-        elsif not @subject.nil?
-          @subject.save(params)
+          object.save(@http_auth_header)
+        elsif not @real_subject.nil?
+          @real_subject.save(@http_auth_header)
         else
           raise 'AuthProxy does nothing'
         end
@@ -63,11 +65,11 @@ module RestAdapter
       #
       def delete(object=nil)
         return false if @invalid
-        params = {authorization: @auth_header}
+
         if not object.nil? #if object is nil, apply the op on the subject.
-          object.delete(params)
-        elsif not @subject.nil?
-          @subject.delete(params)
+          object.delete(@http_auth_header)
+        elsif not @real_subject.nil?
+          @real_subject.delete(@http_auth_header)
         else
           raise 'AuthProxy does nothing'
         end
@@ -77,6 +79,26 @@ module RestAdapter
       # make a alias for method save
       alias_method :update, :save
 
+      def retrieve(params)
+        @real_subject.retrieve(params,@http_auth_header)
+      end
+
+
+      def self.inject_access(object)
+        object.auth_proxy = self
+        object
+      end
+
+
+      def self.wrap(object)
+        self.new subject: object, username: @username, password: @password
+      end
+
+
+      def subject(object)
+        @real_subject = object
+        self
+      end
 
       # Delegates each method call that is not supported by this proxy
       # to the subject.
@@ -88,7 +110,7 @@ module RestAdapter
         # which acts like user object.
         # So here the user object plays the role of the subject.
 
-        @subject.send(name, *args, &block)
+        @real_subject.send(name, *args, &block)
       end
 
     end
