@@ -9,10 +9,13 @@ module Facade
 
     
     def self.create(params)
+      raise Error if params[:facade_user].nil?
+      raise Error if params[:type].nil?
       # hidden dependencies
-      rails_user = ::User.find_by name: params[:cc_user].username
+      cc_user = params[:facade_user].cc_user
+      rails_user = ::User.find_by name: params[:facade_user].username
       rails_sport_session =  ::SportSession.new user_id: rails_user.id, type: params[:type]
-      cc_subscription = RestAdapter::Models::Subscription.retrieve sport: params[:type], user: params[:cc_user]
+      cc_subscription = RestAdapter::Models::Subscription.retrieve sport: params[:type], user: cc_user
       cc_type = RestAdapter::Models::Entry::TypeLookup[params[:type]]
       entry_hash = params.merge(subscription: cc_subscription, :public_visible => RestAdapter::Privacy::Public, type: cc_type)
       cc_entry = RestAdapter::Models::Entry.new entry_hash
@@ -70,7 +73,7 @@ module Facade
       result = ::SportSession.send method, *args, &block
       case result
         when ::ActiveRecord::Relation
-          result.map {|r| wrap(r) }
+          result.to_a.map {|r| wrap(r) }
         else
           wrap(result)
       end

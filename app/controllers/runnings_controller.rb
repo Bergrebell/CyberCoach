@@ -16,10 +16,10 @@ class RunningsController < ApplicationController
   # POST /users.json
   def create
     # create a cyber coach user
-    entry_params = params.merge({cc_user: current_user, type: 'Running'})
+    entry_params = params.merge({facade_user: current_user, type: 'Running'})
     entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
     @entry = Facade::SportSession.create entry_params
-    if uri = auth_proxy.save(@entry) # if validation is ok, try to create the user
+    if auth_proxy.save(@entry) # if validation is ok, try to create the user
       redirect_to welcome_index_path, notice: 'User was successfully created. '
     else
       flash[:notice] = 'Could not register. Cyber coach server is bitchy today!'

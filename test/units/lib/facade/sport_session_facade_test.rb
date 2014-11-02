@@ -7,8 +7,8 @@ class TestSportSessionFacade < ActiveSupport::TestCase
 
     rails_user = ::User.new name: 'asarteam0'
     rails_user.save(validate: false)
-    cc_user = Facade::User.authenticate username: 'asarteam0', password: 'scareface'
-    auth_proxy = cc_user.auth_proxy
+    facade_user = User.authenticate username: 'asarteam0', password: 'scareface'
+    auth_proxy = facade_user.auth_proxy
     assert auth_proxy.authorized?
     entry_hash = {
         :type =>  'Running',
@@ -18,7 +18,7 @@ class TestSportSessionFacade < ActiveSupport::TestCase
         :comment => 'Some comment',
         :entry_duration => 10000,
         :entry_date => DateTime.now,
-        :cc_user => cc_user
+        :facade_user => facade_user
     }
 
     sport_session = Facade::SportSession.create(entry_hash)
@@ -36,10 +36,11 @@ class TestSportSessionFacade < ActiveSupport::TestCase
     rails_user = ::User.new name: 'asarteam0'
     rails_user.save(validate: false)
 
-    user = Facade::User.authenticate username: 'asarteam0', password: 'scareface'
-    auth_proxy = user.auth_proxy
+    facade_user = Facade::User.authenticate username: 'asarteam0', password: 'scareface'
+    auth_proxy = facade_user.auth_proxy
     assert auth_proxy.authorized?
-    subscription = RestAdapter::Models::Subscription.retrieve sport: 'Running', user: user
+    cc_user = facade_user.cc_user
+    subscription = RestAdapter::Models::Subscription.retrieve sport: 'Running', user: cc_user
     assert subscription
     entry_hash = {
         :type =>  RestAdapter::Models::Entry::Type::Running,
