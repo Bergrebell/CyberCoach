@@ -8,7 +8,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
   end
 
 
-  test "id of a partnership" do
+  test "id of a partnership on creation" do
     mike = RestAdapter::Models::User.retrieve 'mikeShiva'
     timon = RestAdapter::Models::User.retrieve 'timon'
 
@@ -16,12 +16,28 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
     assert_equal 'mikeshiva;timon', partnership.id
   end
 
+
+  test "uri of a partnership on creation" do
+    mike = RestAdapter::Models::User.retrieve 'mikeShiva'
+    timon = RestAdapter::Models::User.retrieve 'timon'
+
+    partnership = RestAdapter::Models::Partnership.new first_user: mike, second_user: timon
+    assert_equal '/CyberCoachServer/resources/partnerships/mikeshiva;timon/', partnership.uri
+  end
+
+
+  test "uri of a partnership on retrieving" do
+    partnership = RestAdapter::Models::Partnership.retrieve 'mikeshiva;timon'
+    assert_equal '/CyberCoachServer/resources/partnerships/mikeshiva;timon/', partnership.uri
+  end
+
+
   test "mike shiva proposes a partnership to timon" do
     mike = RestAdapter::Models::User.retrieve 'mikeShiva'
     timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for mike
-    auth_proxy = RestAdapter::AuthProxy.new username: 'mikeShiva', password: '12345'
+    auth_proxy = RestAdapter::Proxy::Auth.new username: 'mikeShiva', password: '12345'
     assert auth_proxy.authorized?
 
     # create a partnership
@@ -74,7 +90,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
     timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for timon
-    auth_proxy = RestAdapter::AuthProxy.new username: 'timon', password: 'scareface'
+    auth_proxy = RestAdapter::Proxy::Auth.new username: 'timon', password: 'scareface'
     assert auth_proxy.authorized?
 
     # create a partnership
@@ -100,7 +116,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
     timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for timon
-    auth_proxy = RestAdapter::AuthProxy.new username: 'timon', password: 'scareface'
+    auth_proxy = RestAdapter::Proxy::Auth.new username: 'timon', password: 'scareface'
     assert auth_proxy.authorized?
 
     # get the partnership
@@ -122,7 +138,7 @@ class TestPartnershipAdapter  < ActiveSupport::TestCase
     timon = RestAdapter::Models::User.retrieve 'timon'
 
     # create auth proxy for timon
-    auth_proxy = RestAdapter::AuthProxy.new username: 'mikeShiva', password: '12345'
+    auth_proxy = RestAdapter::Proxy::Auth.new username: 'mikeShiva', password: '12345'
     assert auth_proxy.authorized?
 
     # get the partnership

@@ -13,8 +13,7 @@ class TestResource  < ActiveSupport::TestCase
 
 
   test "deseralize user" do
-    user = RestAdapter::Models::User.retrieve 'asarteam1'
-    pp user
+    user = RestAdapter::Models::User.retrieve 'asarteam0'
     assert_not_nil user.username
     assert_not_nil user.partnerships
     assert_not_nil user.real_name

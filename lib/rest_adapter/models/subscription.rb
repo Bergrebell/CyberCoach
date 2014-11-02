@@ -122,7 +122,7 @@ module RestAdapter
         # This method overrides 'uri' from the base resource class.
         def uri
           if @uri.nil? #if uri is not available try to build one using the properties
-            self.class.site + self.resource_path + '/' + self.id
+            self.class.site + self.resource_path + '/' + self.id + '/'
           else
             @uri
           end
@@ -131,7 +131,7 @@ module RestAdapter
 
         # This method overrides 'create_absolute_uri' from the base resource class.
         def create_absolute_uri
-          self.class.base + self.class.site + self.resource_path + '/' + id
+          self.class.base + self.class.site + self.resource_path + '/' + id + '/'
         end
 
 

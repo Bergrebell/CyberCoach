@@ -26,7 +26,7 @@ class TestRestAdapter < ActiveSupport::TestCase
         public_visible: RestAdapter::Privacy::Public
     )
 
-    assert_equal '/CyberCoachServer/resources/users/alex', user.uri
+    assert_equal '/CyberCoachServer/resources/users/alex/', user.uri
 
     assert_equal 'alex', user.id
     assert_equal 'alex', user.username
@@ -39,6 +39,19 @@ class TestRestAdapter < ActiveSupport::TestCase
   test "retrieve a user" do
     user = RestAdapter::Models::User.retrieve 'asarteam0'
     assert_not_nil user
+    assert_equal 'asarteam0', user.username
+    assert_equal nil, user.password
+    assert_equal RestAdapter::Privacy::Public, user.public_visible
+    assert_equal 'asarteam0', user.real_name
+    assert_equal '/CyberCoachServer/resources/users/asarteam0/', user.uri
+  end
+
+
+  test "retrieve a user over a ghost object" do
+    user = RestAdapter::Models::User.new username: 'asarteam0'
+    assert_not_nil user
+    assert_equal '/CyberCoachServer/resources/users/asarteam0/', user.uri
+    user.fetch!
     assert_equal 'asarteam0', user.username
     assert_equal nil, user.password
     assert_equal RestAdapter::Privacy::Public, user.public_visible
@@ -121,7 +134,7 @@ class TestRestAdapter < ActiveSupport::TestCase
     user = RestAdapter::Models::User.retrieve 'asarteam0'
     user.email = 'asarteam0@test.com'
 
-    auth_proxy = RestAdapter::AuthProxy.new username: 'asarteam0', password: 'scareface', session: {:user => { :friends => nil, :partnerships => nil}}
+    auth_proxy = RestAdapter::Proxy::Auth.new username: 'asarteam0', password: 'scareface', session: {:user => { :friends => nil, :partnerships => nil}}
     assert auth_proxy.authorized?
     auth_proxy.save(user)
 
@@ -140,7 +153,7 @@ class TestRestAdapter < ActiveSupport::TestCase
     )
 
     pp user.serialize
-    auth_proxy = RestAdapter::AuthProxy.new username: 'dummy', password: 'dummy', session: {:user => { :friends => nil, :partnerships => nil}}
+    auth_proxy = RestAdapter::Proxy::Auth.new username: 'dummy', password: 'dummy'
 
     assert auth_proxy.save(user)
 

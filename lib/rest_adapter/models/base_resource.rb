@@ -11,7 +11,7 @@ module RestAdapter
       include RestAdapter::Behaviours::AsHash
       include RestAdapter::Behaviours::Serializable
       include RestAdapter::Behaviours::Deserializable
-      include RestAdapter::Behaviours::ActiveRecord
+      include RestAdapter::Behaviours::Crudable
 
 
       # class methods for the user resource

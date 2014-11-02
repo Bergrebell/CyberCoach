@@ -1,7 +1,21 @@
 require 'pp'
 require 'rspec/mocks/standalone'
+require 'test_helper'
 
 class TestUserFacade < ActiveSupport::TestCase
+
+
+  test "if find by works" do
+    rails_user = ::User.new name: 'alex'
+    rails_user.save(validate: false) # ignore rails validators
+
+    user = Facade::User.find_by(name: 'alex')
+    assert user
+    puts user.name
+
+  end
+
+  # facade specific methods
 
   test "create and delete a new user" do
     return true

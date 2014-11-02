@@ -15,10 +15,10 @@ module RestAdapter
 
       # Returns the uri of this resource without the base.
       # Example====
-      # object.uri =>  /CyberCoachServer/resources/users/alex
+      # object.uri =>  /CyberCoachServer/resources/users/alex/
       def uri
         if @uri.nil?
-          self.class.site + self.class.resource_path + '/' + self.id
+          self.class.site + self.class.resource_path + '/' + self.id + '/'
         else
           @uri
         end
@@ -46,6 +46,11 @@ module RestAdapter
       end
 
 
+      def serialize
+        raise 'Not implemented!'
+      end
+
+
       # Class methods for the resource class.
       # open eigenclass
       class << self
@@ -57,11 +62,18 @@ module RestAdapter
           raise 'Not specified!'
         end
 
+
         def site
           raise 'Not specified!'
         end
 
+
         def create(params)
+          raise 'Not implemented!'
+        end
+
+
+        def deserialize(object)
           raise 'Not implemented!'
         end
 

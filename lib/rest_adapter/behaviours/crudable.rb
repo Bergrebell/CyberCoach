@@ -2,11 +2,11 @@ module RestAdapter
 
   module Behaviours
 
-    module ActiveRecord
+    module Crudable
 
       def self.included(base)
         base.send :include, InstanceMethods
-        base.extend ClassMethods
+        base.extend ClassMethods, HelperClassMethods
 
         # Required class methods (preconditions) which must be implemented for using this behaviour.
         raise 'ActiveRecord#deserialize() is not implemented! Precondition is not satisfied.' if not defined? base.deserialize
@@ -16,30 +16,39 @@ module RestAdapter
 
       # module helper class methods
 
-      def self.parse_query_options(options)
-        # if query is not set, use default
-        if options[:query].nil?
-          options = options.merge({query: {start: 0, size: 999}})
+      module HelperClassMethods
+        def parse_query_options(options)
+          # if query is not set, use default
+          query_options = options[:query].nil? ? {start: 0, size: 999} : options[:query]
+          # build query
+          uri = Addressable::URI.new
+          uri.query_values = query_options
+          q = '?' + uri.query
         end
 
-        # build query
-        uri = Addressable::URI.new
-        uri.query_values = options[:query]
-        q = '?' + uri.query
-      end
 
-
-      def self.get_basic_options
-        {content_type: self.serialize_format,
-         accept: self.deserialize_format}
-      end
-
-
-      def self.get_default_response_handler
-        proc do |response, request, result|
-          return self.deserialize(response)
+        def get_basic_options
+          {content_type: self.serialize_format,
+           accept: self.deserialize_format}
         end
+
+
+        def get_default_response_handler
+          proc do |response, request, result|
+            self.deserialize(response)
+          end
+        end
+
+        def clear_options(hash)
+          options = hash.dup
+          options.delete(:method)
+          options.delete(:response_handler)
+          options.delete(:query)
+          options
+        end
+
       end
+
 
 
       module InstanceMethods
@@ -47,16 +56,22 @@ module RestAdapter
         # Fetches all details for this resource object and returns a object
         # containing all details.
         #
-        def fetch(options={})
-          q = ActiveRecord.parse_query_options(options)
+        def fetch(params={})
+          options = params.dup
+          q = self.class.parse_query_options(options)
+          uri = self.absolute_uri + q
+
+          basic_options = self.class.get_basic_options
+          cleared_options = self.class.clear_options(options)
+          http_options = basic_options.merge(cleared_options)
+
           begin
-            uri = self.absolute_uri + q
-            options = self.class.get_basic_options
-            response = RestClient.get(uri, options)
+            response = RestClient.get(uri, http_options)
             # get deserializer
             self.class.deserialize(response)
           rescue Exception => e
             puts e
+            raise e if options[:raise]
             false
           end
         end
@@ -65,13 +80,17 @@ module RestAdapter
         # Fetches all detail information of this resource object and modifies its internal properties
         # according the fetched details.
         #
-        def fetch!(options={})
-          q = self.parse_query_options(options)
-          begin
-            uri = self.absolute_uri + q
-            options = self.class.get_basic_options
-            response = RestClient.get(uri, options)
+        def fetch!(params={})
+          options = params.dup
+          q = self.class.parse_query_options(options)
+          uri = self.absolute_uri + q
 
+          basic_options = self.class.get_basic_options
+          cleared_options = self.class.clear_options(options)
+          http_options = basic_options.merge(cleared_options)
+
+          begin
+            response = RestClient.get(uri, http_options)
             obj = self.class.deserialize(response)
             variables = obj.instance_variables
             variables.each do |variable|
@@ -80,6 +99,7 @@ module RestAdapter
             obj
           rescue Exception => e
             puts e
+            raise e if options[:raise]
             false
           end
         end
@@ -89,24 +109,23 @@ module RestAdapter
         # Pass modified objects  to the AuthProxy object and apply the save operation on
         # the AuthProxy object.
         #
-        def save(options={})
-          options = options.dup
-          # basic options
-          basic_options = ActiveRecord.get_basic_options
+        def save(params={})
+          options = params.dup
+
           method = [:put,:post].include?(options[:method]) ? options[:method] : :put # hack alert
+          response_handler = options[:response_handler].nil? ? self.class.get_default_response_handler : options[:response_handler]
 
-          response_handler = options[:response_handler].nil? ? ActiveRecord.get_default_response_handler : options[:response_handler]
-
-          options.delete(:method)
-          options.delete(:response_handler)
-          options = basic_options.merge(options)
+          basic_options = self.class.get_basic_options
+          cleared_options = self.class.clear_options(options)
+          http_options = basic_options.merge(cleared_options)
+          uri = self.create_absolute_uri
 
           begin
-            uri = self.create_absolute_uri
             serialized_object = self.serialize
-            RestClient.send(method, uri, serialized_object, options, &response_handler)
+            RestClient.send(method, uri, serialized_object, http_options, &response_handler)
           rescue Exception => e
             puts e
+            raise e if options[:raise]
             false
           end
         end
@@ -121,69 +140,65 @@ module RestAdapter
         # the AuthProxy object.
         #
         def delete(params={})
-          # basic options
-          options = {
-              accept: self.class.deserialize_format,
-              content_type: self.class.serialize_format
-          }
-          options = options.merge(params)
+          options = params.dup
+
+          basic_options = self.class.get_basic_options
+          cleared_options = self.class.clear_options(options)
+          http_options = basic_options.merge(cleared_options)
           uri = self.absolute_uri
+
           begin
-            response = RestClient.delete(uri, options)
+            response = RestClient.delete(uri, http_options)
             self.class.deserialize(response)
           rescue Exception => e
             puts e
+            raise e if options[:raise]
             false
           end
         end
       end
 
 
-
-
-
       module ClassMethods
 
         # Returns a resource object with the provided id.
         def retrieve(id, options={})
-          q = ActiveRecord.parse_query_options(options)
           options = options.dup
-          options.delete(:query)
-          basic_options = {
-              content_type: self.serialize_format,
-              accept: self.deserialize_format
-          }
 
-          basic_options = options.merge(basic_options)
+          q = self.parse_query_options(options)
+          uri = self.create_absolute_resource_uri(id) + q
+
+          basic_options = self.get_basic_options
+          cleared_options = self.clear_options(options)
+          http_options = basic_options.merge(cleared_options)
 
           begin
-            uri = self.create_absolute_resource_uri(id) + q
-            response = RestClient.get(uri,basic_options)
+            response = RestClient.get(uri,http_options)
             self.deserialize(response)
           rescue Exception => e
             puts e
+            raise e if options[:raise]
             false
           end
         end
 
 
         # Returns a collection of resource objects..
-        def all(params={})
-          # if filter is not set, use default
-          if params[:filter].nil?
-            params = params.merge({filter: ->(x) { true }})
-          end
+        def all(options={})
+          options = options.dup
 
-          basic_options = {
-              content_type: self.serialize_format,
-              accept: self.deserialize_format
-          }
+          q = self.parse_query_options(options)
+          uri = self.collection_uri + q
 
-          q = ActiveRecord.parse_query_options(params)
-          response = RestClient.get(self.collection_uri + q,basic_options)
-          filter = params[:filter]
+          filter = options[:filter].nil? ? ->(x) { true } : options[:filter] # if filter is not set, use default
+
+          basic_options = self.get_basic_options
+          cleared_options = self.clear_options(options)
+          http_options = basic_options.merge(cleared_options)
+
+          response = RestClient.get(uri,http_options)
           results = self.deserialize(response)
-          results = results.select { |item| filter.call(item) } #filter the results
+          results.select { |item| filter.call(item) } #filter the results
         end
 
       end
