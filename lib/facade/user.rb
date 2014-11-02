@@ -62,7 +62,7 @@ module Facade
       end
 
       if @auth_proxy.authorized? and @rails_user.valid? and @auth_proxy.save(@cc_user)
-        @auth_proxy = RestAdapter::AuthProxy.new username: @cc_user.username, password: @cc_user.password
+        @auth_proxy = RestAdapter::Proxy::Auth.new username: @cc_user.username, password: @cc_user.password
       end
     end
 
