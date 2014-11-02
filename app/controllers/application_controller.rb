@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   before_action :require_login
   helper_method :current_user
+  helper_method :auth_proxy
 
 
   private
@@ -34,7 +35,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  alias_method :auth_proxy, :current_user
+  def auth_proxy
+    user = current_user
+    user.auth_proxy
+  end
 
 
 end

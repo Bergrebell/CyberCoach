@@ -4,10 +4,12 @@ class TestSportSessionFacade < ActiveSupport::TestCase
 
 
   test "if creating a new sport session succeeds using create" do
+
     rails_user = ::User.new name: 'asarteam0'
     rails_user.save(validate: false)
     cc_user = Facade::User.authenticate username: 'asarteam0', password: 'scareface'
-    assert cc_user.authorized?
+    auth_proxy = cc_user.auth_proxy
+    assert auth_proxy.authorized?
     entry_hash = {
         :type =>  'Running',
         :course_length => 700,
@@ -20,12 +22,13 @@ class TestSportSessionFacade < ActiveSupport::TestCase
     }
 
     sport_session = Facade::SportSession.create(entry_hash)
-    assert sport_session.save
+    assert auth_proxy.save(sport_session)
 
     rails_sport_session = ::SportSession.find_by type: 'Running'
     pp rails_sport_session.cybercoach_uri
 
   end
+
 
 
   test "if creating a new object succeeds using new" do
@@ -34,7 +37,8 @@ class TestSportSessionFacade < ActiveSupport::TestCase
     rails_user.save(validate: false)
 
     user = Facade::User.authenticate username: 'asarteam0', password: 'scareface'
-    assert user.authorized?
+    auth_proxy = user.auth_proxy
+    assert auth_proxy.authorized?
     subscription = RestAdapter::Models::Subscription.retrieve sport: 'Running', user: user
     assert subscription
     entry_hash = {
@@ -54,12 +58,11 @@ class TestSportSessionFacade < ActiveSupport::TestCase
     hash = {
         rails_sport_session: ::SportSession.new(user_id: rails_user.id),
         type: 'Running',
-        cc_entry: cc_entry,
-        auth_proxy: user.auth_proxy
+        cc_entry: cc_entry
     }
 
     sport_session = Facade::SportSession.new(hash)
-    assert sport_session.save
+    assert auth_proxy.save(sport_session)
 
   end
 
