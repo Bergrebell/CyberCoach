@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141026170438) do
+ActiveRecord::Schema.define(version: 20141031225130) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
@@ -58,12 +58,15 @@ ActiveRecord::Schema.define(version: 20141026170438) do
     t.integer  "cybercoach_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "confirmed"
+    t.string   "cybercoach_uri"
   end
 
   create_table "users", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id"
   end
 
 end

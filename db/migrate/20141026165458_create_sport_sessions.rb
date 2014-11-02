@@ -3,7 +3,7 @@ class CreateSportSessions < ActiveRecord::Migration
     create_table :sport_sessions do |t|
       t.integer :user_id
       t.string :type
-      t.integer :cybercoach_id
+      t.string :cybercoach_uri
 
       t.timestamps
     end

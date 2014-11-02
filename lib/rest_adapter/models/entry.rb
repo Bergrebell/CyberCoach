@@ -42,6 +42,18 @@ module RestAdapter
         Soccer = 'entrysoccer'
       end
 
+      TypeLookup = {
+          'Running' => Type::Running,
+          'Boxing' => Type::Boxing,
+          'Cycling' => Type::Cycling,
+          'Soccer' => Type::Soccer,
+          'running' => Type::Running,
+          'boxing' => Type::Boxing,
+          'cycling' => Type::Cycling,
+          'soccer' => Type::Soccer
+      }
+
+
       def initialize(params={})
         super(params)
       end

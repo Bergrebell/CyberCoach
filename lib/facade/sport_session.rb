@@ -11,16 +11,16 @@ module Facade
     
     def self.create(params)
       # hidden dependencies
-      cc_sport = RestAdapter::Models::Sport.new name: params[:type]
       auth_proxy = params[:cc_user].auth_proxy
-      cc_subscription = RestAdapter::Models::Subscription.retrieve sport: cc_sport, user: params[:cc_user]
-      cc_entry = RestAdapter::Models::Entry.new params.merge(subscription: cc_subscription, :public_visible => RestAdapter::Privacy::Public)
-      rails_sport_session =  ::SportSession.new params[:user_id]
+      rails_user = ::User.find_by name: params[:cc_user].username
+      rails_sport_session =  ::SportSession.new user_id: rails_user.id, type: params[:type]
+      cc_subscription = RestAdapter::Models::Subscription.retrieve sport: params[:type], user: params[:cc_user]
+      cc_type = RestAdapter::Models::Entry::TypeLookup[params[:type]]
+      entry_hash = params.merge(subscription: cc_subscription, :public_visible => RestAdapter::Privacy::Public, type: cc_type)
+      cc_entry = RestAdapter::Models::Entry.new entry_hash
 
       # inject dependencies
-      self.new cc_entry: cc_entry, cc_user: cc_user,
-               cc_subscription: cc_subscription, rails_sport_session: rails_sport_session,
-               auth_proxy: auth_proxy
+      self.new cc_entry: cc_entry, rails_sport_session: rails_sport_session, auth_proxy: auth_proxy
     end
 
 
@@ -34,7 +34,7 @@ module Facade
       end
     end
 
-    def update
+    def update(params)
 
     end
 
