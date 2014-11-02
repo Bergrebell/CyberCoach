@@ -184,6 +184,9 @@ module Facade
     end
 
 
+
+
+
     def self.method_missing(method, *args, &block)
       begin
         RestAdapter::Models::User.send method, *args, &block

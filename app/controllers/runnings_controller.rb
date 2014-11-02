@@ -3,12 +3,21 @@ class RunningsController < ApplicationController
 
   # List all running sessions
   def index
-    @sessions = current_user.sport_sessions
+    @sessions = Facade::SportSession.where user_id: current_user.id # pretty cool hehehe...don't get used to it :-)
     @friends = current_user.friends
   end
 
   def new
     @running = Running.new
+  end
+
+
+  def edit
+    @running = Facade::SportSession.find_by id: params[:id]
+  end
+
+  def show
+    @running = Facade::SportSession.find_by id: params[:id]
   end
 
 
@@ -27,17 +36,25 @@ class RunningsController < ApplicationController
     end
   end
 
-  def show
 
+  def update
+    @running = Facade::SportSession.find_by id: params[:id]
+    entry_params = sport_session_params.merge({facade_user: current_user, type: 'Running'})
+    @running.update_attributes(entry_params)
+    if auth_proxy.update(@running)
+      redirect_to welcome_index_path, notice: 'User was successfully updated.'
+    else
+      render :edit
+    end
   end
 
-  def edit
-
-  end
 
   def destroy
 
   end
 
+  def sport_session_params
+    Hash[params[:sport_session].map {|k,v| [k.to_sym,v]}]
+  end
 
 end

@@ -58,6 +58,19 @@ module RestAdapter
       end
 
 
+      def update(object=nil)
+        return false if @invalid
+
+        if not object.nil? #if object is nil, apply the op on the subject.
+          object.save(@http_auth_header)
+        elsif not @real_subject.nil?
+          @real_subject.save(@http_auth_header)
+        else
+          raise 'AuthProxy does nothing'
+        end
+      end
+
+
       # Applies the delete operation on the object if provided, otherwise on the subject.
       #
       # Examples====
@@ -82,6 +95,12 @@ module RestAdapter
       def retrieve(params)
         @real_subject.retrieve(params,@http_auth_header)
       end
+
+
+      def all(params)
+        @real_subject.all(params,@http_auth_header)
+      end
+
 
 
       def self.inject_access(object)

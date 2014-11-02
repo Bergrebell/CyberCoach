@@ -97,12 +97,11 @@ module RestAdapter
 
       def save(params={})
         method = self.cc_id.nil? ? :post : :put
-
         response_handler = proc do |response, request, result|
-          return response.headers[:location]
+          return  method == :post ? response.headers[:location] : response.code == 200
         end
 
-        params = params.merge({method: method, deserialize: false, response_handler: response_handler})
+        params = params.merge({method: method, response_handler: response_handler})
         super(params)
       end
 
@@ -123,7 +122,7 @@ module RestAdapter
             user_partnership_id = parse_retrieve_params(params)
             "#{user_partnership_id}/#{id}"
           else
-            params.gsub(self.site,'')
+            params.dup.sub(self.site,'')
           end
           super(resource_id)
         end

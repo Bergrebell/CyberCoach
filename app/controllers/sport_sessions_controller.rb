@@ -9,5 +9,9 @@ class SportSessionsController < ApplicationController
     @session = Facade::SportSession.find_by id: params[:id]
   end
 
+  def edit
+    @session = Facade::SportSession.find_by id: params[:id]
+  end
+
 
 end

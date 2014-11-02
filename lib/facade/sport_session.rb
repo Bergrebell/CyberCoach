@@ -26,17 +26,34 @@ module Facade
 
 
     def save(params={})
-      if entry_uri = @cc_entry.save(params)
-        @rails_sport_session.cybercoach_uri = entry_uri
-        @rails_sport_session.save
-        entry_uri
-      else
-        false
+      begin
+        if entry_uri = @cc_entry.save(params)
+          @rails_sport_session.cybercoach_uri = entry_uri if entry_uri.is_a?(String)
+          @rails_sport_session.save
+          entry_uri
+        else
+          false
+        end
+      rescue
+
       end
     end
 
-    def update(params)
+    def update(params={})
+      @cc_entry.save(params)
+    end
 
+
+    def update_attributes(params)
+      cc_type = RestAdapter::Models::Entry::TypeLookup[params[:type]]
+      params.delete(:type)
+      begin
+      hash = params.merge(uri: @rails_sport_session.cybercoach_uri, type: cc_type, cc_id: @cc_entry.cc_id)
+      @cc_entry = RestAdapter::Models::Entry.new hash
+      rescue => e
+        # do nothing
+        raise e
+      end
     end
 
 
@@ -51,32 +68,51 @@ module Facade
     end
 
 
+    def errors
+      @rails_sport_session.errors
+    end
+
     def id
       @rails_sport_session.id
     end
 
     def cc_id
-      @cc_entry.id
+      @cc_entry.cc_id
     end
 
     def method_missing(method, *args, &block)
       begin
         @cc_entry.send method, *args, &block
       rescue
-        @rails_sport_session.send method, *args, &block
+        begin
+          @rails_sport_session.send method, *args, &block
+        rescue
+
+        end
       end
     end
 
 
     # map where, find etc from rails....good luck...it might bite you!!!!!
-    def self.method_missing(method, *args, &block)
-      result = ::SportSession.send method, *args, &block
+    def self.find_by(*args, &block)
+      result = ::SportSession.send :find_by, *args, &block
+      wrap(result)
+    end
+
+
+    def self.where(*args, &block)
+      result = ::SportSession.send :where, *args, &block
       case result
         when ::ActiveRecord::Relation
-          result.to_a.map {|r| wrap(r) }
+          result.map {|r| wrap(r) }
         else
           wrap(result)
       end
+    end
+
+
+    def self.method_missing(method, *args, &block)
+      ::SportSession.send method, *args, &block
     end
 
 

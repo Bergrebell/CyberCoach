@@ -1,7 +1,7 @@
 <p>
 
   <%= link_to "id #{@session.id}", action: 'show', id: @session.id %> <br>
-  date-created: <%= @session.date_created.strftime  '%Y %m %d, %T' %> <br>
+  date-created: <%= @session.date_created.try(:strftime,'%Y %m %d, %T') %> <br>
   type: <%= @session.type %> <br>
   uri: <%= @session.uri %> <br>
   comment: <%= @session.comment %> <br>
