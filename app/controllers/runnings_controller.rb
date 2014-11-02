@@ -3,10 +3,14 @@ class RunningsController < ApplicationController
 
   # List all running sessions
   def index
-    
+    @sessions = current_user.sport_sessions
+    @friends = current_user.friends
   end
 
-  def create
+  def new
+
+    # _params = params.merge({:type => 'Running', :user_id => current_user.id, :cc_user => current_user.cc_user})
+    # @running = Facade::SportSession.create(_params)
 
   end
 
@@ -21,5 +25,6 @@ class RunningsController < ApplicationController
   def destroy
 
   end
+
 
 end
