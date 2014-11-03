@@ -35,12 +35,6 @@ class TestUserFacade < ActiveSupport::TestCase
     assert user.delete
   end
 
-  test "wrap user object" do
-    user = Facade::User.wrap({username: 'asarteam0', password: 'scareface'})
-    assert_not_nil user
-    assert_equal 'asarteam0', user.username
-    assert_equal 'scareface', user.password
-  end
 
   # delegation tests
 

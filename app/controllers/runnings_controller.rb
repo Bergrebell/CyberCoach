@@ -23,10 +23,10 @@ class RunningsController < ApplicationController
 
   # POST /runnings
   def create
-    entry_params = params.merge({facade_user: current_user, type: 'Running'})
+    entry_params = params.merge({user: current_user, type: 'Running'})
     entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
-    @entry = Facade::SportSession.create entry_params
-    if auth_proxy.save(@entry)
+    @entry = Facade::SportSession.create(entry_params)
+    if @entry.save
       redirect_to runnings_url, notice: 'Running session successfully created'
     else
       flash[:notice] = 'Unable to create Running session'
@@ -37,9 +37,8 @@ class RunningsController < ApplicationController
 
   def update
     @running = Facade::SportSession.find_by id: params[:id]
-    entry_params = sport_session_params.merge({facade_user: current_user, type: 'Running'})
-    @running.update_attributes(entry_params)
-    if auth_proxy.update(@running)
+    entry_params = sport_session_params.merge({user: current_user, type: 'Running'})
+    if @running.update(entry_params)
       redirect_to runnings_url, notice: 'Running session successfully updated'
     else
       render :edit

@@ -39,7 +39,7 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     # create a cyber coach user
-    @user = Facade::User.create user_params
+    @user = Facade::User.create(user_params)
     if @user.save # if validation is ok, try to create the user
       # auto login, after registration
       session[:username] = @user.username

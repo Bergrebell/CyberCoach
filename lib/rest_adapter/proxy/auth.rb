@@ -3,7 +3,8 @@ module RestAdapter
     # This class is responsible for providing access for authentication protected operations.
     # An operation like save, update or delete applied on a object needs authentication.
     # To hide the details and to provide a common interface you can use a AuthProxy object.
-    class Auth
+
+    class Auth < Proxy::BaseAuth
 
       attr_reader :auth_header
       attr_reader :http_auth_header
@@ -99,18 +100,6 @@ module RestAdapter
 
       def all(params)
         @real_subject.all(params,@http_auth_header)
-      end
-
-
-
-      def self.inject_access(object)
-        object.auth_proxy = self
-        object
-      end
-
-
-      def self.wrap(object)
-        self.new subject: object, username: @username, password: @password
       end
 
 

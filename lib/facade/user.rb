@@ -4,12 +4,30 @@ module Facade
 
     # instance methods
 
-    attr_accessor :cc_user, :rails_user, :auth_proxy
-
     def initialize(params={})
       @cc_user = params[:cc_user]
       @auth_proxy = params[:auth_proxy]
       @rails_user = params[:rails_user]
+    end
+
+
+    def id
+      @rails_user.id
+    end
+
+
+    def auth_proxy
+      @auth_proxy
+    end
+
+
+    def cc_model
+      @cc_user
+    end
+
+
+    def rails_model
+      @rails_user
     end
 
 
@@ -19,14 +37,6 @@ module Facade
       cc_user = RestAdapter::Models::User.new(params)
       auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password
       rails_user = ::User.new params.merge(name: params[:username]) # please change the rails model!!!
-      self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
-    end
-
-    # factory method
-    def self.wrap(params={})
-      cc_user = RestAdapter::Models::User.authenticate(params)
-      auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password
-      rails_user = ::User.find_by name: cc_user.username
       self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
     end
 
@@ -42,15 +52,20 @@ module Facade
       return false if not @cc_user.save
 
       begin
-        RestAdapter::Models::Sport::Types.each do |sport|
-          hash = {user: @cc_user, sport: sport, public_visible: RestAdapter::Privacy::Public}
-          subscription = RestAdapter::Models::Subscription.new(hash)
-          raise Error, 'Could not create subscription!' if not @auth_proxy.save(subscription)
-        end
+        self.class.subscribe_user_to_all_subscriptions(@cc_user,@auth_proxy)
         true
       rescue
-        @rails_user.delete
+        @rails_user.destroy
         false
+      end
+    end
+
+
+    def self.subscribe_user_to_all_subscriptions(cc_user,auth_proxy)
+      RestAdapter::Models::Sport::Types.each do |sport|
+        hash = {user: cc_user, sport: sport, public_visible: RestAdapter::Privacy::Public}
+        subscription = RestAdapter::Models::Subscription.new(hash)
+        raise Error, 'Could not create subscription!' if not auth_proxy.save(subscription)
       end
     end
 
@@ -90,9 +105,6 @@ module Facade
       end
     end
 
-    def id
-      @rails_user.id
-    end
 
     def friend_proposals(users)
       @cc_user.fetch! #update user and also its list of partnerships
@@ -166,13 +178,13 @@ module Facade
         auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password, subject: cc_user
         rails_user = if (check_user = ::User.find_by name: cc_user.username)
                        check_user
-                     else
+                     else # hack alert: if user does not exist in the database just create the user
                        new_user = ::User.new name: cc_user.username
-                       new_user.save(:validate => false)
+                       new_user.save(:validate => false) #ignore rails model validation
                        new_user
-                      end
-
-        facade_user = self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
+                     end
+        self.subscribe_user_to_all_subscriptions(cc_user,auth_proxy) # hack alert: always subscribe user to all sport subscriptions
+        self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
       else
         false
       end
@@ -182,9 +194,6 @@ module Facade
     def self.username_available?(username)
       RestAdapter::Models::User.username_available?(username)
     end
-
-
-
 
 
     def self.method_missing(method, *args, &block)
