@@ -21,6 +21,7 @@ class SessionController < ApplicationController
   end
 
   def logout
+    user = ObjectStore::Store.get(session[:username])
     ObjectStore::Store.remove(session[:username])
     session[:username] = nil
     session[:password] = nil

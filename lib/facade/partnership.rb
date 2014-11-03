@@ -9,6 +9,14 @@ module Facade
       @partnership = params[:partnership]
     end
 
+    def self.facade_for_1
+      RestAdapter::Models::Partnership
+    end
+
+    def self.facade_for_2
+      nil
+    end
+
     def id
       @partnership.id
     end
@@ -27,19 +35,24 @@ module Facade
 
     # factory method
     def self.create(params)
-      auth_proxy = get_auth_proxy params
-      params[:first_user] = params[:first_user].cc_model  if params[:first_user].is_a?(Facade::BaseFacade)
-      params[:second_user] = params[:second_user].cc_model  if params[:second_user].is_a?(Facade::BaseFacade)
-      partnership = RestAdapter::Models::Partnership.new params
-
+      raise 'not a facade object' if not params[:confirmer].is_a?(Facade::BaseFacade)
+      raise 'not a facade object' if not params[:proposer].is_a?(Facade::BaseFacade)
+      auth_proxy = params[:proposer].auth_proxy
+      partnership_hash = params.dup
+      partnership_hash = partnership_hash.merge({
+          first_user: params[:proposer].cc_model,
+          second_user: params[:confirmer].cc_model,
+          public_visible: RestAdapter::Privacy::Public})
+      partnership = RestAdapter::Models::Partnership.new partnership_hash
       self.new auth_proxy: auth_proxy, partnership: partnership
     end
 
 
     def self.retrieve(params)
-      auth_proxy = get_auth_proxy params
-      auth_header = {authorization: auth_proxy.auth_header}
-      partnership = RestAdapter::Models::Partnership.retrieve(params, auth_header)
+      auth_proxy = params[:confirmer].auth_proxy
+      auth_header = auth_proxy.http_auth_header
+      retrieve_params = { first_user: params[:confirmer], second_user: params[:proposer] }
+      partnership = RestAdapter::Models::Partnership.retrieve(retrieve_params, auth_header)
 
       self.new auth_proxy: auth_proxy, partnership: partnership
     end
@@ -62,26 +75,6 @@ module Facade
       end
     end
 
-
-    def self.method_missing(method, *args, &block)
-      RestAdapter::Models::Partnership.send method, *args, &block
-    end
-
-    def method_missing(method, *args, &block)
-      @partnership.send method, *args, &block
-    end
-
-
-    private
-    def self.get_auth_proxy(params)
-      if params[:first_user].is_a?(Facade::BaseFacade)
-        params[:first_user].auth_proxy
-      elsif params[:second_user].is_a?(Facade::BaseFacade)
-        params[:second_user].auth_proxy
-      else
-        raise Error, 'None of the provided user is a facade user!'
-      end
-    end
   end
 
 end

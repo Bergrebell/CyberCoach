@@ -19,10 +19,10 @@ class FriendsController < ApplicationController
   # POST
   #
   def confirm
-    other_user = Facade::User::retrieve params[:username]
+    proposer = Facade::User.retrieve params[:username]
     partnership = Facade::Partnership.retrieve(
-      first_user: other_user,
-      second_user: current_user,
+      confirmer: current_user,
+      proposer: proposer,
     )
     if partnership.present?
       if partnership.save
@@ -39,12 +39,12 @@ class FriendsController < ApplicationController
   # POST
   #
   def create
-    other_user = Facade::User::retrieve params[:username]
+    other_user = Facade::User.retrieve params[:username]
 
+    raise 'errorror' if current_user.is_a?(RestAdapter::Models::User)
     partnership = Facade::Partnership.create(
-        first_user: current_user,
-        second_user: other_user,
-        public_visible: RestAdapter::Privacy::Public
+        proposer: current_user,
+        confirmer: other_user
     )
 
     respond_to do |format|

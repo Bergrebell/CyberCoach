@@ -35,10 +35,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def auth_proxy
-    user = current_user
-    user.auth_proxy
-  end
 
 
 end

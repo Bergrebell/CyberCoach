@@ -18,14 +18,6 @@ class User < ActiveRecord::Base
     @username
   end
 
-  def password=(param)
-    @password = param
-  end
-
-  def password
-    @password
-  end
-
   def password_confirmation
     @password_confirmation
   end

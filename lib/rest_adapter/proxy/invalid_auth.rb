@@ -24,6 +24,14 @@ module RestAdapter
         false
       end
 
+      def username
+        'null user'
+      end
+
+      def http_auth_header
+        {}
+      end
+
     end
 
   end

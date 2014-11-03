@@ -47,7 +47,8 @@ class RunningsController < ApplicationController
 
 
   def destroy
-
+    @running = Facade::SportSession.find_by id: params[:id]
+    @running.delete
   end
 
   def sport_session_params

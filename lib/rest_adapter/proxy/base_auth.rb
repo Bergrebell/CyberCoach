@@ -8,17 +8,26 @@ module RestAdapter
         raise 'Not implemented!'
       end
 
-      def save(params={})
+      def save(params=nil)
         raise 'Not implemented!'
       end
 
 
-      def update(params={})
+      def update(params=nil)
         raise 'Not implemented!'
       end
 
 
-      def delete(params={})
+      def delete(params=nil)
+        raise 'Not implemented!'
+      end
+
+      def username
+        raise 'Not implemented!'
+      end
+
+
+      def http_auth_header
         raise 'Not implemented!'
       end
 

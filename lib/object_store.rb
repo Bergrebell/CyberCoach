@@ -15,6 +15,8 @@ module ObjectStore
     end
 
     def remove(key)
+      object = @store[key]
+      object.clean_up if defined? object.cleanup
       @store.delete(key)
     end
   end

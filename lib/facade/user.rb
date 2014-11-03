@@ -10,6 +10,13 @@ module Facade
       @rails_user = params[:rails_user]
     end
 
+    def self.facade_for_2
+      ::User
+    end
+
+    def self.facade_for_1
+      RestAdapter::Models::User
+    end
 
     def id
       @rails_user.id
@@ -36,7 +43,7 @@ module Facade
       params = params.merge(public_visible: RestAdapter::Privacy::Public) # always use public
       cc_user = RestAdapter::Models::User.new(params)
       auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password
-      rails_user = ::User.new params.merge(name: params[:username]) # please change the rails model!!!
+      rails_user = ::User.new params.merge(name: params[:username], password: params[:password]) # please change the rails model!!!
       self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
     end
 
@@ -70,13 +77,19 @@ module Facade
     end
 
 
-    def update(params=nil)
-      if not params.nil?
-        @cc_user = RestAdapter::Models::User.new params
-        @rails_user = ::User.new params
-      end
+    def update(params={})
+      @cc_user.fetch!
+      user_hash = @cc_user.as_hash(:included_keys => [:password,:real_name,:username,:email])
+      new_user_hash = user_hash.merge(params)
+      dummy_rails_user = ::User.new(new_user_hash.dup)
+      new_user_hash.delete(:username)
+      @cc_user = RestAdapter::Models::User.new new_user_hash
 
-      if @auth_proxy.authorized? and @rails_user.valid? and @auth_proxy.save(@cc_user)
+      if @auth_proxy.authorized? and dummy_rails_user.valid? and @auth_proxy.save(@cc_user)
+        require 'pp'
+        pp new_user_hash
+        @rails_user.assign_attributes(new_user_hash)
+        @rails_user.save(validate: false)
         @auth_proxy = RestAdapter::Proxy::Auth.new username: @cc_user.username, password: @cc_user.password
       end
     end
@@ -103,6 +116,12 @@ module Facade
       rescue
         false
       end
+    end
+
+
+    # clean up the object store when users logs out..
+    def clean_up
+      ObjectStore::Store.remove([@cc_user.username,:detailed_partnerships])
     end
 
 
@@ -163,28 +182,24 @@ module Facade
     end
 
 
-    def method_missing(method, *args, &block)
-      begin
-        @cc_user.send method, *args, &block
-      rescue
-        @rails_user.send method, *args, &block
-      end
-    end
-
     # class methods
 
     def self.authenticate(params)
       if cc_user = RestAdapter::Models::User.authenticate(params)
-        auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password, subject: cc_user
-        rails_user = if (check_user = ::User.find_by name: cc_user.username)
+        rails_user = if (check_user = ::User.find_by name: params[:username])
                        check_user
                      else # hack alert: if user does not exist in the database just create the user
-                       new_user = ::User.new name: cc_user.username
+                       new_user = ::User.new name: params[:username], password: params[:password]
                        new_user.save(:validate => false) #ignore rails model validation
                        new_user
                      end
-        self.subscribe_user_to_all_subscriptions(cc_user,auth_proxy) # hack alert: always subscribe user to all sport subscriptions
-        self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
+        auth_proxy = RestAdapter::Proxy::RailsAuth.new user_id: rails_user.id
+        begin # if subscription fails...
+          self.subscribe_user_to_all_subscriptions(cc_user, auth_proxy) # hack alert: always subscribe user to all sport subscriptions
+          self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
+        rescue
+          false
+        end
       else
         false
       end
@@ -195,14 +210,19 @@ module Facade
       RestAdapter::Models::User.username_available?(username)
     end
 
-
-    def self.method_missing(method, *args, &block)
-      begin
-        RestAdapter::Models::User.send method, *args, &block
-      rescue
-        ::User.send method, *args, &block
-      end
+    def self.retrieve(params)
+      user = RestAdapter::Models::User.retrieve params
+      self.new cc_user: user, auth_proxy: RestAdapter::Proxy::InvalidAuth.new
     end
+
+
+
+    def self.wrap(rails_user)
+      cc_user = RestAdapter::Models::User.new username: rails_user.name
+      auth_proxy = RestAdapter::Proxy::RailsAuth.new user_id: rails_user.id
+      self.new rails_user: rails_user, cc_user: cc_user, auth_proxy: auth_proxy, rails_user: ::User.new
+    end
+
 
   end
 

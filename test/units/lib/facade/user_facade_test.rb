@@ -10,15 +10,15 @@ class TestUserFacade < ActiveSupport::TestCase
     rails_user.save(validate: false) # ignore rails validators
 
     user = Facade::User.find_by(name: 'alex')
-    assert user
-    puts user.name
+    assert user.is_a?(Facade::User)
+    assert_not_nil user.real_name
 
   end
 
   # facade specific methods
 
   test "create and delete a new user" do
-    return true
+
     hash = {
         username: 'mydummy5',
         password: 'mydummy5',
@@ -32,7 +32,50 @@ class TestUserFacade < ActiveSupport::TestCase
     assert user.valid?
     assert user.save
     sleep 3
-    assert user.delete
+    another_user = Facade::User.find_by name: 'mydummy5'
+    assert another_user.is_a?(Facade::User)
+    assert another_user.delete
+
+    assert Facade::User.authenticate(username: 'mydummy5', password: 'mydummy5') == false
+
+  end
+
+
+  test "update a user" do
+
+    if Facade::User.authenticate(username: 'mydummy11', password: 'mydummy11') == false
+      hash = {
+          username: 'mydummy11',
+          password: 'mydummy11',
+          email: 'mydummy@mydummy.com',
+          real_name: 'my dummy dummy',
+          password_confirmation: 'mydummy11',
+          public_visible: RestAdapter::Privacy::Public
+      }
+
+      user = Facade::User.create hash
+      assert user.valid?
+      assert user.save
+      sleep 5
+    else
+      assert Facade::User.authenticate(username: 'mydummy11', password: 'mydummy11')
+    end
+
+    another_user = Facade::User.find_by name: 'mydummy11'
+    assert another_user.is_a?(Facade::User)
+    assert another_user.update(email: 'newemail@test.com',password: 'mydummy11')
+    sleep 1.5
+
+    second_user =  Facade::User.find_by name: 'mydummy11'
+    assert second_user.email == 'newemail@test.com'
+    assert second_user.update(email: 'mydummy@mydummy.com',password: 'mydummy11')
+
+    sleep 1.5
+
+    third_user =  Facade::User.find_by name: 'mydummy11'
+    assert third_user.email == 'mydummy@mydummy.com'
+
+
   end
 
 

@@ -31,12 +31,20 @@ module Facade
       # preconditions
       raise Error, ':cc_entry is missing or wrong type!' if params[:cc_entry].nil? or not params[:cc_entry].is_a?(RestAdapter::Models::Entry)
       raise Error, ':rails_sport_session is missing or wrong type!' if params[:rails_sport_session].nil? or not params[:rails_sport_session].is_a?(::SportSession)
-      raise Error, 'RestAdapter::Proxy::Auth is missing or wrong type!' if params[:auth_proxy].nil? or not params[:auth_proxy].is_a?(RestAdapter::Proxy::BaseAuth)
 
       @cc_entry = params[:cc_entry]
       @rails_sport_session = params[:rails_sport_session]
       @auth_proxy =  params[:auth_proxy]
     end
+
+    def self.facade_for_2
+      ::SportSession
+    end
+
+    def self.facade_for_1
+      nil
+    end
+
 
 
     def id
@@ -91,7 +99,7 @@ module Facade
     def save(params={})
       begin
         if entry_uri = @auth_proxy.save(@cc_entry)
-          raise Error if entry_uri.nil? or entry_uri.empty? or entry_uri.size==1
+          raise Error if entry_uri.nil? or entry_uri.empty? or entry_uri.size==1 # hack alert: is this a higgs bugson???
           @rails_sport_session.cybercoach_uri = entry_uri
           @rails_sport_session.save
           entry_uri
@@ -104,12 +112,8 @@ module Facade
     end
 
     def update(params={})
-      # preconditions
-      raise 'Facade::User is missing!' if params[:user].nil?
-      raise 'Facade::User has no valid auth proxy. auth proxy is nil!' if params[:user].auth_proxy.nil?
-      auth_proxy = params[:user].auth_proxy
       update_attributes(params)
-      auth_proxy.save(@cc_entry)
+      @auth_proxy.save(@cc_entry)
     end
 
 
@@ -127,7 +131,7 @@ module Facade
 
 
     def delete
-
+      @auth_proxy.delete(@cc_entry)
     end
 
 
@@ -136,50 +140,10 @@ module Facade
     end
 
 
-
-    def method_missing(method, *args, &block)
-      begin
-        @cc_entry.send method, *args, &block
-      rescue
-        begin
-          @rails_sport_session.send method, *args, &block
-        rescue
-
-        end
-      end
-    end
-
-
-    # map where, find etc from rails....good luck...it might bite you!!!!!
-    def self.find_by(*args, &block)
-      result = ::SportSession.send :find_by, *args, &block
-      wrap(result)
-    end
-
-
-    def self.where(*args, &block)
-      result = ::SportSession.send :where, *args, &block
-      case result
-        when ::ActiveRecord::Relation
-          result.map {|r| wrap(r) }
-        else
-          wrap(result)
-      end
-    end
-
-
-
-
-    def self.method_missing(method, *args, &block)
-      ::SportSession.send method, *args, &block
-    end
-
-
-    private
-
-    def self.wrap(sport_session)
-      cc_entry = RestAdapter::Models::Entry.retrieve sport_session.cybercoach_uri
-      self.new rails_sport_session: sport_session, cc_entry: cc_entry, auth_proxy: RestAdapter::Proxy::InvalidAuth.new
+    def self.wrap(rails_sport_session)
+      cc_entry = RestAdapter::Models::Entry.retrieve rails_sport_session.cybercoach_uri
+      auth_proxy = RestAdapter::Proxy::RailsAuth.new user_id: rails_sport_session.user_id
+      self.new rails_sport_session: rails_sport_session, cc_entry: cc_entry, auth_proxy: auth_proxy
     end
 
   end

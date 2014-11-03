@@ -195,8 +195,6 @@ class TestEntryAdapter  < ActiveSupport::TestCase
     auth_proxy = RestAdapter::Proxy::Auth.new username: 'asarteam0', password: 'scareface'
     user = RestAdapter::Models::User.retrieve 'asarteam0'
 
-    auth_header = auth_proxy.auth_header
-    http_header = {authorization: auth_header}
     subscription = RestAdapter::Models::Subscription.retrieve('/users/asarteam0/Running')
 
     assert subscription

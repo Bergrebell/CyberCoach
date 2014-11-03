@@ -44,6 +44,61 @@ module Facade
       raise 'Not implemented!'
     end
 
+    def self.facade_for_1
+      raise 'Not implemented!'
+    end
+
+    def self.facade_for_2
+      raise 'Not implemented!'
+    end
+
+
+    def self.wrap(hide_object_behind_facade)
+      raise 'Not implemented!'
+    end
+
+
+    # map where, find etc from rails....good luck...it might bite you!!!!!
+    def self.find_by(*args, &block)
+      result = self.facade_for_2.send :find_by, *args, &block
+      wrap(result)
+    end
+
+
+    def self.where(*args, &block)
+      result = self.facade_for_2.send :where, *args, &block
+      case result
+        when ::ActiveRecord::Relation
+          result.map {|r| wrap(r) }
+        else
+          wrap(result)
+      end
+    end
+
+
+    def self.method_missing(method, *args, &block)
+      begin
+        facade_for_1.send method, *args, &block
+      rescue
+        facade_for_2.send method, *args, &block if not facade_for_2.nil?
+      end
+    end
+
+
+    def method_missing(method, *args, &block)
+      begin
+        cc_model.send method, *args, &block
+      rescue
+        rails_model.send method, *args, &block
+      end
+    end
+
+
+    def clean_up
+
+    end
+
+
   end
 
 end
