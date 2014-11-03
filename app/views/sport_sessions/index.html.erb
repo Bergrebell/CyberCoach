@@ -15,6 +15,9 @@
       number of rounds <%= session.number_of_rounds %> <br>
       entry-location <%= session.entry_location %> <br>
       entry-duration <%= session.entry_duration %> <br>
+      <!--- I'm really patent, but this time ... i just want to pass a god damn id...--->
+      <%= link_to 'Destroy', (sport_sessions_path + '/' + session.id.to_s), method: :delete   %>
+
 
     </p>
 <% end %>

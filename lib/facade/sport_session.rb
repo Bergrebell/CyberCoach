@@ -29,8 +29,8 @@ module Facade
 
     def initialize(params={})
       # preconditions
-      raise Error, ':cc_entry is missing or wrong type!' if params[:cc_entry].nil? or not params[:cc_entry].is_a?(RestAdapter::Models::Entry)
-      raise Error, ':rails_sport_session is missing or wrong type!' if params[:rails_sport_session].nil? or not params[:rails_sport_session].is_a?(::SportSession)
+      raise ':cc_entry is missing or wrong type!' if params[:cc_entry].nil? or not params[:cc_entry].is_a?(RestAdapter::Models::Entry)
+      raise ':rails_sport_session is missing or wrong type!' if params[:rails_sport_session].nil? or not params[:rails_sport_session].is_a?(::SportSession)
 
       @cc_entry = params[:cc_entry]
       @rails_sport_session = params[:rails_sport_session]
@@ -131,7 +131,9 @@ module Facade
 
 
     def delete
-      @auth_proxy.delete(@cc_entry)
+      @rails_sport_session.destroy
+      @auth_proxy.delete(@cc_entry) # if it fails i don't care....
+      true
     end
 
 

@@ -1,9 +1,14 @@
 Rails.application.routes.draw do
 
-  get 'friends/index'
+  get 'runnings/index'
+  post 'runnings/destroy'
+
   get 'sport_sessions/index'
   get 'sport_sessions/show'
   get 'sport_sessions/edit'
+  post 'sport_sessions/destroy'
+
+  get 'friends/index'
   post 'friends/confirm'
   post 'friends/create'
 

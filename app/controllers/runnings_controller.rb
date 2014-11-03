@@ -3,7 +3,7 @@ class RunningsController < ApplicationController
 
   # List all running sessions
   def index
-    @sessions = Facade::SportSession.where user_id: current_user.id # pretty cool hehehe...don't get used to it :-)
+    @sessions = Facade::SportSession.where(user_id: current_user.id, type: 'Running') # pretty cool hehehe...don't get used to it :-)
     @friends = current_user.friends
   end
 
@@ -47,8 +47,12 @@ class RunningsController < ApplicationController
 
 
   def destroy
-    @running = Facade::SportSession.find_by id: params[:id]
-    @running.delete
+    @session = Facade::SportSession.find_by id: params[:id]
+    if @session.delete
+      redirect_to sport_sessions_index_path, notice: 'Sport session was successfully destroyed.'
+    else
+      redirect_to sport_sessions_index_path, notice: 'Sport session cannot be removed.'
+    end
   end
 
   def sport_session_params
