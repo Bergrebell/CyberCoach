@@ -124,6 +124,10 @@ module Facade
       ObjectStore::Store.remove([@cc_user.username,:detailed_partnerships])
     end
 
+    def partnerships
+      @cc_user.partnerships.map { |p|  Facade::Partnership.new partnership: p, auth_proxy: @auth_proxy}
+    end
+
 
     def friend_proposals(users)
       @cc_user.fetch! #update user and also its list of partnerships

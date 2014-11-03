@@ -51,7 +51,7 @@ module RestAdapter
 
       # Returns true if the given user has confirmed this partnership.
       def confirmed_by?(user)
-        username = user.kind_of?(User) ? user.username : user # support usernames and user object
+        username = !user.is_a?(String) ? user.username : user # support usernames and user object
 
         # check if confirmed lookup table is present
         if self.confirmed.nil?

@@ -61,6 +61,7 @@ module Facade
     def save(params={})
       if @auth_proxy.save(@partnership)
         ObjectStore::Store.remove([@auth_proxy.username,:detailed_partnerships])
+        true
       else
         false
       end
@@ -70,6 +71,7 @@ module Facade
     def delete(params={})
       if @auth_proxy.delete(@partnership)
         ObjectStore::Store.remove([@auth_proxy.username, :detailed_partnerships])
+        true
       else
         false
       end

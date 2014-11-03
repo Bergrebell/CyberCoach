@@ -69,7 +69,7 @@ module Facade
       result = self.facade_for_2.send :where, *args, &block
       case result
         when ::ActiveRecord::Relation
-          result.map {|r| wrap(r) }
+          result.map {|r| wrap(r) }.select {|r| !r.nil? }
         else
           wrap(result)
       end
