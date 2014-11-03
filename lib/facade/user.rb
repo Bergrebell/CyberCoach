@@ -188,7 +188,7 @@ module Facade
 
     # class methods
 
-    def self.authenticate(params)
+    def self.authenticate(params) # here might be a higgs bugson
       if cc_user = RestAdapter::Models::User.authenticate(params)
         rails_user = if (check_user = ::User.find_by name: params[:username])
                        check_user
