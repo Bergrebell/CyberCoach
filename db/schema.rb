@@ -55,18 +55,15 @@ ActiveRecord::Schema.define(version: 20141103092455) do
   create_table "sport_sessions", force: true do |t|
     t.integer  "user_id"
     t.string   "type"
-    t.integer  "cybercoach_id"
+    t.string   "cybercoach_uri"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "confirmed"
-    t.string   "cybercoach_uri"
   end
 
   create_table "users", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "user_id"
     t.string   "password"
   end
 
