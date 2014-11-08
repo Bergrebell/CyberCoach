@@ -1,0 +1,3 @@
+class Cycling < SportSession
+
+end
