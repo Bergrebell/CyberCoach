@@ -15,7 +15,7 @@ Select Sport Session: <% @item_paths = {"Running" => new_running_path, "Cycling"
 <% @sessions.each do |session| %>
 
     <p>
-      <%= link_to "id #{session.id}", action: 'show', id: session.id %> <br>
+      <%= link_to "id #{session.id}", sport_session_path(session) %> <br>
       date-created: <%= session.date_created.try(:strftime, "%Y %m %d, %T") %> <br>
       type: <%= session.type %> <br>
       uri: <%= session.uri %> <br>
@@ -25,9 +25,8 @@ Select Sport Session: <% @item_paths = {"Running" => new_running_path, "Cycling"
       number of rounds <%= session.number_of_rounds %> <br>
       entry-location <%= session.entry_location %> <br>
       entry-duration <%= session.entry_duration %> <br>
-      <!--- I'm really patient, but this time ... i just want to pass a god damn id...--->
-      <%= link_to 'Destroy', (sport_sessions_path + '/' + session.id.to_s), method: :delete   %>
 
+      <%= link_to 'Destroy', sport_session_path(session), method: :delete   %>
 
     </p>
 <% end %>
