@@ -72,14 +72,18 @@ module RestAdapter
       # open eigenclass
       class << self
 
-        # Authenticates a user against the cyber coach webservice.
-        # It uses a hash as argument with the following properties:
-        # params = {
-        #           username: username,
-        #           password: password
-        # }
-        # Remark: http://stackoverflow.com/questions/22978704/object-stored-in-rails-session-becomes-a-string
-        # God dammit, rails cannot store objects in a session variable...
+        # This class method authenticates a user against the CyberCoach webservice.
+        # Returns a RestAdapter::Models::User user object if authentication succeeds otherwise false.
+        #
+        # ==== Attributes
+        # The params hash accepts the following properties:
+        #
+        # * +username+        - username
+        # * +password+        - password
+        #
+        # ==== Example
+        # RestAdapter::Models::User.authenticate username: 'alex', password: 'test'
+        #   => RestAdapter::Models::User
         #
         def authenticate(params)
           begin
