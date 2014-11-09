@@ -1,0 +1,3 @@
+class AttributeValidator < Validator
+
+end
