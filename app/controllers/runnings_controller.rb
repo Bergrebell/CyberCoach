@@ -3,7 +3,7 @@ class RunningsController < ApplicationController
 
   # List all running sessions
   def index
-    @sessions = Facade::SportSession.where(user_id: current_user.id, type: 'Running') # pretty cool hehehe...don't get used to it :-)
+    @runnings = Facade::SportSession.where(user_id: current_user.id, type: 'Running')
     @friends = current_user.friends
   end
 
