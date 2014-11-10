@@ -32,6 +32,8 @@ Rails.application.routes.draw do
 
   resources :boxings
 
+  resources :soccers
+
   resources :sport_sessions
 
   # The priority is based upon order of creation: first created -> highest priority.
