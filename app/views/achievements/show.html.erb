@@ -11,9 +11,20 @@
 </p>
 
 <p>
-  <strong>Category:</strong>
-  <%= @achievement.category_id %>
+  <strong>Sport:</strong>
+  <%= @achievement.sport.title %>
 </p>
+
+<p>
+  <strong>Validator:</strong>
+  <%= @achievement.validator.type %>
+</p>
+
+<p>
+  <strong>Validator:</strong>
+  <%= @achievement.rules %>
+</p>
+
 
 <%= link_to 'Edit', edit_achievement_path(@achievement) %> |
 <%= link_to 'Back', achievements_path %>

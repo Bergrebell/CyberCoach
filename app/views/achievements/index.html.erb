@@ -5,7 +5,9 @@
     <tr>
       <th>Title</th>
       <th>Points</th>
-      <th>Category</th>
+      <th>Sport</th>
+      <th>Rules</th>
+      <th>Validator</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -15,7 +17,9 @@
       <tr>
         <td><%= achievement.title %></td>
         <td><%= achievement.points %></td>
-        <td><%= achievement.category_id %></td>
+        <td><%= achievement.sport.title %></td>
+        <td><%= achievement.rules %></td>
+        <td><%= achievement.validator.type %></td>
         <td><%= link_to 'Show', achievement %></td>
         <td><%= link_to 'Edit', edit_achievement_path(achievement) %></td>
         <td><%= link_to 'Destroy', achievement, method: :delete, data: { confirm: 'Are you sure?' } %></td>
