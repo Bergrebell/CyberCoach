@@ -8,16 +8,16 @@ class BoxingsController < ApplicationController
   end
 
   def new
-
+    @boxing = Facade::SportSession.create(user: current_user, type: 'Boxing')
   end
 
 
   def edit
-    @running = Facade::SportSession.find_by id: params[:id]
+    @boxing = Facade::SportSession.find_by id: params[:id]
   end
 
   def show
-    @running = Facade::SportSession.find_by id: params[:id]
+    @boxing = Facade::SportSession.find_by id: params[:id]
   end
 
 
@@ -36,9 +36,9 @@ class BoxingsController < ApplicationController
 
 
   def update
-    @running = Facade::SportSession.find_by id: params[:id]
+    @boxing = Facade::SportSession.find_by id: params[:id]
     entry_params = sport_session_params.merge({user: current_user, type: 'Boxing'})
-    if @running.update(entry_params)
+    if @boxing.update(entry_params)
       redirect_to boxings_url, notice: 'Boxing session successfully updated'
     else
       render :edit

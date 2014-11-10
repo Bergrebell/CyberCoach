@@ -1,0 +1,17 @@
+<h1>Listing soccer sessions</h1>
+
+<% @soccers.each do |soccer| %>
+    <p>
+      <%= link_to "id #{soccer.id}", action: 'show', id: soccer.id %> <br>
+      date-created: <%= soccer.date_created.try(:strftime, "%Y %m %d, %T") %> <br>
+      type: <%= soccer.type %> <br>
+      uri: <%= soccer.uri %> <br>
+      uri: <%= soccer.uri %> <br>
+      comment: <%= soccer.comment %> <br>
+      entry-location <%= soccer.entry_location %> <br>
+      entry-duration <%= soccer.entry_duration %> <br>
+      <!--- I'm really patient, but this time ... i just want to pass a god damn id...--->
+      <%= link_to 'Destroy', soccer_path(soccer), method: :delete   %>
+    </p>
+<% end %>
+

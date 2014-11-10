@@ -23,7 +23,7 @@ module RestAdapter
                              :courselength => :course_length,
                              :coursetype => :course_type,
                              :bicycletype => :bicycle_type,
-                             :round_duration => :round_duration,
+                             :roundduration => :round_duration,
                              :numberofrounds => :number_of_rounds
 
       serialize_properties :comment, :track, :entry_date, :entry_location, :entry_duration, :public_visible,
