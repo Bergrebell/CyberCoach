@@ -2,8 +2,24 @@ module Facade
 
   class User < Facade::BaseFacade
 
-    # instance methods
 
+    # Creates a user for the rails application using the provided dependencies.
+    # Returns a Facade::User user object.
+    #
+    # DO NOT USE THIS CONSTRUCTOR in the Rails App use Facade::User.create instead!
+    #
+    # ==== Attributes
+    # The params hash accepts the following properties:
+    #
+    # * +cc_user+                     - cc_user of type RestAdapter::Models::User
+    # * +auth_proxy+                  - auth_proxy of type RestAdapter::Proxy::BaseAuth
+    # * +rails_user+                  - rails_user of type ::User
+    #
+    # ==== Example
+    # Facade::User.create(username: 'alex', real_name: 'alex', email: 'test@test.com',
+    #   password: 'test', password_confirmation: 'test')
+    #   => Facade::User
+    #
     def initialize(params={})
       @cc_user = params[:cc_user]
       @auth_proxy = params[:auth_proxy]
@@ -38,7 +54,23 @@ module Facade
     end
 
 
-    # factory method
+    # This class method creates a user for the rails application.
+    # Returns a Facade::User user object.
+    #
+    # ==== Attributes
+    # The params hash accepts the following properties:
+    #
+    # * +username+                    - username
+    # * +real_name+                   - real name
+    # * +password+                    - password
+    # * +password_confirmation+       - password confirmation
+    # * +email+                       - email
+    #
+    # ==== Example
+    # Facade::User.create(username: 'alex', real_name: 'alex', email: 'test@test.com',
+    #   password: 'test', password_confirmation: 'test')
+    #   => Facade::User
+    #
     def self.create(params={})
       params = params.merge(public_visible: RestAdapter::Privacy::Public) # always use public
       cc_user = RestAdapter::Models::User.new(params)
@@ -53,6 +85,12 @@ module Facade
     end
 
 
+    # Persists the created user.
+    # Returns true if persisting the user succeeds otherwise false.
+    #
+    # ==== Example
+    # user.save
+    #
     def save
       return false if not @rails_user.save
       return false if not self.class.username_available?(@cc_user.username)
@@ -68,33 +106,48 @@ module Facade
     end
 
 
-    def self.subscribe_user_to_all_subscriptions(cc_user,auth_proxy)
-      RestAdapter::Models::Sport::Types.each do |sport|
-        hash = {user: cc_user, sport: sport, public_visible: RestAdapter::Privacy::Public}
-        subscription = RestAdapter::Models::Subscription.new(hash)
-        raise Error, 'Could not create subscription!' if not auth_proxy.save(subscription)
-      end
-    end
-
-
+    # Updates a user object with the provided user attributes.
+    # Returns a Facade::User user object or false if updating fails.
+    #
+    # ==== Attributes
+    # The params hash accepts the following properties:
+    #
+    # * +username+                    - username
+    # * +real_name+                   - real name
+    # * +password+                    - password
+    # * +password_confirmation+       - password confirmation
+    # * +email+                       - email
+    #
+    # ==== Example
+    # user.update(real_name: 'alex', email: 'test@test.com',
+    #   password: 'test', password_confirmation: 'test')
+    #   => Facade::User
+    #
     def update(params={})
       @cc_user.fetch!
-      user_hash = @cc_user.as_hash(:included_keys => [:password,:real_name,:username,:email])
-      new_user_hash = user_hash.merge(params)
-      dummy_rails_user = ::User.new(new_user_hash.dup)
-      new_user_hash.delete(:username)
-      @cc_user = RestAdapter::Models::User.new new_user_hash
+      user_hash = @cc_user.as_hash(:included_keys => [:password,:real_name,:username,:email]) # copy attributes
+      new_user_hash = user_hash.merge(params) # merge copied user attributes with provided attributes.
+      dummy_rails_user = ::User.new(new_user_hash.dup) # create a dummy rails user for validation purposes
+      new_user_hash.delete(:username) # remove username attribute if available. changing the username is not permitted.
+      @cc_user = RestAdapter::Models::User.new new_user_hash # create a new cc_user using the updated attributes.
 
-      if @auth_proxy.authorized? and dummy_rails_user.valid? and @auth_proxy.save(@cc_user)
-        require 'pp'
-        pp new_user_hash
+      if @auth_proxy.authorized? and dummy_rails_user.valid? and @auth_proxy.save(@cc_user) # validation check
         @rails_user.assign_attributes(new_user_hash)
         @rails_user.save(validate: false)
         @auth_proxy = RestAdapter::Proxy::Auth.new username: @cc_user.username, password: @cc_user.password
+        self
+      else
+        false
       end
     end
 
 
+    # Deletes this user object.
+    # Returns true if deleting this user succeeds otherwise false.
+    #
+    # ==== Example
+    # user.delete
+    #
     def delete
       return false if not @auth_proxy.authorized?
 
@@ -136,19 +189,9 @@ module Facade
     end
 
 
-    def cached_detailed_partnerships
-      detailed_partnerships = ObjectStore::Store.get([@cc_user.username,:detailed_partnerships])
-      if detailed_partnerships.nil?
-        detailed_partnerships = @cc_user.fetch_partnerships
-        ObjectStore::Store.set([@cc_user.username,:detailed_partnerships],detailed_partnerships)
-      end
-      detailed_partnerships
-    end
-
-
     # Returns all friends of this user.
     def friends
-      partnerships = self.cached_detailed_partnerships
+      partnerships = cached_detailed_partnerships
       active_partnerships = partnerships.select { |p| p.active? } # filter, only get active partnerships
       active_partnerships.map { |p| p.partner_of(@cc_user) } # get users instead of partnerships
     end
@@ -156,7 +199,7 @@ module Facade
 
     # Returns all received friend requests of this user.
     def received_friend_requests
-      partnerships = self.cached_detailed_partnerships
+      partnerships = cached_detailed_partnerships
       proposed_partnerships = partnerships.select { |p| not p.confirmed_by?(@cc_user) } # filter, only get proposed partnerships
       proposed_partnerships.map { |p| p.partner_of(@cc_user) } # get users instead of partnerships
     end
@@ -164,7 +207,7 @@ module Facade
 
     # Returns all sent friend requests of this user.
     def sent_friend_requests
-      partnerships = self.cached_detailed_partnerships
+      partnerships = cached_detailed_partnerships
       proposed_partnerships = partnerships.select { |p| p.confirmed_by?(@cc_user) and not p.active? }
       proposed_partnerships.map { |p| p.partner_of(@cc_user) } # get users instead of partnerships
     end
@@ -172,7 +215,7 @@ module Facade
 
     # Returns true if this user is befriended with the given 'another_user'.
     def befriended_with?(another_user)
-      not self.cached_detailed_partnerships.select { |p|
+      not cached_detailed_partnerships.select { |p|
         p.associated_with?(another_user)
       }.empty?
     end
@@ -186,8 +229,22 @@ module Facade
     end
 
 
-    # class methods
-
+    # This class method authenticates a user against the rails application.
+    # Returns a Facade::User user object if authentication succeeds otherwise false.
+    #
+    # If the user is not already registered in the local database it creates the missing user
+    # and subscribes the user to all sport categories.
+    #
+    # ==== Attributes
+    # The params hash accepts the following properties:
+    #
+    # * +username+        - username
+    # * +password+        - password
+    #
+    # ==== Example
+    # Facade::User.authenticate username: 'alex', password: 'test'
+    #   => Facade::User
+    #
     def self.authenticate(params) # here might be a higgs bugson
       if cc_user = RestAdapter::Models::User.authenticate(params)
         rails_user = if (check_user = ::User.find_by name: params[:username])
@@ -214,11 +271,11 @@ module Facade
       RestAdapter::Models::User.username_available?(username)
     end
 
+
     def self.retrieve(params)
       user = RestAdapter::Models::User.retrieve params
       self.new cc_user: user, auth_proxy: RestAdapter::Proxy::InvalidAuth.new
     end
-
 
 
     def self.wrap(rails_user)
@@ -227,6 +284,26 @@ module Facade
       self.new rails_user: rails_user, cc_user: cc_user, auth_proxy: auth_proxy, rails_user: ::User.new
     end
 
+
+    private
+
+    def self.subscribe_user_to_all_subscriptions(cc_user,auth_proxy)
+      RestAdapter::Models::Sport::Types.each do |sport|
+        hash = {user: cc_user, sport: sport, public_visible: RestAdapter::Privacy::Public}
+        subscription = RestAdapter::Models::Subscription.new(hash)
+        raise Error, 'Could not create subscription!' if not auth_proxy.save(subscription)
+      end
+    end
+
+
+    def cached_detailed_partnerships
+      detailed_partnerships = ObjectStore::Store.get([@cc_user.username,:detailed_partnerships])
+      if detailed_partnerships.nil?
+        detailed_partnerships = @cc_user.fetch_partnerships
+        ObjectStore::Store.set([@cc_user.username,:detailed_partnerships],detailed_partnerships)
+      end
+      detailed_partnerships
+    end
 
   end
 

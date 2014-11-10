@@ -19,8 +19,12 @@ class ApplicationController < ActionController::Base
   end
 
 
-  # Returns an AuthProxy object if the current user is authenticated.
-  # Otherwise it returns nil.
+  # This method returns the current logged in user.
+  # Returns a Facade::User user object if user is logged in otherwise nil.
+  #
+  # ==== Example
+  # self.current_user => Facade::User
+  #
   def current_user
     if session[:username].present?
       user = ObjectStore::Store.get(session[:username])

@@ -58,6 +58,13 @@ module Facade
     end
 
 
+    # For rails compatibility such that action pack can be used.
+    # See for more details: http://apidock.com/rails/ActiveRecord/Base/to_param
+    def to_param
+      rails_model.to_param
+    end
+
+
     # map where, find etc from rails....good luck...it might bite you!!!!!
     def self.find_by(*args, &block)
       result = self.facade_for_2.send :find_by, *args, &block

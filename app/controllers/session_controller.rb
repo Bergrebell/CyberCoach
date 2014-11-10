@@ -4,15 +4,11 @@ class SessionController < ApplicationController
 
   def login
     if params[:username].present? and params[:password].present?
-      # if okay, user is an object and evaluates to true
-      if user = Facade::User.authenticate(params.dup)
-        # get a hash of the user object, because rails cannot store objects in a session.
-        # the rails session is just a key value store...
-
+      user = Facade::User.authenticate(params.dup)
+      if user
         session[:username] = user.username
         session[:password] = user.password
-        session[:remote_ip] = request.remote_ip
-        ObjectStore::Store.set(user.username, user)
+        ObjectStore::Store.set(user.username, user) # store logged in user as facade user in the object store
         redirect_to '/welcome/index', notice: 'Logged in successfully'
       else
         flash[:error] = 'User credentials not valid'

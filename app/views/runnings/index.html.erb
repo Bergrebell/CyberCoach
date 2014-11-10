@@ -1,22 +1,29 @@
 <h1>Front-Page Sport Sessions</h1>
 
-<a href="<%= new_running_url %>">Create Running Session</a>
+Select Sport Session: <% @item_paths = {"Running" => new_running_path, "Cycling" => new_cycling_path, "Boxing" => new_boxing_path}%>
+<%= select_tag :edit_item, options_for_select(@item_paths)%>
 
-<% @sessions.each do |session| %>
+<script type="text/javascript">
+    $('#edit_item').change(function() {
+        window.location = $(this).find('option:selected').val();
+    });
+</script>
+
+<% @runnings.each do |running| %>
 
     <p>
-      <%= link_to "id #{session.id}", action: 'show', id: session.id %> <br>
-      date-created: <%= session.date_created.try(:strftime, "%Y %m %d, %T") %> <br>
-      type: <%= session.type %> <br>
-      uri: <%= session.uri %> <br>
-      uri: <%= session.uri %> <br>
-      comment: <%= session.comment %> <br>
-      course-type <%= session.course_type %> <br>
-      number of rounds <%= session.number_of_rounds %> <br>
-      entry-location <%= session.entry_location %> <br>
-      entry-duration <%= session.entry_duration %> <br>
+      <%= link_to "id #{running.id}", action: 'show', id: running.id %> <br>
+      date-created: <%= running.date_created.try(:strftime, "%Y %m %d, %T") %> <br>
+      type: <%= running.type %> <br>
+      uri: <%= running.uri %> <br>
+      uri: <%= running.uri %> <br>
+      comment: <%= running.comment %> <br>
+      course-type <%= running.course_type %> <br>
+      number of rounds <%= running.number_of_rounds %> <br>
+      entry-location <%= running.entry_location %> <br>
+      entry-duration <%= running.entry_duration %> <br>
       <!--- I'm really patient, but this time ... i just want to pass a god damn id...--->
-      <%= link_to 'Destroy', (sport_sessions_path + '/' + session.id.to_s), method: :delete   %>
+      <%= link_to 'Destroy', running_path(running), method: :delete   %>
 
     </p>
 <% end %>
