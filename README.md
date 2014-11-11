@@ -148,7 +148,7 @@ user.update({ real_name: 'Petter Muller', email: 'peter@peter.ch})
 If updating a user succeeds the facade user is returned otherwise false.
 
 #####delete
-Deleting a user pretty simple just call the method delete on a user facde object.
+Deleting a user is pretty simple just call the method delete on a user facde object.
 
 ```ruby
 user.delete
