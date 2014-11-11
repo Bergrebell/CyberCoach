@@ -1,6 +1,6 @@
-<h1>Front-Page Sport Sessions</h1>
+<h1>Sport Sessions</h1>
 
-Create a Sport Session: <% @item_paths = {"Running" => new_running_path, "Cycling" => new_cycling_path, "Boxing" => new_boxing_path, "Soccer" => new_soccer_path}%>
+Create new sport session: <% @item_paths = {"Running" => new_running_path, "Cycling" => new_cycling_path, "Boxing" => new_boxing_path, "Soccer" => new_soccer_path}%>
 <%= select_tag :edit_item, options_for_select(@item_paths)%>
 
 <script type="text/javascript">

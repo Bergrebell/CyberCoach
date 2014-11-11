@@ -7,7 +7,7 @@ class SoccersController < ApplicationController
     end
 
     def new
-
+      @soccer = Facade::SportSession.create(user: current_user, type: 'Soccer')
     end
 
 

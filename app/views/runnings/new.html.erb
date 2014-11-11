@@ -1,11 +1,12 @@
 <h2>Create a Running Session</h2>
 
-<form class="uk-form uk-form-stacked" method="post" action="<%= runnings_path %>">
+
+<!--form class="uk-form uk-form-stacked" method="post" action="<%= runnings_path %>"-->
+<%= form_for @running, url: runnings_path, method: :post do |f| %>
   <div class="uk-form-row">
-    <label class="uk-form-label" for="date">Date</label>
     <div class="uk-form-controls uk-form-icon">
       <i class="uk-icon-calendar"></i>
-      <input type="datetime" name="date" id="entry_date">
+      <%= f.text_field :entry_date, id: 'datepicker', size:16 %>
     </div>
   </div>
   <div class="uk-form-row">
@@ -51,5 +52,5 @@
         <button class="uk-button uk-button-primary uk-margin-top">Create</button>
     </div>
   </div>
-
-</form>
+<% end %>
+<!--/form-->

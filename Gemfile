@@ -67,3 +67,5 @@ gem 'validates_email_format_of'
 
 # http://stackoverflow.com/questions/17655744/rails-4-0-rake-dbsessionscreate
 gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
+
+gem 'jquery-ui-rails'

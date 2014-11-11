@@ -8,7 +8,7 @@ class BoxingsController < ApplicationController
   end
 
   def new
-
+    @boxing = Facade::SportSession.create(user: current_user, type: 'Boxing')
   end
 
 
