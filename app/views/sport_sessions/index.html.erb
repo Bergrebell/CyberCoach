@@ -10,22 +10,26 @@ Create new sport session: <% @item_paths = {"Running" => new_running_path, "Cycl
 </script>
 
 
-<% @sessions.each do |session| %>
+<table class="uk-table uk-table-striped uk-table-hover">
+  <thead>
+  <tr>
+    <th>Sport</th>
+    <th>Date</th>
+    <th>Location</th>
+    <th>Participants</th>
+    <th>Action</th>
+  </tr>
+  </thead>
 
-    <p>
-      <%= link_to "id #{session.id}", sport_session_path(session) %> <br>
-      date-created: <%= session.date_created.try(:strftime, "%Y %m %d, %T") %> <br>
-      type: <%= session.type %> <br>
-      uri: <%= session.uri %> <br>
-      uri: <%= session.uri %> <br>
-      comment: <%= session.comment %> <br>
-      course-type <%= session.course_type %> <br>
-      number of rounds <%= session.number_of_rounds %> <br>
-      entry-location <%= session.entry_location %> <br>
-      entry-duration <%= session.entry_duration %> <br>
-
-      <%= link_to 'Destroy', sport_session_path(session), method: :delete   %>
-
-    </p>
-<% end %>
-
+  <tbody>
+  <% @sessions.each do |s| %>
+      <tr>
+        <td><%= s.type %></td>
+        <td><%= s.entry_date %></td>
+        <td><%= s.entry_location %></td>
+        <td>&nbsp;</td>
+        <td><%= link_to "view", sport_session_path(session), class: "uk-button uk-button-small"%></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
