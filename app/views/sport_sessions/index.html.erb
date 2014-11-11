@@ -24,10 +24,10 @@ Create new sport session: <% @item_paths = {"Running" => new_running_path, "Cycl
   <tbody>
   <% @sessions.each do |s| %>
       <tr>
-        <td><%= s.type.gsub(/entry/, "")  %></td>
-        <td><%= s.entry_date %></td>
+        <td><%= s.type.gsub(/^entry/, '') %></td>
+        <td><%= s.entry_date%></td>
         <td><%= s.entry_location %></td>
-        <td>&nbsp;</td>
+        <td>TODO</td>
         <td><%= link_to "view", sport_session_path(s), class: "uk-button uk-button-small"%></td>
       </tr>
   <% end %>
