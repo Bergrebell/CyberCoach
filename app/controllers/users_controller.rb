@@ -6,12 +6,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    page = request.query_parameters[:page].nil? ? 1 : request.query_parameters[:page]
-    page = page.to_i
-    size = 5
-    @users = Facade::User.all query: {size: size, start: (page-1)*size}
-    pages = (Facade::User.available / size.to_f).ceil
-    @links = (1..pages)
+    @users = Facade::User.paginate(per_page: 5, page: params[:page])
   end
 
   # GET /users/1

@@ -16,10 +16,7 @@
     <% end %>
   </tbody>
 </table>
-<% @links.each do |num| %>
-    <%= link_to num, users_path({page: num}) %>
-
-<% end %>
+<%= will_paginate @users %>
 <br>
 
 <%= link_to 'Back', welcome_index_path %>

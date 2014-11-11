@@ -45,6 +45,9 @@ module Facade
       nil
     end
 
+    def self.rails_class
+      ::SportSession
+    end
 
 
     def id
