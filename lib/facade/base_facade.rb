@@ -65,6 +65,38 @@ module Facade
     end
 
 
+    #
+    # Wraps a rails query like all, select, where, find, find_by etc.
+    # The result of the query is wrapped into facade objects.
+    #
+    # ====Examples
+    #
+    # Facade::SportSession.query do
+    #   SportSession.all # get all sport sessions that are saved in the rails database
+    # end
+    #
+    #
+    # Facade::SportSession.query do
+    #   SportSession.where(type: 'Running').where(user_id: 2)
+    # end
+    #
+    #
+    # Facade::User.query do
+    #  User.find_by id: 2
+    # end
+    #
+    #
+    def self.query
+      result = yield
+      case result
+        when ::ActiveRecord::Relation
+          result.map {|r| wrap(r) }.select {|r| !r.nil? }
+        else
+          wrap(result)
+      end
+    end
+
+
     # map where, find etc from rails....good luck...it might bite you!!!!!
     def self.find_by(*args, &block)
       result = self.facade_for_2.send :find_by, *args, &block
