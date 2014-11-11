@@ -11,12 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141103092455) do
+ActiveRecord::Schema.define(version: 20141111155630) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
     t.integer  "points"
     t.integer  "category_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "boxing_participant_results", force: true do |t|
+    t.integer  "sport_session_participant_id"
+    t.boolean  "knockout_opponent"
+    t.integer  "number_of_rounds"
+    t.integer  "time_of_fight"
+    t.integer  "points"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -34,6 +44,14 @@ ActiveRecord::Schema.define(version: 20141103092455) do
     t.datetime "updated_at"
   end
 
+  create_table "running_participant_results", force: true do |t|
+    t.integer  "sport_session_participant_id"
+    t.float    "length"
+    t.float    "time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "sessions", force: true do |t|
     t.string   "session_id", null: false
     t.text     "data"
@@ -43,6 +61,11 @@ ActiveRecord::Schema.define(version: 20141103092455) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", unique: true
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at"
+
+  create_table "soccers", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sport_session_participants", force: true do |t|
     t.integer  "user_id"
