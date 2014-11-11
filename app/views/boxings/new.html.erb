@@ -1,11 +1,10 @@
 <h2>Create a Boxing Session</h2>
 
-<!--form class="uk-form uk-form-stacked" method="post" action="<%= boxings_path %>"-->
-<%= form_for @boxing, url: boxings_path, method: :post do |f| %>
+<form class="uk-form uk-form-stacked" method="post" action="<%= boxings_path %>">
     <div class="uk-form-row">
-      <div class="uk-form-controls uk-form-icon">
-        <i class="uk-icon-calendar"></i>
-        <%= f.text_field :entry_date, id: 'datepicker', size:16 %>
+      <label class="uk-form-label" for="entry_date">Date</label>
+      <div class="uk-form-controls">
+        <input type="text" name="entry_date" id='datepicker'>
       </div>
     </div>
 
@@ -51,5 +50,5 @@
         <button class="uk-button uk-button-primary uk-margin-top">Create</button>
     </div>
   </div>
-<% end %>
-<!--/form-->
+
+</form>
