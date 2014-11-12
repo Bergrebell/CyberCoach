@@ -23,7 +23,8 @@ class CyclingsController < ApplicationController
 
   # POST /runnings
   def create
-    entry_params = params.merge({user: current_user, type: 'Cycling'})
+    date_time_object = DateTime.strptime(params[:entry_date], '%Y-%m-%d')
+    entry_params = params.merge({user: current_user, type: 'Cycling', entry_date: date_time_object})
     entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
     @entry = Facade::SportSession.create(entry_params)
     if @entry.save

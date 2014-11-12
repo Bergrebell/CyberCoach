@@ -1,14 +1,16 @@
 <h1>Sport Sessions</h1>
 
-Create new sport session: <% @item_paths = {"Running" => new_running_path, "Cycling" => new_cycling_path, "Boxing" => new_boxing_path, "Soccer" => new_soccer_path}%>
-<%= select_tag :edit_item, options_for_select(@item_paths)%>
-
-<script type="text/javascript">
-    $('#edit_item').change(function() {
-        window.location = $(this).find('option:selected').val();
-    });
-</script>
-
+<div class="uk-button-dropdown" data-uk-dropdown>
+  <button class="uk-button">Create New Session</button>
+  <div class="uk-dropdown uk-dropdown-small">
+    <ul class="uk-nav uk-nav-dropdown">
+      <li><%= link_to "Running", new_running_path, :class => 'uk-link'%></li>
+      <li><%= link_to "Boxing", new_boxing_path, :class => 'uk-link'%></li>
+      <li><%= link_to "Soccer", new_soccer_path, :class => 'uk-link'%></li>
+      <li><%= link_to "Cycling", new_cycling_path, :class => 'uk-link'%></li>
+    </ul>
+  </div>
+</div>
 
 <table class="uk-table uk-table-striped uk-table-hover">
   <thead>
@@ -25,10 +27,16 @@ Create new sport session: <% @item_paths = {"Running" => new_running_path, "Cycl
   <% @sessions.each do |s| %>
       <tr>
         <td><%= s.type.gsub(/^entry/, '') %></td>
-        <td><%= s.entry_date%></td>
+        <td><%= s.entry_date %></td>
+        <!--td><--!%= s.entry_date.strftime(Facade::SportSession::DATETIME_FORMAT) %></td-->
         <td><%= s.entry_location %></td>
-        <td>TODO</td>
-        <td><%= link_to "view", sport_session_path(s), class: "uk-button uk-button-small"%></td>
+        <td>
+          <ul><% s.sport_session_participants.each do |p|%>
+             <li><%=p.user.name%></li>
+             <% end %>
+          </ul>
+        </td>
+        <td><%= link_to 'view', sport_session_path(s), class: "uk-button uk-button-small"%></td>
       </tr>
   <% end %>
   </tbody>

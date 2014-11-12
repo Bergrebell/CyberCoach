@@ -13,13 +13,12 @@ class SportSessionsController < ApplicationController
     @session = Facade::SportSession.find_by id: params[:id]
   end
 
-
   def destroy
     @session = Facade::SportSession.find_by id: params[:id]
     if @session.delete
-      redirect_to sport_sessions_index_path, notice: 'Running session was successfully destroyed.'
+      redirect_to sport_sessions_index_path, notice: 'Sport session was successfully destroyed.'
     else
-      redirect_to sport_sessions_index_path, notice: 'Running session cannot be removed.'
+      redirect_to sport_sessions_index_path, notice: 'Sport session cannot be removed.'
     end
   end
 

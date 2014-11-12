@@ -17,10 +17,6 @@
 //= require uikit
 
 // script for calendar date pick
-// The main code
-$(function() {
-    $( "#datepicker" ).datepicker();
-});
 // This makes the pop-up show the actual db date by fixing a format difference.
     $(function (){
         var dateInput = $("#datepicker");

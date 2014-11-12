@@ -1,5 +1,4 @@
 <p>
-
   <%= link_to "id #{@session.id}", sport_session_path(@session) %> <br>
   date-created: <%= @session.date_created.try(:strftime,'%Y %m %d, %T') %> <br>
   type: <%= @session.type %> <br>
@@ -9,5 +8,4 @@
   number of rounds <%= @session.number_of_rounds %> <br>
   entry-location <%= @session.entry_location %> <br>
   entry-duration <%= @session.entry_duration %> <br>
-
 </p>
