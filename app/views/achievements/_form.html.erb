@@ -20,8 +20,16 @@
     <%= f.number_field :points %>
   </div>
   <div class="field">
-    <%= f.label :category_id %><br>
-    <%= f.select(:category_id, options_for_select(RestAdapter::Models::Sport::Types.map { |s| [s.name,s.id]})) %>
+    <%= f.label :sport_id %><br>
+    <%= f.select(:sport_id, options_for_select(Sport.all.map { |s| [s.title, s.id]})) %>
+  </div>
+    <div class="field">
+      <%= f.label :validator_id %><br>
+      <%= f.select(:validator_id, options_for_select(Validator.all.map { |s| [s.type, s.id]})) %>
+    </div>
+  <div class="field">
+    <%= f.label :rules %><br>
+    <%= f.text_area :rules %>
   </div>
   <div class="actions">
     <%= f.submit %>
