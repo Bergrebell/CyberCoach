@@ -67,6 +67,10 @@ module Facade
       @auth_proxy
     end
 
+
+    def type
+      @cc_entry.subscription.sport.name
+    end
     
     def self.create(params)
       # preconditions

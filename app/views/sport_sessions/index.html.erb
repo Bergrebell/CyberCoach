@@ -26,7 +26,7 @@
   <tbody>
   <% @sessions.each do |s| %>
       <tr>
-        <td><%= s.type.gsub(/^entry/, '') %></td>
+        <td><%= s.type %></td>
         <td><%= s.entry_date %></td>
         <!--td><--!%= s.entry_date.strftime(Facade::SportSession::DATETIME_FORMAT) %></td-->
         <td><%= s.entry_location %></td>
