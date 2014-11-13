@@ -2,6 +2,7 @@ module Facade
 
   class SportSession < Facade::BaseFacade
 
+    DATETIME_FORMAT = '%Y-%m-%d' # example: 2014-01-01
     # lookup tables for finding the right entry type and sport type
 
     EntryTypeLookup = {
@@ -71,6 +72,17 @@ module Facade
     def type
       @cc_entry.subscription.sport.name
     end
+
+
+    # Correct entry_date string for the views.
+    def entry_date
+      begin #Try if we can format entry date. If it fails then its probably nil.
+        @cc_entry.entry_date.strftime(DATETIME_FORMAT)
+      rescue # if nil or another exception is raised just use an empty string
+        ''
+      end
+    end
+
     
     def self.create(params)
       # preconditions
