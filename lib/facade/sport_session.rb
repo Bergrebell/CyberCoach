@@ -37,16 +37,14 @@ module Facade
       @auth_proxy =  params[:auth_proxy]
     end
 
-    def self.facade_for_2
-      ::SportSession
-    end
-
-    def self.facade_for_1
-      nil
-    end
 
     def self.rails_class
       ::SportSession
+    end
+
+
+    def self.cc_class
+      RestAdapter::Models::SportSession
     end
 
 

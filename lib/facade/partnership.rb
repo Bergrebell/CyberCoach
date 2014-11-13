@@ -9,25 +9,31 @@ module Facade
       @partnership = params[:partnership]
     end
 
-    def self.facade_for_1
+
+    def self.cc_class
       RestAdapter::Models::Partnership
     end
 
-    def self.facade_for_2
-      nil
-    end
 
     def id
       @partnership.id
     end
 
+
     def rails_model
       @partnership
     end
 
+
     def cc_model
       @partnership
     end
+
+
+    def self.paginate(options)
+      raise 'Not implemented!'
+    end
+
 
     def auth_proxy
       @auth_proxy

@@ -26,18 +26,16 @@ module Facade
       @rails_user = params[:rails_user]
     end
 
-    def self.facade_for_2
-      ::User
-    end
-
-    def self.facade_for_1
-      RestAdapter::Models::User
-    end
-
 
     def self.rails_class
       ::User
     end
+
+
+    def self.cc_class
+      RestAdapter::Models::User
+    end
+
 
     def id
       @rails_user.id

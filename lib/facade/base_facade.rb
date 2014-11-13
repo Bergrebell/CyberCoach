@@ -16,6 +16,10 @@ module Facade
       raise 'Not implemented!'
     end
 
+    def cc_class
+      raise 'Not implemented!'
+    end
+
     # Returns always the id of the rails model.
     def id
       raise 'Not implemented!'
@@ -45,14 +49,6 @@ module Facade
 
 
     def delete(params={})
-      raise 'Not implemented!'
-    end
-
-    def self.facade_for_1
-      raise 'Not implemented!'
-    end
-
-    def self.facade_for_2
       raise 'Not implemented!'
     end
 
@@ -126,13 +122,13 @@ module Facade
 
     # map where, find etc from rails....good luck...it might bite you!!!!!
     def self.find_by(*args, &block)
-      result = self.facade_for_2.send :find_by, *args, &block
+      result = self.rails_class.send :find_by, *args, &block
       wrap(result)
     end
 
 
     def self.where(*args, &block)
-      result = self.facade_for_2.send :where, *args, &block
+      result = self.rails_class.send :where, *args, &block
       case result
         when ::ActiveRecord::Relation
           result.map {|r| wrap(r) }.select {|r| !r.nil? }
@@ -144,9 +140,9 @@ module Facade
 
     def self.method_missing(method, *args, &block)
       begin
-        facade_for_1.send method, *args, &block
-      rescue
-        facade_for_2.send method, *args, &block if not facade_for_2.nil?
+        cc_class.send method, *args, &block
+      rescue #TODO: implement a proper error handling if rails_class is nil
+        rails_class.send method, *args, &block if not rails_class.nil?
       end
     end
 
