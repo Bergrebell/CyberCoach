@@ -69,3 +69,5 @@ gem 'validates_email_format_of'
 gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 
 gem 'jquery-ui-rails'
+
+gem 'will_paginate', '~> 3.0'

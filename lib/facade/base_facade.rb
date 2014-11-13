@@ -7,6 +7,10 @@ module Facade
       raise 'Not implemented!'
     end
 
+    def rails_class
+      raise 'Not implemented!'
+    end
+
     # Returns the cyber coach model that is associated with this object.
     def cc_model
       raise 'Not implemented!'
@@ -62,6 +66,29 @@ module Facade
     # See for more details: http://apidock.com/rails/ActiveRecord/Base/to_param
     def to_param
       rails_model.to_param
+    end
+
+
+    # Integrates the gem WillPaginate into the BaseFacade
+    def self.paginate(options)
+      page = options[:page] || 1 # use page = 1 as default
+      per_page = options[:per_page] || self.rails_class.per_page # use per_page defined in the models as default
+      # this is the only way I was able to hack WillPaginate into the Facade::BaseFacade
+      WillPaginate::Collection.create(page,per_page) do |pager|
+        result,count =  if block_given?
+                          query = yield
+                          count = query.count
+                          res = query.offset(pager.offset).limit(pager.per_page)
+                          [res,count]
+                        else
+                          count = rails_class.count
+                          res = rails_class.offset(pager.offset).limit(pager.per_page)
+                          [res,count]
+                        end
+        result = result.map { |object| wrap(object)}
+        pager.replace(result)
+        pager.total_entries = count
+      end
     end
 
 

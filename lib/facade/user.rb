@@ -34,6 +34,11 @@ module Facade
       RestAdapter::Models::User
     end
 
+
+    def self.rails_class
+      ::User
+    end
+
     def id
       @rails_user.id
     end
