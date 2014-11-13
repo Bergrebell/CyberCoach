@@ -27,6 +27,17 @@ module Facade
           'cycling' => RestAdapter::Models::Sport.new(name: 'Cycling'),
     }
 
+    RailsSportModelLookup = {
+        'Running' => ::Running,
+        'Boxing' => ::Boxing,
+        'Cycling' => ::Cycling,
+        'Soccer' => ::Soccer,
+        'running' => ::Running,
+        'boxing' => ::Boxing,
+        'cycling' => ::Cycling,
+        'soccer' => ::Soccer
+    }
+
 
     def initialize(params={})
       # preconditions
@@ -74,6 +85,16 @@ module Facade
     end
 
 
+    def new_record? # for rails compatibility
+      @cc_entry.cc_id.nil?
+    end
+
+
+    def persisted? # for rails compatibility
+      !@cc_entry.cc_id.nil?
+    end
+
+
     # Correct entry_date string for the views.
     def entry_date
       begin #Try if we can format entry date. If it fails then its probably nil.
@@ -106,7 +127,8 @@ module Facade
       cc_user = facade_user.cc_model
       auth_proxy  = facade_user.auth_proxy
       rails_user = facade_user.rails_model
-      rails_sport_session =  ::SportSession.new user_id: rails_user.id, type: params[:type]
+      rails_model_class = RailsSportModelLookup[params[:type]] # lookup the corresponding rails model i.e. Running, Boxing etc.
+      rails_sport_session =  rails_model_class.new user_id: rails_user.id, type: params[:type]
 
       # create pseudo subscription
       cc_type = Facade::SportSession::EntryTypeLookup[params[:type]]

@@ -23,7 +23,7 @@ class RunningsController < ApplicationController
 
   # POST /runnings
   def create
-    date_time_object = DateTime.strptime(params[:entry_date], '%Y-%m-%d')
+    date_time_object = DateTime.strptime(params[:entry_date], Facade::SportSession::DATETIME_FORMAT)
     entry_params = params.merge({user: current_user, type: 'Running', entry_date: date_time_object})
     entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
     @entry = Facade::SportSession.create(entry_params)
@@ -38,7 +38,8 @@ class RunningsController < ApplicationController
 
   def update
     @running = Facade::SportSession.find_by id: params[:id]
-    entry_params = sport_session_params.merge({user: current_user, type: 'Running'})
+    date_time = DateTime.strptime(sport_session_params[:entry_date], Facade::SportSession::DATETIME_FORMAT)
+    entry_params = sport_session_params.merge({user: current_user, type: 'Running', entry_date: date_time})
     if @running.update(entry_params)
       redirect_to runnings_url, notice: 'Running session successfully updated'
     else
