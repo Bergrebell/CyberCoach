@@ -28,7 +28,6 @@
       <tr>
         <td><%= s.type %></td>
         <td><%= s.entry_date %></td>
-        <!--td><--!%= s.entry_date.strftime(Facade::SportSession::DATETIME_FORMAT) %></td-->
         <td><%= s.entry_location %></td>
         <td>
           <ul><% s.sport_session_participants.each do |p|%>

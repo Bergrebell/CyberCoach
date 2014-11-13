@@ -1,6 +1,6 @@
 <p>
   <%= link_to "id #{@session.id}", sport_session_path(@session) %> <br>
-  date-created: <%= @session.date_created.try(:strftime,'%Y %m %d, %T') %> <br>
+  date-created: <%= @session.date_created %> <br>
   type: <%= @session.type %> <br>
   uri: <%= @session.uri %> <br>
   comment: <%= @session.comment %> <br>
