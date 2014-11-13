@@ -218,7 +218,7 @@ module Facade
 
     # Returns true if this user is befriended with the given 'another_user'.
     def befriended_with?(another_user)
-      not cached_detailed_partnerships.select { |p|
+      not partnerships.select { |p|
         p.associated_with?(another_user)
       }.empty?
     end
