@@ -11,16 +11,12 @@
 // about supported directives.
 //
 //= require jquery
-//= require jquery-ui/datepicker
 //= require jquery_ujs
 //= require_tree .
 //= require uikit
 
 // script for calendar date pick
-// This makes the pop-up show the actual db date by fixing a format difference.
-    $(function (){
-        var dateInput = $("#datepicker");
-        var format = 'yy-mm-dd';
-        dateInput.datepicker({dateFormat: format});
-        dateInput.datepicker('setDate', $.datepicker.parseDate(format, dateInput.val()));
-    });
+$(function (){
+    var dateInput = $(".datepicker");
+    $.UIkit.datepicker(dateInput,{format:'YYYY-MM-DD'})
+});

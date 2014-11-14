@@ -3,7 +3,7 @@ class BoxingsController < ApplicationController
 
   # List all running sessions
   def index
-    @sessions = Facade::SportSession.where(user_id: current_user.id, type: 'Boxing') # pretty cool hehehe...don't get used to it :-)
+    @boxings = Facade::SportSession.where(user_id: current_user.id, type: 'Boxing') # pretty cool hehehe...don't get used to it :-)
     @friends = current_user.friends
   end
 
@@ -23,7 +23,7 @@ class BoxingsController < ApplicationController
 
   # POST /boxings
   def create
-    date_time_object = DateTime.strptime(params[:entry_date], '%Y-%m-%d')
+    date_time_object = DateTime.strptime(params[:date], '%Y-%m-%d')
     entry_params = params.merge({user: current_user, type: 'Boxing', entry_date: date_time_object})
     entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
     @entry = Facade::SportSession.create(entry_params)
