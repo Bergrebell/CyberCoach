@@ -142,7 +142,7 @@ All these properties are optional. In fact you could also pass an empty hash. In
 Example:
 
 ```ruby
-user.update({ real_name: 'Petter Muller', email: 'peter@peter.ch})
+user.update({ real_name: 'Petter Muller', email: 'peter@peter.ch'})
 ```
 
 If updating a user succeeds the facade user is returned otherwise false.
@@ -262,4 +262,70 @@ sport_session.delete
 ```
 
 ####Facade::Partnership
+#####retrieve
+An existing partnership can be retrievd as follows:
+
+```ruby
+moritz = Facade::User.query { User.find_by name: 'moritz'}
+peter = Facade::User.query { User.find_by name: 'peter'}
+partnership = Facade::Partnership.retrieve(confirmer: moritz, proposer: peter)
+```
+
+For retrieving purposes it does not matter which user is a proposer or a confirmer. So the roles can be swapped.
+
+#####create
+Assume we have two users called peter and moritz.
+
+Peter wants to be in a partnership with moritz. In that case Peter is a proposer of a partnership and Moritz is the confirmer.
+
+The class method create takes as argument a hash with the two properties:
+
+- confirmer
+- proposer
+
+
+Example: Peter proposes a partnership
+```ruby
+moritz = Facade::User.query { User.find_by name: 'moritz'}
+peter = Facade::User.query { User.find_by name: 'peter'}
+partnership = Facade::Partnership.create confirmer: moritz, proposer: peter
+```
+
+This creates only a partnership facade object without persisting it on the cyber coach server.
+For persisting the partnership we need to call the instance method save on the partnership object.
+
+#####save
+If you have already created a partnership object then the next step is to persist it via the save method.
+```ruby
+moritz = Facade::User.query { User.find_by name: 'moritz'}
+peter = Facade::User.query { User.find_by name: 'peter'}
+partnership = Facade::Partnership.create confirmer: moritz, proposer: peter
+partnership.save
+```
+
+If persisting succeeds the partnership object is returned otherwise false.
+
+In order to have an operational partnership both users must propose such a partnership.
+Regarding the previous example moritz needs to propose this partnership as well.
+
+```ruby
+moritz = Facade::User.query { User.find_by name: 'moritz'}
+peter = Facade::User.query { User.find_by name: 'peter'}
+partnership = Facade::Partnership.create confirmer: peter, proposer: moritz
+partnership.save
+```
+
+#####delete
+Deleting a partnership is simple. Call the delete instance method on a partnership object.
+But here it plays a role how you retrieve the partnership object. If Moritz wants to leave the partership he needs to be the confirmer in the retrieve method call:
+```ruby
+moritz = Facade::User.query { User.find_by name: 'moritz'}
+peter = Facade::User.query { User.find_by name: 'peter'}
+partnership = Facade::Partnership.retrieve(confirmer: moritz, proposer: peter)
+partnership.delete
+```
+
+If deleting succeeds it returns true otherwise false.
+
+## User Guide - RestAdapter Classes
 TODO
