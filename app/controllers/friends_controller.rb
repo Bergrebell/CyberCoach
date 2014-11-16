@@ -5,7 +5,9 @@ class FriendsController < ApplicationController
   def index
     @friends = current_user.friends
     @requests_received = current_user.received_friend_requests
-    users = Facade::User.all query: {size: 10 }
+    users = Facade::User.query do
+      User.all
+    end
     @proposals = current_user.friend_proposals(users)
   end
 
