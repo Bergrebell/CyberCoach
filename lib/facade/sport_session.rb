@@ -107,7 +107,7 @@ module Facade
       cc_user = facade_user.cc_model
       auth_proxy  = facade_user.auth_proxy
       rails_user = facade_user.rails_model
-      rails_sport_session =  ::SportSession.new user_id: rails_user.id, type: params[:type]
+      rails_sport_session =  ::SportSession.new user_id: rails_user.id, type: params[:type], date: params[:entry_date], location: params[:entry_location]
 
       # Array of IDs of users that we want to invite for the sport session
       users_invited = (params[:users_invited].present? and params[:users_invited].kind_of?(Array)) ? params[:users_invited] : []
