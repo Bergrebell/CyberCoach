@@ -281,10 +281,17 @@ module Facade
     end
 
 
-    def self.wrap(rails_user)
+    def self.rails_wrap(rails_user)
       cc_user = RestAdapter::Models::User.new username: rails_user.name
       auth_proxy = RestAdapter::Proxy::RailsAuth.new user_id: rails_user.id
-      self.new rails_user: rails_user, cc_user: cc_user, auth_proxy: auth_proxy, rails_user: ::User.new
+      self.new rails_user: rails_user, cc_user: cc_user, auth_proxy: auth_proxy
+    end
+
+
+    def self.cc_wrap(cc_user)
+      rails_user = ::User.find_by name: cc_user.username
+      auth_proxy = RestAdapter::Proxy::RailsAuth.new user_id: rails_user.id
+      self.new rails_user: rails_user, cc_user: cc_user, auth_proxy: auth_proxy
     end
 
 

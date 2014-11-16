@@ -53,7 +53,25 @@ module Facade
     end
 
 
-    def self.wrap(hide_object_behind_facade)
+    def self.wrap(object)
+      raise 'Error' if object.nil?
+
+      if object.is_a? rails_class
+        rails_wrap(object)
+      elsif object.is_a? cc_class
+        cc_wrap(object)
+      else
+        raise 'Error'
+      end
+    end
+
+
+    def self.rails_wrap(object)
+      raise 'Not implemented!'
+    end
+
+
+    def self.cc_wrap(object)
       raise 'Not implemented!'
     end
 

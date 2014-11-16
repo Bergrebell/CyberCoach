@@ -46,7 +46,7 @@ module Facade
 
 
     def self.cc_class
-      RestAdapter::Models::SportSession
+      RestAdapter::Models::Entry
     end
 
 
@@ -183,7 +183,7 @@ module Facade
     end
 
 
-    def self.wrap(rails_sport_session)
+    def self.rails_wrap(rails_sport_session)
       begin
         cc_entry = RestAdapter::Models::Entry.retrieve rails_sport_session.cybercoach_uri
         auth_proxy = RestAdapter::Proxy::RailsAuth.new user_id: rails_sport_session.user_id
@@ -192,6 +192,18 @@ module Facade
         nil
       end
     end
+
+
+    def self.cc_wrap(cc_entry)
+      begin
+        rails_sport_session = ::SportSession.find_by cybercoach_uri: cc_entry.uri
+        auth_proxy = RestAdapter::Proxy::RailsAuth.new user_id: rails_sport_session.user_id
+        self.new rails_sport_session: rails_sport_session, cc_entry: cc_entry, auth_proxy: auth_proxy
+      rescue
+        nil
+      end
+    end
+
 
   end
 
