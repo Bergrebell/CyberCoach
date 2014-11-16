@@ -3,7 +3,11 @@ class RunningsController < ApplicationController
 
   # List all running sessions
   def index
-    @runnings = Facade::SportSession.where(user_id: current_user.id, type: 'Running')
+    # Grab all the running sessions where the current user is a participant
+    runnings = SportSession.confirmed_sessions_from_user(current_user.id, 'Running')
+    @runnings_upcoming = runnings.select { |running| Date.parse(running.date.to_s) > Date.today}
+    @runnings_past = runnings.select { |running| Date.parse(running.date.to_s) < Date.today}
+    @invitations = SportSession.unconfirmed_sessions_from_user(current_user.id, 'Running')
   end
 
   def new

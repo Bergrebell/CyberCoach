@@ -4,10 +4,10 @@
   <button class="uk-button">Create New Session</button>
   <div class="uk-dropdown uk-dropdown-small">
     <ul class="uk-nav uk-nav-dropdown">
-      <li><%= link_to "Running", new_running_path, :class => 'uk-link'%></li>
-      <li><%= link_to "Boxing", new_boxing_path, :class => 'uk-link'%></li>
-      <li><%= link_to "Soccer", new_soccer_path, :class => 'uk-link'%></li>
-      <li><%= link_to "Cycling", new_cycling_path, :class => 'uk-link'%></li>
+      <li><%= link_to "Running", new_running_path %></li>
+      <li><%= link_to "Boxing", new_boxing_path %></li>
+      <li><%= link_to "Soccer", new_soccer_path %></li>
+      <li><%= link_to "Cycling", new_cycling_path %></li>
     </ul>
   </div>
 </div>
@@ -27,16 +27,19 @@
   <% @sessions.each do |s| %>
       <tr>
         <td><%= s.type %></td>
-        <td><%= s.entry_date %></td>
-        <td><%= s.entry_location %></td>
+        <td><%= s.date %></td>
+        <td><%= s.location %></td>
         <td>
-          <ul><% s.sport_session_participants.each do |p|%>
-             <li><%=p.user.name%></li>
-             <% end %>
+          <ul>
+            <% s.sport_session_participants.each do |p| %>
+                <% if p.confirmed %>
+                    <li><%= p.user.name %></li>
+                <% end %>
+            <% end %>
           </ul>
         </td>
         <td>
-          <%= link_to 'View', sport_session_path(s), class: "uk-button uk-button-small"%>
+          <%= link_to 'View', sport_session_path(s), class: "uk-button uk-button-small" %>
         </td>
       </tr>
   <% end %>

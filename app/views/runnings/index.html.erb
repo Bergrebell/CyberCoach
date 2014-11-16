@@ -23,19 +23,25 @@
       </thead>
 
       <tbody>
-      <% @runnings.each do |s| %>
+      <% @runnings_upcoming.each do |s| %>
           <tr>
-            <td><%= s.entry_date %></td>
-            <td><%= s.entry_location %></td>
+            <td><%= s.date %></td>
+            <td><%= s.location %></td>
             <td>
-              <ul><% s.sport_session_participants.each do |p|%>
-                    <li><%=p.user.name%></li>
+              <ul>
+                <% s.sport_session_participants.each do |p| %>
+                    <% if p.confirmed? %>
+                        <li><%= p.user.name %></li>
+                    <% end %>
                 <% end %>
               </ul>
             </td>
             <td>
-              <%= link_to 'View', running_path(s), class: "uk-button uk-button-small"%>
-              <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small"%>
+              <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
+              <% # User can only edit his own sessions %>
+              <% if s.user_id == current_user.id %>
+                  <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small" %>
+              <% end %>
             </td>
           </tr>
       <% end %>
@@ -47,10 +53,74 @@
   <!-- Past events -->
   <li>
 
+    <table class="uk-table uk-table-striped uk-table-hover">
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Location</th>
+        <th>Participants</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @runnings_past.each do |s| %>
+          <tr>
+            <td><%= s.date %></td>
+            <td><%= s.location %></td>
+            <td>
+              <ul>
+                <% s.sport_session_participants.each do |p| %>
+                    <li><%= p.user.name %></li>
+                <% end %>
+              </ul>
+            </td>
+            <td>
+              <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
+              <%= link_to 'Edit Results', edit_running_path(s.id), class: "uk-button uk-button-small" %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+
+
   </li>
 
   <!-- Invitations -->
   <li>
+
+    <table class="uk-table uk-table-striped uk-table-hover">
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Location</th>
+        <th>Participants</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @invitations.each do |s| %>
+          <tr>
+            <td><%= s.date %></td>
+            <td><%= s.location %></td>
+            <td>
+              <ul>
+                <% s.sport_session_participants.each do |p| %>
+                    <li><%= p.user.name %></li>
+                <% end %>
+              </ul>
+            </td>
+            <td>
+              <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
+              <%= link_to 'Confirm', running_path(s), class: "uk-button uk-button-small" %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+
 
   </li>
 

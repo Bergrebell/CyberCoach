@@ -25,4 +25,28 @@ class SportSession < ActiveRecord::Base
 
   end
 
+  # Return all SportSessions where the given user participated
+  #
+  def self.all_sessions_from_user(user_id, type='', confirmed=nil)
+    where = {:user_id => user_id}
+    if not confirmed.nil?
+      where[:confirmed] = confirmed
+    end
+    if type.present?
+      SportSession.where(:type => type).joins(:sport_session_participants).where(sport_session_participants: where)
+    else
+      SportSession.joins(:sport_session_participants).where(sport_session_participants: where)
+    end
+
+  end
+
+
+  def self.confirmed_sessions_from_user(user_id, type='')
+    self.all_sessions_from_user(user_id, type, true)
+  end
+
+  def self.unconfirmed_sessions_from_user(user_id, type='')
+    self.all_sessions_from_user(user_id, type, false)
+  end
+
 end
