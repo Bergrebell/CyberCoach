@@ -1,64 +1,7 @@
-<h1>Editing running</h1>
+<h2>Editing running</h2>
 
-<%= form_for @running, url: running_path(@running.id), method: :put do |f| %>
-    <% if @running.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+<%= form_for @running, url: running_path(@running.id), method: :put, :html => {:class => 'uk-form uk-form-horizontal'} do |f| %>
 
-          <ul>
-            <% @user.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
-    <% end %>
+    <%= render 'form', :f => f %>
 
-
-    <div class="field">
-      <%= f.label :number_of_rounds %>
-      <br>
-      <%= f.text_field :number_of_rounds %>
-    </div>
-
-    <div class="field">
-      <%= f.label :entry_location %>
-      <br>
-      <%= f.text_field :entry_location %>
-    </div>
-
-
-    <div class="field">
-      <%= f.label :entry_duration %>
-      <br>
-      <%= f.text_field :entry_duration %>
-    </div>
-
-
-    <div class="field">
-      <%= f.label :course_type %>
-      <br>
-      <%= f.text_field :course_type %>
-    </div>
-
-    <div class="field">
-      <%= f.label :course_length %>
-      <br>
-      <%= f.text_field :course_length %>
-    </div>
-
-
-    <div class="field">
-      <%= f.label :comment %>
-      <br>
-      <%= f.text_area :comment %>
-    </div>
-
-
-    <div class="actions">
-      <%= f.submit %>
-    </div>
 <% end %>
-
-
-<%= link_to 'Show', action: 'show', id: @running.id %> |
-<%= link_to 'Back', runnings_path %>

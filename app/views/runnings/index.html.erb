@@ -22,10 +22,12 @@
           </ul>
         </td>
         <td>
-          <%= link_to 'view', sport_session_path(s), class: "uk-button uk-button-small"%>
-          <%= link_to 'delete', running_path(s), method: :delete, class: "uk-button uk-button-small"  %>
+          <%= link_to 'View', running_path(s), class: "uk-button uk-button-small"%>
+          <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small"%>
         </td>
       </tr>
   <% end %>
   </tbody>
 </table>
+
+<a href="<%= new_running_path %>" class="uk-button uk-button-primary">Create Running Session</a>

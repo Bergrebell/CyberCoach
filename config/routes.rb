@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
-  get 'runnings/index'
-  post 'runnings/destroy'
+  # get 'runnings/index'
+  # post 'runnings/destroy'
 
   get 'sport_sessions/index'
   get 'sport_sessions/show'
