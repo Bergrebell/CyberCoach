@@ -9,7 +9,7 @@ class RunningsController < ApplicationController
 
   def new
     @running = Facade::SportSession.create(user: current_user, type: 'Running')
-    @friends = current_user.friends
+    @friends = current_user.friends # TODO This should return users of type Facade?
   end
 
 
@@ -39,22 +39,24 @@ class RunningsController < ApplicationController
 
     date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
     entry_params = sport_session_params.merge({user: current_user, type: 'Running', entry_date: date_time_object})
+
+    # Workaround, we actually need the user ID and not username. We'll fix this later
+    ################################################################################
+    users_invited = []
+    if entry_params[:users_invited].present?
+      entry_params[:users_invited].each do |username|
+        user = User.where(:name => username).first
+        if user.present?
+          users_invited.push(user.id)
+        end
+      end
+    end
+    entry_params[:users_invited] = users_invited
+    ################################################################################
+
     @entry = Facade::SportSession.create(entry_params)
 
     if @entry.save
-
-      # 1. Invite the friends, needs other handling
-      if entry_params[:friends].present?
-        @entry.invite(entry_params[:friends])
-      end
-
-      # 2. For the current RunningParticipantResult model to work, I need to be participant too
-      SportSessionParticipant.create(:user_id => current_user.id, :sport_session_id => @entry.id, :confirmed => true)
-
-      # The stuff above should be hidden behind the facade/model
-      # Also we might need more information what is going wrong than just a true/false. Either with
-      # exceptions or an error messages array?
-
       redirect_to runnings_url, notice: 'Running session successfully created'
     else
       flash[:notice] = 'Unable to create Running session'

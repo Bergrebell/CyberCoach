@@ -17,8 +17,8 @@
         <td><%= s.entry_location %></td>
         <td>
           <ul><% s.sport_session_participants.each do |p|%>
-                <li><%=p.user.name%></li>
-            <% end %>
+                    <li><%=p.user.name%></li>
+                <% end %>
           </ul>
         </td>
         <td>

@@ -87,7 +87,7 @@
 
             <% @friends.each do |friend| %>
                 <div>
-                  <input type="checkbox" name="sport_session[friends][]" value="<%= friend.id %>">
+                  <input type="checkbox" name="sport_session[users_invited][]" value="<%= friend.id %>">
                   <%= friend.username %>
                 </div>
             <% end %>

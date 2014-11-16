@@ -36,6 +36,7 @@ module Facade
       @cc_entry = params[:cc_entry]
       @rails_sport_session = params[:rails_sport_session]
       @auth_proxy =  params[:auth_proxy]
+      @users_invited = params[:users_invited]
     end
 
 
@@ -108,6 +109,9 @@ module Facade
       rails_user = facade_user.rails_model
       rails_sport_session =  ::SportSession.new user_id: rails_user.id, type: params[:type]
 
+      # Array of IDs of users that we want to invite for the sport session
+      users_invited = (params[:users_invited].present? and params[:users_invited].kind_of?(Array)) ? params[:users_invited] : []
+
       # create pseudo subscription
       cc_type = Facade::SportSession::EntryTypeLookup[params[:type]]
       cc_sport = Facade::SportSession::SportTypeLookup[params[:type]]
@@ -119,7 +123,7 @@ module Facade
       cc_entry = RestAdapter::Models::Entry.new entry_hash
 
       # inject dependencies
-      self.new cc_entry: cc_entry, rails_sport_session: rails_sport_session, auth_proxy: auth_proxy
+      self.new cc_entry: cc_entry, rails_sport_session: rails_sport_session, auth_proxy: auth_proxy, users_invited: users_invited
     end
 
 
@@ -129,6 +133,16 @@ module Facade
           raise Error if entry_uri.nil? or entry_uri.empty? or entry_uri.size==1 # hack alert: is this a higgs bugson???
           @rails_sport_session.cybercoach_uri = entry_uri
           @rails_sport_session.save
+
+          @rails_sport_session.invite(@users_invited)
+
+          # The user creating the entry also needs a SportSessionParticipant object
+          SportSessionParticipant.where(
+              :user_id => @rails_sport_session.user_id,
+              :sport_session_id => @rails_sport_session.id,
+              :confirmed => true
+          ).first_or_create
+
           entry_uri
         else
           false
