@@ -14,9 +14,19 @@
 
     <ul class="uk-navbar-nav">
       <% if current_user.present? %>
-        <li<%= if params[:controller] == 'sport_sessions'; " class=uk-active" end %>><a href="<%= sport_sessions_index_url %>">Sport Sessions</a></li>
+        <li data-uk-dropdown class="uk-parent<%= if params[:controller] == 'sport_sessions'; " uk-active" end %>">
+          <a href="<%= sport_sessions_index_url %>"><i class="uk-icon-soccer-ball-o"></i> Sport Sessions <i class="uk-icon-angle-down"></i></a>
+            <div class="uk-dropdown uk-dropdown-navbar">
+              <ul class="uk-nav uk-nav-navbar">
+                <li><a href="<%= runnings_url %>">Running</a></li>
+                <li><a href="<%= boxings_url %>">Boxing</a></li>
+                <li><a href="<%= cyclings_url %>">Cycling</a></li>
+                <li><a href="<%= soccers_url %>">Soccer</a></li>
+              </ul>
+            </div>
+        </li>
         <li<%= if params[:controller] == 'friends'; " class=uk-active" end %>><a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends</a></li>
-        <li<%= if params[:controller] == 'achievements'; " class=uk-active" end %>><a href="<%= achievements_url %>">Achievements</a></li>
+        <li<%= if params[:controller] == 'achievements'; " class=uk-active" end  %>><a href="<%= achievements_url %>"><i class="uk-icon-star"></i> Achievements</a></li>
       <% end %>
     </ul>
 
