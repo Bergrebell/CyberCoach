@@ -57,6 +57,10 @@ class RunningsController < ApplicationController
     entry_params[:users_invited] = users_invited
     ################################################################################
 
+
+    # @wanze => this is a one-liner :-)
+    # entry_params[:users_invited] = User.select(:id).where('name in (?)', entry_params[:users_invited])
+
     @entry = Facade::SportSession.create(entry_params)
 
     if @entry.save
