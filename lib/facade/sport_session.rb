@@ -17,14 +17,14 @@ module Facade
     }
 
     SportTypeLookup = {
-          'Running' => RestAdapter::Models::Sport.new(name: 'Running'),
-          'Boxing' => RestAdapter::Models::Sport.new(name: 'Boxing'),
-          'Soccer' => RestAdapter::Models::Sport.new(name: 'Soccer'),
-          'Cycling' => RestAdapter::Models::Sport.new(name: 'Cycling'),
-          'running' => RestAdapter::Models::Sport.new(name: 'Running'),
-          'boxing' => RestAdapter::Models::Sport.new(name: 'Boxing'),
-          'soccer' => RestAdapter::Models::Sport.new(name: 'Soccer'),
-          'cycling' => RestAdapter::Models::Sport.new(name: 'Cycling'),
+          'Running' => RestAdapter::Models::Sport::Type::Running,
+          'Boxing' => RestAdapter::Models::Sport::Type::Boxing,
+          'Soccer' => RestAdapter::Models::Sport::Type::Soccer,
+          'Cycling' => RestAdapter::Models::Sport::Type::Cycling,
+          'running' => RestAdapter::Models::Sport::Type::Running,
+          'boxing' => RestAdapter::Models::Sport::Type::Boxing,
+          'soccer' => RestAdapter::Models::Sport::Type::Soccer,
+          'cycling' => RestAdapter::Models::Sport::Type::Cycling
     }
 
 
