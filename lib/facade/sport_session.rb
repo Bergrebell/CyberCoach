@@ -97,10 +97,10 @@ module Facade
     
     def self.create(params)
       # preconditions
-      raise Error, 'User is not of type Facade::User!' if params[:user].nil? or not params[:user].is_a?(Facade::User)
-      raise Error, 'Type is nil or empty string!' if params[:type].nil? or params[:type].empty?
-      raise Error, 'Facade::User has no cc_model. cc_model is nil!' if params[:user].cc_model.nil?
-      raise Error, 'Facade::User has no auth proxy. auth proxy is nil!' if params[:user].auth_proxy.nil?
+      raise 'User is not of type Facade::User!' if params[:user].nil? or not params[:user].is_a?(Facade::User)
+      raise 'Type is nil or empty string!' if params[:type].nil? or params[:type].empty?
+      raise 'Facade::User has no cc_model. cc_model is nil!' if params[:user].cc_model.nil?
+      raise 'Facade::User has no auth proxy. auth proxy is nil!' if params[:user].auth_proxy.nil?
 
       # hidden dependencies
       facade_user = params[:user]
