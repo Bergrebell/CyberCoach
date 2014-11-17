@@ -158,15 +158,15 @@ module Facade
         # delete first all subscriptions, because cyber coach server, ehmm... does not behave well
         subscriptions = @cc_user.subscriptions
         subscriptions.each do |s|
-          raise Error, 'Could not delete subscription!' if not @auth_proxy.delete(s)
+          raise 'Could not delete subscription!' if not @auth_proxy.delete(s)
         end
 
         partnerships = @cc_user.partnerships
         partnerships.each do |p|
-          raise Error, 'Could not delete partnership!' if not @auth_proxy.delete(p)
+          raise 'Could not delete partnership!' if not @auth_proxy.delete(p)
         end
 
-        raise Error, 'Could not delete cyber coach user!' if not @auth_proxy.delete(@cc_user)
+        raise 'Could not delete cyber coach user!' if not @auth_proxy.delete(@cc_user)
         @rails_user.destroy
         true
       rescue
@@ -302,7 +302,7 @@ module Facade
       RestAdapter::Models::Sport::Types.each do |sport|
         hash = {user: cc_user, sport: sport, public_visible: RestAdapter::Privacy::Public}
         subscription = RestAdapter::Models::Subscription.new(hash)
-        raise Error, 'Could not create subscription!' if not auth_proxy.save(subscription)
+        raise 'Could not create subscription!' if not auth_proxy.save(subscription)
       end
     end
 

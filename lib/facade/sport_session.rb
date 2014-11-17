@@ -2,6 +2,30 @@ module Facade
 
   class SportSession < Facade::BaseFacade
 
+    class Running < SportSession
+      def self.rails_class
+        ::Running
+      end
+    end
+
+    class Boxing < SportSession
+      def self.rails_class
+        ::Boxing
+      end
+    end
+
+    class Soccer < SportSession
+      def self.rails_class
+        ::Soccer
+      end
+    end
+
+    class Cycling < SportSession
+      def self.rails_class
+        ::Cycling
+      end
+    end
+
     DATETIME_FORMAT = '%Y-%m-%d' # example: 2014-01-01
     # lookup tables for finding the right entry type and sport type
 
@@ -17,18 +41,24 @@ module Facade
     }
 
     SportTypeLookup = {
-          'Running' => RestAdapter::Models::Sport.new(name: 'Running'),
-          'Boxing' => RestAdapter::Models::Sport.new(name: 'Boxing'),
-          'Soccer' => RestAdapter::Models::Sport.new(name: 'Soccer'),
-          'Cycling' => RestAdapter::Models::Sport.new(name: 'Cycling'),
-          'running' => RestAdapter::Models::Sport.new(name: 'Running'),
-          'boxing' => RestAdapter::Models::Sport.new(name: 'Boxing'),
-          'soccer' => RestAdapter::Models::Sport.new(name: 'Soccer'),
-          'cycling' => RestAdapter::Models::Sport.new(name: 'Cycling'),
+          'Running' => RestAdapter::Models::Sport::Type::Running,
+          'Boxing' => RestAdapter::Models::Sport::Type::Boxing,
+          'Soccer' => RestAdapter::Models::Sport::Type::Soccer,
+          'Cycling' => RestAdapter::Models::Sport::Type::Cycling,
+          'running' => RestAdapter::Models::Sport::Type::Running,
+          'boxing' => RestAdapter::Models::Sport::Type::Boxing,
+          'soccer' => RestAdapter::Models::Sport::Type::Soccer,
+          'cycling' => RestAdapter::Models::Sport::Type::Cycling
     }
 
+    RailsModelClass = {
+        'Running' => ::Running,
+        'Boxing' => ::Boxing,
+        'Soccer' => ::Soccer,
+        'Cycling' => ::Cycling
+    }
 
-    def initialize(params={})
+      def initialize(params={})
       # preconditions
       raise ':cc_entry is missing or wrong type!' if params[:cc_entry].nil? or not params[:cc_entry].is_a?(RestAdapter::Models::Entry)
       raise ':rails_sport_session is missing or wrong type!' if params[:rails_sport_session].nil? or not params[:rails_sport_session].is_a?(::SportSession)
@@ -75,6 +105,17 @@ module Facade
     end
 
 
+    # for rails compatibility: called by rails form helpers to create the right url and to choose the right http method
+    def new_record?
+      @cc_entry.cc_id.nil?
+    end
+
+    # for rails compatibility: called by rails form helpers to create the right url and to choose the right http method
+    def persisted?
+      !@cc_entry.cc_id.nil?
+    end
+
+
     # Correct entry_date string for the views.
     def entry_date
       begin #Try if we can format entry date. If it fails then its probably nil.
@@ -97,17 +138,23 @@ module Facade
     
     def self.create(params)
       # preconditions
-      raise Error, 'User is not of type Facade::User!' if params[:user].nil? or not params[:user].is_a?(Facade::User)
-      raise Error, 'Type is nil or empty string!' if params[:type].nil? or params[:type].empty?
-      raise Error, 'Facade::User has no cc_model. cc_model is nil!' if params[:user].cc_model.nil?
-      raise Error, 'Facade::User has no auth proxy. auth proxy is nil!' if params[:user].auth_proxy.nil?
+      raise 'User is not of type Facade::User!' if params[:user].nil? or not params[:user].is_a?(Facade::User)
+      raise 'Type is nil or empty string!' if params[:type].nil? or params[:type].empty?
+      raise 'Facade::User has no cc_model. cc_model is nil!' if params[:user].cc_model.nil?
+      raise 'Facade::User has no auth proxy. auth proxy is nil!' if params[:user].auth_proxy.nil?
 
       # hidden dependencies
       facade_user = params[:user]
       cc_user = facade_user.cc_model
       auth_proxy  = facade_user.auth_proxy
       rails_user = facade_user.rails_model
-      rails_sport_session =  ::SportSession.new user_id: rails_user.id, type: params[:type], date: params[:entry_date], location: params[:entry_location]
+      rails_model_class = ::SportSession #TODO: use RailsModelClass[params[:type]]
+      rails_sport_session = rails_model_class.new(
+          user_id: rails_user.id,
+          type: params[:type],
+          date: params[:entry_date],
+          location: params[:entry_location]
+      )
 
       # Array of IDs of users that we want to invite for the sport session
       users_invited = (params[:users_invited].present? and params[:users_invited].kind_of?(Array)) ? params[:users_invited] : []
