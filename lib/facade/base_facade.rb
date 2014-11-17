@@ -60,6 +60,8 @@ module Facade
         rails_wrap(object)
       elsif object.is_a? cc_class
         cc_wrap(object)
+      elsif object.is_a? self # just for completeness: do nothing if we have a facade object
+        object
       else
         raise 'Error'
       end
