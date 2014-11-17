@@ -4,10 +4,10 @@ class RunningsController < ApplicationController
   # List all running sessions
   def index
     # Grab all the running sessions where the current user is a participant
-    runnings = SportSession.confirmed_sessions_from_user(current_user.id, 'Running')
+    runnings = current_user.sport_sessions_confirmed('Running')
     @runnings_upcoming = runnings.select { |running| Date.parse(running.date.to_s) > Date.today}
     @runnings_past = runnings.select { |running| Date.parse(running.date.to_s) < Date.today}
-    @invitations = SportSession.unconfirmed_sessions_from_user(current_user.id, 'Running')
+    @invitations = current_user.sport_sessions_unconfirmed('Running')
   end
 
   def new
@@ -39,28 +39,20 @@ class RunningsController < ApplicationController
 
   # POST /runnings
   def create
-
     date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
     entry_params = sport_session_params.merge({user: current_user, type: 'Running', entry_date: date_time_object})
+    #entry_params[:users_invited] = User.select('id').where('username IN (?)', entry_params[:users_invited])
 
-    # Workaround, we actually need the user ID and not username. We'll fix this later
-    ################################################################################
     users_invited = []
     if entry_params[:users_invited].present?
       entry_params[:users_invited].each do |username|
-        user = User.where(:name => username).first
+        user = User.where(:username => username).first
         if user.present?
           users_invited.push(user.id)
         end
       end
     end
     entry_params[:users_invited] = users_invited
-    ################################################################################
-
-
-    # @wanze => this is a one-liner :-)
-    # entry_params[:users_invited] = User.select(:id).where('name in (?)', entry_params[:users_invited])
-
     @entry = Facade::SportSession.create(entry_params)
 
     if @entry.save

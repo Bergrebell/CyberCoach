@@ -31,7 +31,7 @@
               <ul>
                 <% s.sport_session_participants.each do |p| %>
                     <% if p.confirmed? %>
-                        <li><%= p.user.name %></li>
+                        <li><%= p.user.username %></li>
                     <% end %>
                 <% end %>
               </ul>
@@ -71,7 +71,7 @@
             <td>
               <ul>
                 <% s.sport_session_participants.each do |p| %>
-                    <li><%= p.user.name %></li>
+                    <li><%= p.user.username %></li>
                 <% end %>
               </ul>
             </td>
@@ -108,7 +108,7 @@
             <td>
               <ul>
                 <% s.sport_session_participants.each do |p| %>
-                    <li><%= p.user.name %></li>
+                    <li><%= p.user.username %></li>
                 <% end %>
               </ul>
             </td>

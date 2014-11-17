@@ -2,7 +2,7 @@ class SportSessionsController < ApplicationController
 
 
   def index
-    @sessions = SportSession.confirmed_sessions_from_user(current_user.id)
+    @sessions = current_user.sport_sessions_confirmed
   end
 
   def show

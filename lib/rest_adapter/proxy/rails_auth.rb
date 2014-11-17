@@ -60,7 +60,7 @@ module RestAdapter
           user = ::User.find_by id: @rails_user_id
           if user
             @password = user.password
-            @username = user.name
+            @username = user.username
             @valid = true
           else
             @valid = false

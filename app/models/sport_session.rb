@@ -41,11 +41,11 @@ class SportSession < ActiveRecord::Base
   end
 
 
-  def self.confirmed_sessions_from_user(user_id, type='')
+  def self.all_sport_sessions_confirmed_from_user(user_id, type='')
     self.all_sessions_from_user(user_id, type, true)
   end
 
-  def self.unconfirmed_sessions_from_user(user_id, type='')
+  def self.all_sport_sessions_unconfirmed_from_user(user_id, type='')
     self.all_sessions_from_user(user_id, type, false)
   end
 
