@@ -18,7 +18,7 @@ module RestAdapter
 
       serialize_properties :password, :email, :real_name, :public_visible
 
-      attr_accessor :username, :password, :email, :real_name, :public_visible, :partnerships, :subscriptions
+      attr_accessor :username, :password, :email, :real_name, :public_visible, :partnerships, :subscriptions, :date_created
 
       lazy_loading_on :email, :real_name, :public_visible, :partnerships, :subscriptions
 
