@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117065709) do
+ActiveRecord::Schema.define(version: 20141118213114) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
@@ -86,6 +86,9 @@ ActiveRecord::Schema.define(version: 20141117065709) do
     t.datetime "updated_at"
     t.string   "location"
     t.datetime "date"
+    t.string   "title"
+    t.float    "latitude"
+    t.float    "longitude"
   end
 
   create_table "sports", force: true do |t|

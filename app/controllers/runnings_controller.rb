@@ -11,7 +11,7 @@ class RunningsController < ApplicationController
   end
 
   def new
-    @running = Facade::SportSession.create(user: current_user, type: 'Running')
+    @running = Facade::SportSession::Running.create(user: current_user, type: 'Running')
     @friends = current_user.friends # TODO This should return users of type Facade?
   end
 
