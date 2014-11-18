@@ -5,8 +5,9 @@
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => false %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => false %>
   <%= csrf_meta_tags %>
+  <%= yield(:head) %>
 </head>
-<body>
+<body class="<%= controller_name %> <%= action_name %>">
 
 <div class="uk-container uk-container-center">
   <nav class="uk-navbar uk-margin">
@@ -59,5 +60,8 @@
   <%= yield %>
 
 </div>
+
+<%= yield(:javascript) %>
+
 </body>
 </html>
