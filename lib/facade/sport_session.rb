@@ -105,17 +105,6 @@ module Facade
     end
 
 
-    # for rails compatibility: called by rails form helpers to create the right url and to choose the right http method
-    def new_record?
-      @cc_entry.cc_id.nil?
-    end
-
-    # for rails compatibility: called by rails form helpers to create the right url and to choose the right http method
-    def persisted?
-      !@cc_entry.cc_id.nil?
-    end
-
-
     # Correct entry_date string for the views.
     def entry_date
       begin #Try if we can format entry date. If it fails then its probably nil.

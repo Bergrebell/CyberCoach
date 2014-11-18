@@ -17,7 +17,7 @@ class UsersController < ApplicationController
 
   # GET /users/new
   def new
-    @user = User.new
+    @user = Facade::User.create
   end
 
   # GET /users/1/edit

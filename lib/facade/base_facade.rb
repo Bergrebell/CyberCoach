@@ -85,6 +85,18 @@ module Facade
     end
 
 
+    # for rails compatibility: called by rails form helpers to choose the right http method
+    def new_record?
+      cc_model.date_created.nil?
+    end
+
+
+    # for rails compatibility: called by rails form helpers to choose the right http method
+    def persisted?
+      !cc_model.date_created.nil?
+    end
+
+
     # Integrates the gem WillPaginate into the BaseFacade
     def self.paginate(options)
       page = options[:page] || 1 # use page = 1 as default

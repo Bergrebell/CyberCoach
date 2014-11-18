@@ -74,11 +74,17 @@ module Facade
     #   password: 'test', password_confirmation: 'test')
     #   => Facade::User
     #
-    def self.create(params={})
-      params = params.merge(public_visible: RestAdapter::Privacy::Public) # always use public
-      cc_user = RestAdapter::Models::User.new(params)
-      auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password
-      rails_user = ::User.new params.merge(username: params[:username], password: params[:password])
+    def self.create(params=nil)
+      if params.nil?
+        cc_user = RestAdapter::Models::User.new({})
+        rails_user = ::User.new
+        auth_proxy = nil
+      else
+        params = params.merge(public_visible: RestAdapter::Privacy::Public) # always use public
+        cc_user = RestAdapter::Models::User.new(params)
+        auth_proxy = RestAdapter::Proxy::Auth.new username: cc_user.username, password: cc_user.password
+        rails_user = ::User.new params.merge(username: params[:username], password: params[:password])
+      end
       self.new cc_user: cc_user, rails_user: rails_user, auth_proxy: auth_proxy
     end
 
