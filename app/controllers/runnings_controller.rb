@@ -11,13 +11,13 @@ class RunningsController < ApplicationController
   end
 
   def new
-    @running = Facade::SportSession::Running.create(user: current_user, type: 'Running')
+    @running = Facade::SportSession::Running.create(user: current_user)
     @friends = current_user.friends # TODO This should return users of type Facade?
   end
 
 
   def edit
-    @running = Facade::SportSession.find_by id: params[:id]
+    @running = Facade::SportSession::Running.find_by id: params[:id]
 
     if Date.parse(@running.entry_date) < Date.today
       # Can only edit results
@@ -103,7 +103,7 @@ class RunningsController < ApplicationController
   end
 
   def sport_session_params
-    Hash[params[:sport_session].map {|k,v| [k.to_sym,v]}]
+    Hash[params[:running].map {|k,v| [k.to_sym,v]}]
   end
 
   def results_params

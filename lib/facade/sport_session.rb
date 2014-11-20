@@ -3,24 +3,40 @@ module Facade
   class SportSession < Facade::BaseFacade
 
     class Running < SportSession
+      def self.create(params)
+        super(params.merge(type: 'Running'))
+      end
+
       def self.rails_class
         ::Running
       end
     end
 
     class Boxing < SportSession
+      def self.create(params)
+        super(params.merge(type: 'Boxing'))
+      end
+
       def self.rails_class
         ::Boxing
       end
     end
 
     class Soccer < SportSession
+      def self.create(params)
+        super(params.merge(type: 'Soccer'))
+      end
+
       def self.rails_class
         ::Soccer
       end
     end
 
     class Cycling < SportSession
+      def self.create(params)
+        super(params.merge(type: 'Cycling'))
+      end
+
       def self.rails_class
         ::Cycling
       end
@@ -137,7 +153,7 @@ module Facade
       cc_user = facade_user.cc_model
       auth_proxy  = facade_user.auth_proxy
       rails_user = facade_user.rails_model
-      rails_model_class = ::SportSession #TODO: use RailsModelClass[params[:type]]
+      rails_model_class = RailsModelClass[params[:type]]
       rails_sport_session = rails_model_class.new(
           user_id: rails_user.id,
           type: params[:type],
@@ -198,6 +214,9 @@ module Facade
       entry_hash = params.dup
       entry_hash[:type] = Facade::SportSession::EntryTypeLookup[params[:type]]
       begin
+        rails_sport_session_properties = {location: entry_hash[:entry_location], date: entry_hash[:entry_date]}
+        @rails_sport_session.assign_attributes rails_sport_session_properties
+        @rails_sport_session.save
         entry_hash = entry_hash.merge(uri: @rails_sport_session.cybercoach_uri, cc_id: @cc_entry.cc_id)
         @cc_entry = RestAdapter::Models::Entry.new entry_hash
       rescue => e
