@@ -40,7 +40,7 @@ class RunningsController < ApplicationController
   # POST /runnings
   def create
     date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
-    entry_params = sport_session_params.merge({user: current_user, type: 'Running', entry_date: date_time_object})
+    entry_params = sport_session_params.merge({user: current_user, entry_date: date_time_object})
     #entry_params[:users_invited] = User.select('id').where('username IN (?)', entry_params[:users_invited])
 
     users_invited = []
@@ -83,7 +83,7 @@ class RunningsController < ApplicationController
     else
 
       # Update entry
-      entry_params = sport_session_params.merge({user: current_user, type: 'Running'})
+      entry_params = sport_session_params.merge({user: current_user})
       if @running.update(entry_params)
         redirect_to runnings_url, notice: 'Running session successfully updated'
       else

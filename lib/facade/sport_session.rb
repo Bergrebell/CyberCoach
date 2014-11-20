@@ -158,7 +158,8 @@ module Facade
           user_id: rails_user.id,
           type: params[:type],
           date: params[:entry_date],
-          location: params[:entry_location]
+          location: params[:entry_location],
+          title: params[:title] # add here the other properties
       )
 
       # Array of IDs of users that we want to invite for the sport session
@@ -205,18 +206,25 @@ module Facade
     end
 
     def update(params={})
-      update_attributes(params)
+      type = Facade::SportSession::EntryTypeLookup[@rails_sport_session.type]
+      update_attributes(params.merge(type: type))
       @auth_proxy.save(@cc_entry)
     end
 
 
     def update_attributes(params)
       entry_hash = params.dup
-      entry_hash[:type] = Facade::SportSession::EntryTypeLookup[params[:type]]
       begin
-        rails_sport_session_properties = {location: entry_hash[:entry_location], date: entry_hash[:entry_date]}
-        @rails_sport_session.assign_attributes rails_sport_session_properties
-        @rails_sport_session.save
+
+        # sync rails sport session properties
+        rails_sport_session_properties = {
+            location: entry_hash[:entry_location],
+            date: entry_hash[:entry_date],
+            title: entry_hash[:title]
+        }
+
+        @rails_sport_session.update rails_sport_session_properties
+
         entry_hash = entry_hash.merge(uri: @rails_sport_session.cybercoach_uri, cc_id: @cc_entry.cc_id)
         @cc_entry = RestAdapter::Models::Entry.new entry_hash
       rescue => e
