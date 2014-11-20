@@ -30,8 +30,8 @@
 
 <div class="uk-grid" data-uk-grid-margin>
   <div class="uk-width-medium-3-4">
-    <h1 class="uk-heading-large">Jogging an der Aare</h1>
-    <p class="uk-text-large">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
+    <h1 class="uk-heading-large"><%= @session.title %></h1>
+    <p class="uk-text-large"><%= @session.comment %></p>
   </div>
 </div>
 
@@ -44,24 +44,28 @@
       <table class="uk-table uk-text-nowrap">
         <tbody>
         <tr>
-          <td><strong>Date</strong></td>
-          <td>29. November, 2014 13:00</td>
-        </tr>
-        <tr>
-          <td><strong>Running Type</strong></td>
-          <td>Street</td>
+          <td><strong>Date/Time</strong></td>
+          <td><%= @session.date %></td>
         </tr>
         <tr>
           <td><strong>Location</strong></td>
-          <td>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</td>
+          <td><%= @session.location %></td>
+        </tr>
+        <tr>
+          <td><strong>Duration</strong></td>
+          <td><%= @session.entry_duration %></td>
+        </tr>
+        <tr>
+          <td><strong>Course length</strong></td>
+          <td><%= @session.course_length %></td>
+        </tr>
+        <tr>
+          <td><strong>Course type</strong></td>
+          <td><%= @session.course_type %></td>
         </tr>
         <tr>
           <td><strong>Number of rounds</strong></td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td><strong>Excpected time</strong></td>
-          <td>3</td>
+          <td><%= @session.number_of_rounds %></td>
         </tr>
         </tbody>
       </table>
@@ -105,16 +109,7 @@
 
     </div>
 
-
-    <div class="uk-panel uk-panel-box">
-      <h3 class="uk-panel-title"><i class="uk-icon-users"></i> Users Joining</h3>
-      <ul class="uk-list uk-list-line">
-        <li>Wanze</li>
-        <li>Sveta</li>
-        <li>Alex</li>
-        <li>Roman</li>
-      </ul>
-    </div>
+    <%= render :partial => 'sport_sessions/users_joining', :locals => {:session => @running} %>
 
     <div class="uk-panel uk-panel-box">
       <h3 class="uk-panel-title"><i class="uk-icon-star"></i> Achievements</h3>
