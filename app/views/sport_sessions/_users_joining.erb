@@ -2,7 +2,7 @@
 <div class="uk-panel uk-panel-box">
   <h3 class="uk-panel-title"><i class="uk-icon-users"></i> Users Joining</h3>
   <ul class="uk-list uk-list-line">
-    <% @session.sport_session_participants.order('confirmed DESC').each do |participant| %>
+    <% session.sport_session_participants.order('confirmed DESC').each do |participant| %>
         <% if participant.confirmed? %>
             <li><%= participant.user.username %></li>
         <% else %>
