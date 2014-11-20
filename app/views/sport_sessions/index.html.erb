@@ -1,16 +1,56 @@
 <h1>Sport Sessions</h1>
 
-<div class="uk-button-dropdown" data-uk-dropdown>
-  <button class="uk-button">Create New Session</button>
-  <div class="uk-dropdown uk-dropdown-small">
-    <ul class="uk-nav uk-nav-dropdown">
-      <li><%= link_to "Running", new_running_path %></li>
-      <li><%= link_to "Boxing", new_boxing_path %></li>
-      <li><%= link_to "Soccer", new_soccer_path %></li>
-      <li><%= link_to "Cycling", new_cycling_path %></li>
-    </ul>
+<!-- Display search form for offers -->
+<div class="uk-grid">
+  <div class="uk-width-medium-1-1">
+    <div class="uk-panel uk-panel-box">
+      <h3 class="uk-panel-title">Search by</h3>
+      <form class="uk-form uk-form-stacked" action="<%= sport_sessions_path %>" method="GET">
+        <div class="uk-grid">
+          <div class="uk-width-1-4">
+            <label class="uk-form-label" for="type">Sport</label>
+            <select name="type" id="type" class="uk-width-1-1">
+              <option value="">All</option>
+              <% @sessions.each do |s| %>
+                  <option value="<%= s.id %>"><%= s.type %></option>
+              <% end %>
+            </select>
+          </div>
+          <div class="uk-width-1-4">
+            <label class="uk-form-label" for="Date">Date</label>
+            <select name="date" id="date" class="uk-width-1-1">
+              <option value="">All</option>
+
+            </select>
+          </div>
+          <div class="uk-width-1-4">
+            <label class="uk-form-label" for="location">Location</label>
+            <select name="type" id="location" class="uk-width-1-1">
+              <option value="">All</option>
+            </select>
+          </div>
+          <div class="uk-width-1-4">
+            <label class="uk-form-label" for="participant">Participants</label>
+            <select name="type" id="participant" class="uk-width-1-1">
+              <option value="">All</option>
+            </select>
+          </div>
+        </div>
+        <div class="uk-grid">
+          <div class="uk-width-1-1">
+            <button class="uk-button uk-button-primary" type="submit">Go!</button>
+          </div>
+        </div>
+        <% #This adds the needed field for the CRSF protection to the form %>
+        <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
+      </form>
+    </div>
   </div>
 </div>
+
+<!-- Display search form for offers -->
+
+<!-- Listing sport sessions -->
 
 <table class="uk-table uk-table-striped uk-table-hover">
   <thead>
@@ -45,3 +85,15 @@
   <% end %>
   </tbody>
 </table>
+
+<div class="uk-button-dropdown" data-uk-dropdown>
+  <button class="uk-button">Create New Session</button>
+  <div class="uk-dropdown uk-dropdown-small">
+    <ul class="uk-nav uk-nav-dropdown">
+      <li><%= link_to "Running", new_running_path %></li>
+      <li><%= link_to "Boxing", new_boxing_path %></li>
+      <li><%= link_to "Soccer", new_soccer_path %></li>
+      <li><%= link_to "Cycling", new_cycling_path %></li>
+    </ul>
+  </div>
+</div>

@@ -1,8 +1,14 @@
 class SportSessionsController < ApplicationController
 
-
   def index
-    @sessions = current_user.sport_sessions_confirmed
+
+    # If sessions must be filtered, use the passed params for filtering the confirmed sessions
+    # display all confirmed sessions otherwise
+    if params.count > 0
+      @sessions = current_user.sport_sessions_filtered(params)
+    else
+      @sessions = current_user.sport_sessions_confirmed
+    end
   end
 
   def show

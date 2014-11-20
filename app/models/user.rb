@@ -58,4 +58,8 @@ class User < ActiveRecord::Base
     SportSession.all_sport_sessions_unconfirmed_from_user(self.id, type)
   end
 
+  def sport_sessions_filtered(params)
+    SportSession.all_sport_sessions_filtered_from_user(self.id, params)
+  end
+
 end

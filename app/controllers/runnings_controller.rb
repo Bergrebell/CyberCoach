@@ -39,7 +39,7 @@ class RunningsController < ApplicationController
 
   # POST /runnings
   def create
-    date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
+    date_time_object = DateTime.strptime(sport_session_params[:entry_date], Facade::SportSession::DATETIME_FORMAT)
     entry_params = sport_session_params.merge({user: current_user, type: 'Running', entry_date: date_time_object})
     #entry_params[:users_invited] = User.select('id').where('username IN (?)', entry_params[:users_invited])
 

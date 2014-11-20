@@ -23,7 +23,7 @@ class BoxingsController < ApplicationController
 
   # POST /boxings
   def create
-    date_time_object = DateTime.strptime(params[:date], '%Y-%m-%d')
+    date_time_object = DateTime.strptime(params[:date], Facade::SportSession::DATETIME_FORMAT)
     entry_params = params.merge({user: current_user, type: 'Boxing', entry_date: date_time_object})
     entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
     @entry = Facade::SportSession.create(entry_params)

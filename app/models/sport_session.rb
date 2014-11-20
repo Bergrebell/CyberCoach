@@ -49,4 +49,24 @@ class SportSession < ActiveRecord::Base
     self.all_sessions_from_user(user_id, type, false)
   end
 
+  # find sport sessions of the give user using filters (copied from Stefan's CarTrading filter for offers)
+  def self.all_sport_sessions_filtered_from_user(user_id, params)
+    user = {:user_id => user_id}
+    filter = {}
+    if params[:type].present?
+      type = {:type => params[:type]}
+      filter.merge!(type)
+    end
+
+    if params[:location].present?
+      location = {:location => params[:location]}
+      filter.merge!(location)
+    end
+
+    # TODO: add more filters: data, participants, ...
+
+
+    SportSession.where(filter).joins(:sport_session_participants).where(sport_session_participants: user)
+  end
+
 end
