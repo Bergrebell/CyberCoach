@@ -114,7 +114,7 @@
             </td>
             <td>
               <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
-              <%= link_to 'Confirm', running_path(s), class: "uk-button uk-button-small" %>
+              <a href="/runnings/<%= s.id %>/confirm/<%= current_user.id %>" class="uk-button uk-button-small">Confirm</a>
             </td>
           </tr>
       <% end %>

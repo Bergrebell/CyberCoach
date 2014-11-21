@@ -1,4 +1,4 @@
-class RunningsController < ApplicationController
+class RunningsController < SportSessionsController
 
 
   # List all running sessions
@@ -18,6 +18,9 @@ class RunningsController < ApplicationController
 
   def edit
     @running = Facade::SportSession::Running.find_by id: params[:id]
+    if @running.user_id != current_user.id
+      redirect_to runnings_url, alert: 'Permission denied'
+    end
     @friends = current_user.friends
   end
 
@@ -33,7 +36,7 @@ class RunningsController < ApplicationController
     if @entry.save
       redirect_to runnings_url, notice: 'Running session successfully created'
     else
-      flash[:notice] = 'Unable to create Running session'
+      flash[:alert] = 'Unable to create Running session'
       render :new
     end
   end
@@ -62,10 +65,7 @@ class RunningsController < ApplicationController
   # Prepare parameters for create/update method
   #
   def running_params
-    _params = Hash[params[:running].map {|k,v| [k.to_sym,v]}]
-    _params[:entry_date] = DateTime.strptime(_params[:entry_date] + ' ' + _params[:entry_time], '%Y-%m-%d %H:%M') # Where's this constant? ;)
-    _params[:user] = current_user
-    _params
+    sport_session_params('running') # Delegates to method on superclass (SportSessionController)
   end
 
   def results_params

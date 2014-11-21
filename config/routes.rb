@@ -31,10 +31,10 @@ Rails.application.routes.draw do
   resources :runnings
 
 
-  get 'runnings/:id/edit/result' => 'running#edit_result'
-  get 'boxings/:id/edit/result' => 'boxing#edit_result'
-  post 'runnings/:id/result/save' => 'running#save_result'
-  post 'boxings/:id/result/save' => 'boxing#save_result'
+  get 'runnings/:id/edit/result' => 'runnings#edit_result'
+  post 'runnings/:id/result/save' => 'runnings#save_result'
+  get 'boxings/:id/edit/result' => 'boxings#edit_result'
+  post 'boxings/:id/result/save' => 'boxings#save_result'
 
   resources :cyclings
 
@@ -42,7 +42,9 @@ Rails.application.routes.draw do
 
   resources :soccers
 
-  resources :sport_sessions
+  resources :sport_sessions do
+    get '/confirm/:user_id', :to => 'sport_sessions#confirm', :as => 'confirm'
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
