@@ -4,41 +4,49 @@
 <div class="uk-grid">
   <div class="uk-width-medium-1-1">
     <div class="uk-panel uk-panel-box">
-      <h3 class="uk-panel-title">Search by</h3>
+      <h3 class="uk-panel-title">Filter  by</h3>
       <form class="uk-form uk-form-stacked" action="<%= sport_sessions_path %>" method="GET">
         <div class="uk-grid">
           <div class="uk-width-1-4">
+
             <label class="uk-form-label" for="type">Sport</label>
             <select name="type" id="type" class="uk-width-1-1">
               <option value="">All</option>
-              <% @sessions.each do |s| %>
-                  <option value="<%= s.id %>"><%= s.type %></option>
+              <% @all_sessions.each do |s| %>
+                  <option value="<%= s.type %>"><%= s.type %></option>
               <% end %>
             </select>
           </div>
-          <div class="uk-width-1-4">
-            <label class="uk-form-label" for="Date">Date</label>
-            <select name="date" id="date" class="uk-width-1-1">
-              <option value="">All</option>
 
-            </select>
-          </div>
           <div class="uk-width-1-4">
-            <label class="uk-form-label" for="location">Location</label>
-            <select name="type" id="location" class="uk-width-1-1">
+            <label class="uk-form-label" for="date">Date</label>
+              <input type="datetime" name="date" data-uk-datepicker="{weekstart:0, format:'YYYY-MM-DD'}" id="entry_date" class="uk-width-1-1">
+          </div>
+
+          <div class="uk-width-1-4">
+            <label class="uk-form-label" for="entry_location">Location</label>
+            <select name="entry_location" id="entry_location" class="uk-width-1-1">
               <option value="">All</option>
+              <% @all_sessions.each do |s| %>
+                  <option value="<%= s.location %>"><%= s.location %></option>
+              <% end %>
             </select>
           </div>
+
           <div class="uk-width-1-4">
             <label class="uk-form-label" for="participant">Participants</label>
-            <select name="type" id="participant" class="uk-width-1-1">
+            <select name="participant" id="participant" class="uk-width-1-1">
               <option value="">All</option>
+              <% @all_confirmed_participants.each do |p| %>
+                  <option value="<%= p.user_id%>"><%= p.user.username %></option>
+              <% end %>
             </select>
           </div>
+
         </div>
         <div class="uk-grid">
           <div class="uk-width-1-1">
-            <button class="uk-button uk-button-primary" type="submit">Go!</button>
+            <button class="uk-button uk-button-primary" type="submit">Search</button>
           </div>
         </div>
         <% #This adds the needed field for the CRSF protection to the form %>

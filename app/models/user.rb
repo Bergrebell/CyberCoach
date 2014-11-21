@@ -101,6 +101,13 @@ class User < ActiveRecord::Base
     SportSession.all_sport_sessions_unconfirmed_from_user(self.id, type)
   end
 
+  def confirmed_participants_of_all_sessions
+    session_ids = self.sport_sessions_confirmed.map{|s|s.id}
+    SportSessionParticipant.where("confirmed = ? AND sport_session_id IN (#{session_ids.join(', ')})", true).select(:user_id).distinct
+  end
+
+
+
   def sport_sessions_filtered(params)
     SportSession.all_sport_sessions_filtered_from_user(self.id, params)
   end
