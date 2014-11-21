@@ -1,7 +1,4 @@
-<h2>Create a Running Session</h2>
+<h1>Create a Running Session</h1>
 
-<%= form_for @running, url: runnings_url, method: :post, :html => {:class => 'uk-form uk-form-horizontal'} do |f| %>
+<%= render 'form' %>
 
-    <%= render 'form', :f => f %>
-
-<% end %>

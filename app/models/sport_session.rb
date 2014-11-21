@@ -3,6 +3,16 @@ class SportSession < ActiveRecord::Base
   has_many :users, through: :sport_session_participants
 
 
+  # Virtual attribute, this one is merged into the date
+  #
+  def entry_time=(param)
+    @entry_time = param
+  end
+
+  def entry_time
+    self.date.strftime('%H:%M')
+  end
+
   # Invite some users to join this event
   # @param array user_ids
   #

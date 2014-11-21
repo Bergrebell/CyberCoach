@@ -28,10 +28,7 @@ class RunningsController < ApplicationController
 
   # POST /runnings
   def create
-    date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
-    entry_params = sport_session_params.merge({user: current_user, entry_date: date_time_object})
-
-    @entry = Facade::SportSession::Running.create(entry_params)
+    @entry = Facade::SportSession::Running.create(running_params)
 
     if @entry.save
       redirect_to runnings_url, notice: 'Running session successfully created'
@@ -44,10 +41,8 @@ class RunningsController < ApplicationController
 
   def update
     @running = Facade::SportSession::Running.find_by id: params[:id]
-    date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
-    entry_params = sport_session_params.merge({user: current_user, entry_date: date_time_object})
 
-    if @running.update(entry_params)
+    if @running.update(running_params)
       redirect_to runnings_url, notice: 'Running session successfully updated'
     else
       render :edit
@@ -64,8 +59,13 @@ class RunningsController < ApplicationController
     end
   end
 
-  def sport_session_params
-    Hash[params[:running].map {|k,v| [k.to_sym,v]}]
+  # Prepare parameters for create/update method
+  #
+  def running_params
+    _params = Hash[params[:running].map {|k,v| [k.to_sym,v]}]
+    _params[:entry_date] = DateTime.strptime(_params[:entry_date] + ' ' + _params[:entry_time], '%Y-%m-%d %H:%M') # Where's this constant? ;)
+    _params[:user] = current_user
+    _params
   end
 
   def results_params

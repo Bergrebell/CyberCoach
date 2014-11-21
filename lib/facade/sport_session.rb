@@ -159,7 +159,9 @@ module Facade
           type: params[:type],
           date: params[:entry_date],
           location: params[:entry_location],
-          title: params[:title] # add here the other properties
+          title: params[:title],
+          latitude: params[:latitude],
+          longitude: params[:longitude]
       )
 
       # Array of IDs of users that we want to invite for the sport session
@@ -220,7 +222,9 @@ module Facade
         rails_sport_session_properties = {
             location: entry_hash[:entry_location],
             date: entry_hash[:entry_date],
-            title: entry_hash[:title]
+            title: entry_hash[:title],
+            latitude: params[:latitude],
+            longitude: params[:longitude]
         }
 
         @rails_sport_session.update rails_sport_session_properties
