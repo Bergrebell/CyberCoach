@@ -1,0 +1,13 @@
+<!-- Display all users joining the event -->
+<div class="uk-panel uk-panel-box">
+  <h3 class="uk-panel-title"><i class="uk-icon-users"></i> Users Joining</h3>
+  <ul class="uk-list uk-list-line">
+    <% session.sport_session_participants.order('confirmed DESC').each do |participant| %>
+        <% if participant.confirmed? %>
+            <li><%= link_to participant.user.username, participant.user %></li>
+        <% else %>
+            <li><%= link_to participant.user.username, participant.user %><span class="uk-text-muted uk-text-small"> (not confirmed yet)</span></li>
+        <% end %>
+    <% end %>
+  </ul>
+</div>
