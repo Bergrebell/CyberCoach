@@ -12,24 +12,13 @@ class RunningsController < ApplicationController
 
   def new
     @running = Facade::SportSession::Running.create(user: current_user)
-    @friends = current_user.friends # TODO This should return users of type Facade?
+    @friends = current_user.friends
   end
 
 
   def edit
     @running = Facade::SportSession::Running.find_by id: params[:id]
-
-    if Date.parse(@running.entry_date) < Date.today
-      # Can only edit results
-      @results = @running.sport_session_participants.where(:user_id => current_user.id).first!.result
-      render :edit_results
-    else
-      # Normal edit
-      @friends = current_user.friends
-      render :edit
-    end
-
-
+    @friends = current_user.friends
   end
 
   def show
@@ -41,19 +30,8 @@ class RunningsController < ApplicationController
   def create
     date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
     entry_params = sport_session_params.merge({user: current_user, entry_date: date_time_object})
-    #entry_params[:users_invited] = User.select('id').where('username IN (?)', entry_params[:users_invited])
 
-    users_invited = []
-    if entry_params[:users_invited].present?
-      entry_params[:users_invited].each do |username|
-        user = User.where(:username => username).first
-        if user.present?
-          users_invited.push(user.id)
-        end
-      end
-    end
-    entry_params[:users_invited] = users_invited
-    @entry = Facade::SportSession.create(entry_params)
+    @entry = Facade::SportSession::Running.create(entry_params)
 
     if @entry.save
       redirect_to runnings_url, notice: 'Running session successfully created'
@@ -65,30 +43,14 @@ class RunningsController < ApplicationController
 
 
   def update
-    @running = Facade::SportSession.find_by id: params[:id]
+    @running = Facade::SportSession::Running.find_by id: params[:id]
+    date_time_object = DateTime.strptime(sport_session_params[:entry_date], '%Y-%m-%d')
+    entry_params = sport_session_params.merge({user: current_user, entry_date: date_time_object})
 
-    if Date.parse(@running.entry_date) < Date.today
-
-      # Save result
-      @results = @running.sport_session_participants.where(:user_id => current_user.id).first!.result
-      @results.length = results_params[:length]
-      @results.time = results_params[:time]
-
-      @results.save
-
-      # TODO Check for achievements
-
-      redirect_to runnings_url, notice: 'Saved details'
-
+    if @running.update(entry_params)
+      redirect_to runnings_url, notice: 'Running session successfully updated'
     else
-
-      # Update entry
-      entry_params = sport_session_params.merge({user: current_user})
-      if @running.update(entry_params)
-        redirect_to runnings_url, notice: 'Running session successfully updated'
-      else
-        render :edit
-      end
+      render :edit
     end
   end
 

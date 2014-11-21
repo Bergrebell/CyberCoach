@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
-    @user = Facade::User.retrieve(params[:id])
+    @user = Facade::User.find_by id: params[:id]
   end
 
   # GET /users/new

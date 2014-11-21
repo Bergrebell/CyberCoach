@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :friendships
+
   # get 'runnings/index'
   # post 'runnings/destroy'
 

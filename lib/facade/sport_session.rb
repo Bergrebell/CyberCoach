@@ -225,6 +225,10 @@ module Facade
 
         @rails_sport_session.update rails_sport_session_properties
 
+        # Also update invited friends
+        users_invited = (entry_hash[:users_invited].present? and entry_hash[:users_invited].kind_of?(Array)) ? entry_hash[:users_invited] : []
+        @rails_sport_session.invite(users_invited)
+
         entry_hash = entry_hash.merge(uri: @rails_sport_session.cybercoach_uri, cc_id: @cc_entry.cc_id)
         @cc_entry = RestAdapter::Models::Entry.new entry_hash
       rescue => e
