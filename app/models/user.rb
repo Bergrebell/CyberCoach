@@ -4,10 +4,10 @@ class User < ActiveRecord::Base
   has_many :sport_sessions, through: :sport_session_participants
   has_many :sport_session_participants
 
-  validates :password, presence: true, confirmation: true, length: { within: 4..10 }
+  validates :password, presence: true, confirmation: true, length: {within: 4..10}
   validates :real_name, presence: true
-  validates :username, presence: true, length: { within: 4..50 }
-  validates :email, email_format: { message: "Doesn't look like an email address!" }
+  validates :username, presence: true, length: {within: 4..50}
+  validates :email, email_format: {message: "Doesn't look like an email address!"}
 
 
   # Return friends of this user
@@ -26,6 +26,7 @@ class User < ActiveRecord::Base
     users
   end
 
+
   # Return received friend requests not yet confirmed
   #
   def received_friend_requests
@@ -37,6 +38,7 @@ class User < ActiveRecord::Base
 
     users
   end
+
 
   # Return sent friend request not yet confirmed
   #
@@ -50,11 +52,24 @@ class User < ActiveRecord::Base
     users
   end
 
-
-  def friend_proposals
-    # User.joins('')
+  # Return array of users not yet befriended with the current user
+  #
+  def friends_proposals
+    users = User.all
+    users.select { |user| not self.befriended_with(user) }
   end
 
+  # Returns true if the current user if befriended with the other user
+  #
+  def befriended_with(other_user)
+    Friendship.where('(user_id = ? OR friend_id = ?) AND (user_id = ? OR friend_id = ?) AND confirmed = ?',
+                     self.id,
+                     self.id,
+                     other_user.id,
+                     other_user.id,
+                     true
+    ).exists?
+  end
 
   # create some virtual attributes
   def password_confirmation

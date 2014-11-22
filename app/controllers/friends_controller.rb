@@ -8,7 +8,7 @@ class FriendsController < ApplicationController
     # users = Facade::User.query do
     #   User.all
     # end
-    @proposals = []
+    @proposals = current_user.friends_proposals
   end
 
 

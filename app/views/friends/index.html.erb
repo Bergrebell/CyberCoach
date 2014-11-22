@@ -1,53 +1,60 @@
-<% if @requests_received.count > 0 %>
-      <div class="uk-panel uk-panel-box uk-margin">
-      <div class="uk-panel-badge uk-badge">New friend requests</div>
-      <% @requests_received.each do |f| %>
-        <form action="<%= friends_confirm_url %>" method="post">
-          <% #This adds the needed field for the CRSF protection to the form %>
-          <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
-          <%= f.username %>
-          <input type="hidden" name="username" value="<%= f.username %>">
-          <input type="submit" class="uk-button" value="Confirm">
-        </form>
-      <% end %>
-      </div>
-<% end %>
+<h1>Friends</h1>
 
 <div class="uk-grid">
+
+  <!-- Friends -->
   <div class="uk-width-medium-2-3">
-    <h2>My Friends</h2>
-    <table class="uk-table">
-      <tr>
-        <th>Username</th>
-        <th>Number of common sessions</th>
-        <th>Actions</th>
-      </tr>
+
+    <% if @requests_received.count > 0 %>
+        <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-primary">
+          <h3 class="uk-title">New Friend Requests</h3>
+          <% @requests_received.each do |f| %>
+              <form action="<%= friends_confirm_url %>" method="post">
+                <% #This adds the needed field for the CRSF protection to the form     %>
+                <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
+                <%= f.username %>
+                <input type="hidden" name="username" value="<%= f.username %>">
+                <input type="submit" class="uk-button" value="Confirm">
+              </form>
+          <% end %>
+        </div>
+    <% end %>
+
+    <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
+      <h3 class="uk-title">My Friends</h3>
+      <table class="uk-table">
+        <tr>
+          <th>Username</th>
+          <th>Common Sessions</th>
+          <th>Actions</th>
+        </tr>
         <% @friends.each do |f| %>
-          <tr>
-            <td><%= f.username %></td>
-            <td>TODO</td>
-            <td><a class="uk-button uk-button-small">View sessions</a></td>
-          </tr>
-        <% end %>
-    </table>
-  </div>
-  <div class="uk-width-medium-1-3">
-    <h2>Suggestions</h2>
-    <table class="uk-table">
-      <tr>
-        <th>Username</th>
-        <th>&nbsp;</th>
-      </tr>
-      <% @proposals.each do |f| %>
-          <tr>
-            <form action="<%= friends_create_url %>" method="post">
-              <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
-              <input type="hidden" name="username" value="<%= f.username %>">
+            <tr>
               <td><%= f.username %></td>
-              <td><input type="submit" class="uk-button uk-button-small" value="Send request"></td>
-            </form>
-          </tr>
-      <% end %>
-    </table>
+              <td>TODO</td>
+              <td><a class="uk-button uk-button-small">View sessions</a></td>
+            </tr>
+        <% end %>
+      </table>
+    </div>
+  </div>
+
+  <!-- Suggestions -->
+  <div class="uk-width-medium-1-3">
+    <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
+      <h3 class="uk-title">Suggestions</h3>
+      <table class="uk-table">
+        <% @proposals.each do |f| %>
+            <tr>
+              <form action="<%= friends_create_url %>" method="post">
+                <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
+                <input type="hidden" name="username" value="<%= f.username %>">
+                <td><%= f.username %></td>
+                <td><input type="submit" class="uk-button uk-button-small" value="Send request"></td>
+              </form>
+            </tr>
+        <% end %>
+      </table>
+    </div>
   </div>
 </div>
