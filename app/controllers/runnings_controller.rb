@@ -24,8 +24,15 @@ class RunningsController < SportSessionsController
     @friends = current_user.friends
   end
 
+
   def edit_result
     @running = Facade::SportSession::Running.find_by id: params[:id]
+    # TODO Get result object
+  end
+
+
+  def save_result
+    # TODO
   end
 
   def show
