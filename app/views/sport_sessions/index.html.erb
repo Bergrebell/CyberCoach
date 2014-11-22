@@ -1,7 +1,7 @@
 <h1>Sport Sessions</h1>
 
-<div class="uk-button-dropdown" data-uk-dropdown>
-  <button class="uk-button">Create New Session</button>
+<div class="uk-button-dropdown uk-align-right" data-uk-dropdown>
+  <button class="uk-button uk-button-primary">Create Sport Session</button>
   <div class="uk-dropdown uk-dropdown-small">
     <ul class="uk-nav uk-nav-dropdown">
       <li><%= link_to "Running", new_running_path %></li>
@@ -12,36 +12,33 @@
   </div>
 </div>
 
-<table class="uk-table uk-table-striped uk-table-hover">
-  <thead>
-  <tr>
-    <th>Sport</th>
-    <th>Date</th>
-    <th>Location</th>
-    <th>Participants</th>
-    <th>Action</th>
-  </tr>
-  </thead>
+<ul class="uk-tab uk-margin-large-top" data-uk-tab="{connect: '#tabs-content'}">
+  <li class="uk-active"><a href="#">Upcoming Events</a></li>
+  <li><a href="#">Past Events</a></li>
+  <li><a href="#">Invitations<% if @invitations.count > 0 %> <span class="uk-text-muted">(<%= @invitations.count %>)</span><% end %></a></li>
+</ul>
 
-  <tbody>
-  <% @sessions.each do |s| %>
-      <tr>
-        <td><%= s.type %></td>
-        <td><%= s.date %></td>
-        <td><%= s.location %></td>
-        <td>
-          <ul>
-            <% s.sport_session_participants.each do |p| %>
-                <% if p.confirmed %>
-                    <li><%= p.user.username %></li>
-                <% end %>
-            <% end %>
-          </ul>
-        </td>
-        <td>
-          <%= link_to 'View', sport_session_path(s), class: "uk-button uk-button-small" %>
-        </td>
-      </tr>
-  <% end %>
-  </tbody>
-</table>
+<ul id="tabs-content" class="uk-switcher uk-margin">
+
+  <!-- Upcoming events -->
+  <li>
+
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @sessions_upcoming, :show_type => true } %>
+
+  </li>
+
+  <!-- Past events -->
+  <li>
+
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @sessions_past, :show_type => true } %>
+
+  </li>
+
+  <!-- Invitations -->
+  <li>
+
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @invitations, :show_type => true, :confirm_decline_buttons => true } %>
+
+  </li>
+
+</ul>

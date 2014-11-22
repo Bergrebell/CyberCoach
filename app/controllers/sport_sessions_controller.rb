@@ -2,7 +2,11 @@ class SportSessionsController < ApplicationController
 
 
   def index
-    @sessions = current_user.sport_sessions_confirmed
+    sessions = current_user.sport_sessions_confirmed
+    @sessions_upcoming = sessions.select { |s| s.date > Date.today}
+    @sessions_past = sessions.select { |s| s.date < Date.today}
+    @invitations = current_user.sport_sessions_unconfirmed
+
   end
 
   def show

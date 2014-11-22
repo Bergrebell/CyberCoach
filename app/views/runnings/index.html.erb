@@ -1,6 +1,8 @@
 <h1>Running Sessions</h1>
 
-<ul class="uk-tab" data-uk-tab="{connect: '#tabs-content'}">
+<a href="<%= new_running_path %>" class="uk-button uk-button-primary uk-align-right">Create Running Session</a>
+
+<ul class="uk-tab uk-margin-large-top" data-uk-tab="{connect: '#tabs-content'}">
   <li class="uk-active"><a href="#">Upcoming Events</a></li>
   <li><a href="#">Past Events</a></li>
   <li><a href="#">Invitations<% if @invitations.count > 0 %> <span class="uk-text-muted">(<%= @invitations.count %>)</span><% end %></a></li>
@@ -30,5 +32,3 @@
   </li>
 
 </ul>
-
-<a href="<%= new_running_path %>" class="uk-button uk-button-primary">Create Running Session</a>

@@ -2,6 +2,9 @@
   <table class="uk-table uk-table-striped uk-table-hover">
     <thead>
     <tr>
+      <% if local_assigns.has_key? :show_type %>
+          <th>Type</th>
+      <% end %>
       <th>Title</th>
       <th>Date</th>
       <th>Location</th>
@@ -13,6 +16,9 @@
     <tbody>
     <% sessions.each do |s| %>
         <tr>
+          <% if local_assigns.has_key? :show_type %>
+              <td><%= s.type %></td>
+          <% end %>
           <td><%= s.title %></td>
           <td><%= s.date %></td>
           <td><%= s.location %></td>
@@ -29,7 +35,7 @@
 
             <div class="uk-button-group">
 
-              <% # I know its ugly to have this logic in the view, but it makes our life so much easier having a generic table for all types  %>
+              <% # I know its ugly to have this logic in the view, but it makes our life so much easier having a generic table for all types   %>
 
               <% if s.type == 'Running' %>
 
