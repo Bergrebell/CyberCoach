@@ -5,9 +5,5 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
-Sport.create(title: 'Running')
-Sport.create(title: 'Cycling')
-Sport.create(title: 'Boxing')
-Sport.create(title: 'Soccer')
 
 Validator.create(type: 'AttributeValidator')

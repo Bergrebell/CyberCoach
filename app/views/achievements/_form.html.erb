@@ -20,8 +20,8 @@
     <%= f.number_field :points %>
   </div>
   <div class="field">
-    <%= f.label :sport_id %><br>
-    <%= f.select(:sport_id, options_for_select(Sport.all.map { |s| [s.title, s.id]})) %>
+    <%= f.label :sport %><br>
+    <%= f.select(:sport, options_for_select(['Running', 'Boxing', 'Soccer', 'Cycling'])) %>
   </div>
     <div class="field">
       <%= f.label :validator_id %><br>

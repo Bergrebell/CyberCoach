@@ -11,17 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141120232943) do
+ActiveRecord::Schema.define(version: 20141122155933) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
     t.integer  "points"
-    t.integer  "category_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "sport_id"
     t.integer  "validator_id"
     t.text     "rules"
+    t.string   "sport"
   end
 
   create_table "boxing_participant_results", force: true do |t|
@@ -99,8 +98,10 @@ ActiveRecord::Schema.define(version: 20141120232943) do
     t.float    "longitude"
   end
 
-  create_table "sports", force: true do |t|
-    t.string   "title"
+  create_table "user_achievements", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "achievement_id"
+    t.integer  "sport_session_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
