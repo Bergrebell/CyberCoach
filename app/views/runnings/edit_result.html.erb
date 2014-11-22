@@ -12,17 +12,19 @@
       <h3 class="uk-title">Edit Results</h3>
       <form class="uk-form uk-form-stacked" action="<%= running_path @running %>/result/save" method="POST">
 
+        <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
+
         <div class="uk-form-row">
           <label class="uk-form-label">Time</label>
           <div class="uk-form-controls">
-            <input type="text" name="time" placeholder="" class="uk-width-1-1">
+            <input type="text" name="time" placeholder="" class="uk-width-1-1" value="<%= @result.time %>">
           </div>
         </div>
 
         <div class="uk-form-row">
           <label class="uk-form-label">Length</label>
           <div class="uk-form-controls">
-            <input type="text" name="length" placeholder="" class="uk-width-1-1">
+            <input type="text" name="length" placeholder="" class="uk-width-1-1" value="<%= @result.length %>">
           </div>
         </div>
 

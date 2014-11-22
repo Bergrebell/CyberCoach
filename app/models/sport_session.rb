@@ -37,6 +37,24 @@ class SportSession < ActiveRecord::Base
 
   end
 
+
+  # Factory method to return the result object for given user
+  #
+  def result(user)
+    participant = SportSessionParticipant.where(:user_id => user.id, :sport_session_id => self.id, :confirmed => true).first!
+
+    case self.type
+      when 'Running'
+        result = RunningParticipantResult.where(:sport_session_participant_id => participant.id).first_or_create
+      when 'Boxing'
+        result = BoxingParticipantResult.where(:sport_session_participant_id => participant.id).first_or_create
+      else
+        raise 'Unknown Type'
+    end
+
+    result
+  end
+
   # Return all SportSessions where the given user participated
   #
   def self.all_sessions_from_user(user_id, type='', confirmed=nil)
