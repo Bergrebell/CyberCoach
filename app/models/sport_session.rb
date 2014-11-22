@@ -54,11 +54,6 @@ class SportSession < ActiveRecord::Base
     user = {user_id: user_id}
     filter = {}
 
-    if params[:type].present?
-      type = {type: params[:type]}
-      filter.merge!(type)
-    end
-
     if params[:entry_location].present?
       location = {location: params[:entry_location]}
       filter.merge!(location)
@@ -68,6 +63,13 @@ class SportSession < ActiveRecord::Base
       date_time_object = DateTime.strptime(params[:date], Facade::SportSession::DATETIME_FORMAT)
       date = {date: date_time_object}
       filter.merge!(date)
+    end
+
+    if params[:date_to].present? && params[:date_from].present?
+      date_from = DateTime.strptime(params[:date_from], Facade::SportSession::DATETIME_FORMAT)
+      date_to = DateTime.strptime(params[:date_to], Facade::SportSession::DATETIME_FORMAT)
+      date_range = {date: date_from..date_to}
+      filter.merge!(date_range)
     end
 
     filtered_sessions = SportSession.where(filter).joins(:sport_session_participants).where(sport_session_participants: user)

@@ -4,6 +4,7 @@ class SportSessionsController < ApplicationController
     # All confirmed sessions of the current user and their participants, used to display the filter values
     @all_sessions = current_user.sport_sessions_confirmed
     @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
+    @unique_location_sessions = current_user.sessions_with_unique_locations
 
     # If sessions must be filtered, use the passed params for filtering the confirmed sessions
     # display all confirmed sessions otherwise
