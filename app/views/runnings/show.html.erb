@@ -17,39 +17,7 @@
 <div class="uk-grid" data-uk-grid-margin>
   <div class="uk-width-medium-2-3">
 
-
-    <div class="uk-overflow-container">
-      <div class="uk-panel">
-        <table class="uk-table uk-text-nowrap">
-          <tbody>
-          <tr>
-            <td><strong>Date/Time</strong></td>
-            <td><%= @running.date %></td>
-          </tr>
-          <tr>
-            <td><strong>Location</strong></td>
-            <td><%= @running.location %></td>
-          </tr>
-          <tr>
-            <td><strong>Duration</strong></td>
-            <td><%= @running.entry_duration %></td>
-          </tr>
-          <tr>
-            <td><strong>Course length</strong></td>
-            <td><%= @running.course_length %></td>
-          </tr>
-          <tr>
-            <td><strong>Course type</strong></td>
-            <td><%= @running.course_type %></td>
-          </tr>
-          <tr>
-            <td><strong>Number of rounds</strong></td>
-            <td><%= @running.number_of_rounds %></td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <%= render :partial => 'table_attributes', :locals => {:running => @running} %>
 
     <% if @running.latitude and @running.longitude %>
         <div id="map-canvas" class="google-map uk-margin"></div>
