@@ -1,10 +1,9 @@
 <h1>Running Sessions</h1>
 
-
 <ul class="uk-tab" data-uk-tab="{connect: '#tabs-content'}">
   <li class="uk-active"><a href="#">Upcoming Events</a></li>
   <li><a href="#">Past Events</a></li>
-  <li><a href="#">Invitations</a></li>
+  <li><a href="#">Invitations<% if @invitations.count > 0 %> <span class="uk-text-muted">(<%= @invitations.count %>)</span><% end %></a></li>
 </ul>
 
 <ul id="tabs-content" class="uk-switcher uk-margin">
@@ -12,115 +11,21 @@
   <!-- Upcoming events -->
   <li>
 
-    <table class="uk-table uk-table-striped uk-table-hover">
-      <thead>
-      <tr>
-        <th>Date</th>
-        <th>Location</th>
-        <th>Participants</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-
-      <tbody>
-      <% @runnings_upcoming.each do |s| %>
-          <tr>
-            <td><%= s.date %></td>
-            <td><%= s.location %></td>
-            <td>
-              <ul>
-                <% s.sport_session_participants.each do |p| %>
-                    <% if p.confirmed? %>
-                        <li><%= p.user.username %></li>
-                    <% end %>
-                <% end %>
-              </ul>
-            </td>
-            <td>
-              <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
-              <% # User can only edit his own sessions %>
-              <% if s.user_id == current_user.id %>
-                  <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small" %>
-              <% end %>
-            </td>
-          </tr>
-      <% end %>
-      </tbody>
-    </table>
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @runnings_upcoming } %>
 
   </li>
 
   <!-- Past events -->
   <li>
 
-    <table class="uk-table uk-table-striped uk-table-hover">
-      <thead>
-      <tr>
-        <th>Date</th>
-        <th>Location</th>
-        <th>Participants</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-
-      <tbody>
-      <% @runnings_past.each do |s| %>
-          <tr>
-            <td><%= s.date %></td>
-            <td><%= s.location %></td>
-            <td>
-              <ul>
-                <% s.sport_session_participants.each do |p| %>
-                    <li><%= p.user.username %></li>
-                <% end %>
-              </ul>
-            </td>
-            <td>
-              <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
-              <%= link_to 'Edit Results', edit_running_path(s.id), class: "uk-button uk-button-small" %>
-            </td>
-          </tr>
-      <% end %>
-      </tbody>
-    </table>
-
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @runnings_past } %>
 
   </li>
 
   <!-- Invitations -->
   <li>
 
-    <table class="uk-table uk-table-striped uk-table-hover">
-      <thead>
-      <tr>
-        <th>Date</th>
-        <th>Location</th>
-        <th>Participants</th>
-        <th>Action</th>
-      </tr>
-      </thead>
-
-      <tbody>
-      <% @invitations.each do |s| %>
-          <tr>
-            <td><%= s.date %></td>
-            <td><%= s.location %></td>
-            <td>
-              <ul>
-                <% s.sport_session_participants.each do |p| %>
-                    <li><%= p.user.username %></li>
-                <% end %>
-              </ul>
-            </td>
-            <td>
-              <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
-              <a href="/runnings/<%= s.id %>/confirm/<%= current_user.id %>" class="uk-button uk-button-small">Confirm</a>
-            </td>
-          </tr>
-      <% end %>
-      </tbody>
-    </table>
-
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @invitations, :confirm_button => true } %>
 
   </li>
 

@@ -1,0 +1,87 @@
+<div class="uk-overflow-container">
+  <table class="uk-table uk-table-striped uk-table-hover">
+    <thead>
+    <tr>
+      <th>Title</th>
+      <th>Date</th>
+      <th>Location</th>
+      <th>Participants</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% sessions.each do |s| %>
+        <tr>
+          <td><%= s.title %></td>
+          <td><%= s.date %></td>
+          <td><%= s.location %></td>
+          <td>
+            <ul class="uk-list">
+              <% s.sport_session_participants.each do |p| %>
+                  <% if p.confirmed? %>
+                      <li><%= p.user.username %></li>
+                  <% end %>
+              <% end %>
+            </ul>
+          </td>
+          <td>
+
+            <div class="uk-button-group">
+
+              <% # I know its ugly to have this logic in the view, but it makes our life so much easier having a generic table for all types  %>
+
+              <% if s.type == 'Running' %>
+
+                  <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
+                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                      <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small" %>
+                  <% end %>
+                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                      <%= link_to 'Edit Results', edit_running_path(s.id) + '/result', class: "uk-button uk-button-small" %>
+                  <% end %>
+
+              <% elsif s.type == 'Boxing' %>
+
+                  <%= link_to 'View', boxing_path(s), class: "uk-button uk-button-small" %>
+                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                      <%= link_to 'Edit', edit_boxing_path(s.id), class: "uk-button uk-button-small" %>
+                  <% end %>
+                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                      <%= link_to 'Edit Results', edit_boxing_path(s.id) + '/result', class: "uk-button uk-button-small" %>
+                  <% end %>
+
+              <% elsif s.type == 'Cycling' %>
+
+                  <%= link_to 'View', cycling_path(s), class: "uk-button uk-button-small" %>
+                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                      <%= link_to 'Edit', edit_cycling_path(s.id), class: "uk-button uk-button-small" %>
+                  <% end %>
+                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                      <%= link_to 'Edit Results', edit_cycling_path(s.id) + '/result', class: "uk-button uk-button-small" %>
+                  <% end %>
+
+              <% elsif s.type == 'Soccer' %>
+
+                  <%= link_to 'View', soccer_path(s), class: "uk-button uk-button-small" %>
+
+                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                      <%= link_to 'Edit', edit_soccer_path(s.id), class: "uk-button uk-button-small" %>
+                  <% end %>
+                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                      <%= link_to 'Edit Results', edit_soccer_path(s.id) + '/result', class: "uk-button uk-button-small" %>
+                  <% end %>
+
+              <% end %>
+
+              <% if local_assigns.has_key? :confirm_button %>
+                  <a href="/sport_sessions/<%= s.id %>/confirm/<%= current_user.id %>" class="uk-button uk-button-small">Confirm</a>
+              <% end %>
+
+            </div>
+          </td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

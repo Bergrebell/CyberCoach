@@ -10,7 +10,9 @@ class SportSession < ActiveRecord::Base
   end
 
   def entry_time
-    self.date.strftime('%H:%M')
+    if self.date.present?
+      self.date.strftime('%H:%M')
+    end
   end
 
   # Invite some users to join this event

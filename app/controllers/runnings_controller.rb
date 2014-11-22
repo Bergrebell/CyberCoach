@@ -5,8 +5,8 @@ class RunningsController < SportSessionsController
   def index
     # Grab all the running sessions where the current user is a participant
     runnings = current_user.sport_sessions_confirmed('Running')
-    @runnings_upcoming = runnings.select { |running| Date.parse(running.date.to_s) > Date.today}
-    @runnings_past = runnings.select { |running| Date.parse(running.date.to_s) < Date.today}
+    @runnings_upcoming = runnings.select { |running| running.date > Date.today}
+    @runnings_past = runnings.select { |running| running.date < Date.today}
     @invitations = current_user.sport_sessions_unconfirmed('Running')
   end
 
