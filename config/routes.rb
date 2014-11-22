@@ -44,6 +44,8 @@ Rails.application.routes.draw do
 
   resources :sport_sessions do
     get '/confirm/:user_id', :to => 'sport_sessions#confirm', :as => 'confirm'
+    get '/decline/:user_id', :to => 'sport_sessions#decline', :as => 'decline'
+    get '/unsubscribe/:user_id', :to => 'sport_sessions#unsubscribe', :as => 'unsubscribe'
   end
 
   # The priority is based upon order of creation: first created -> highest priority.

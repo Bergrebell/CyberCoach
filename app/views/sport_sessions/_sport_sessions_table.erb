@@ -37,7 +37,7 @@
                   <% if s.user_id == current_user.id and s.date > Date.today %>
                       <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                  <% if s.date < Date.today %>
                       <%= link_to 'Edit Results', edit_running_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
@@ -47,7 +47,7 @@
                   <% if s.user_id == current_user.id and s.date > Date.today %>
                       <%= link_to 'Edit', edit_boxing_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                  <% if s.date < Date.today %>
                       <%= link_to 'Edit Results', edit_boxing_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
@@ -57,7 +57,7 @@
                   <% if s.user_id == current_user.id and s.date > Date.today %>
                       <%= link_to 'Edit', edit_cycling_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                  <% if s.date < Date.today %>
                       <%= link_to 'Edit Results', edit_cycling_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
@@ -68,14 +68,19 @@
                   <% if s.user_id == current_user.id and s.date > Date.today %>
                       <%= link_to 'Edit', edit_soccer_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.user_id == current_user.id and s.date < Date.today %>
+                  <% if s.date < Date.today %>
                       <%= link_to 'Edit Results', edit_soccer_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
               <% end %>
 
-              <% if local_assigns.has_key? :confirm_button %>
+              <% if  s.date > Date.today and s.user_id != current_user.id and not local_assigns.has_key? :confirm_decline_buttons %>
+                  <a href="/sport_sessions/<%= s.id %>/unsubscribe/<%= current_user.id %>" class="uk-button uk-button-small">Unsubscribe</a>
+              <% end %>
+
+              <% if local_assigns.has_key? :confirm_decline_buttons %>
                   <a href="/sport_sessions/<%= s.id %>/confirm/<%= current_user.id %>" class="uk-button uk-button-small">Confirm</a>
+                  <a href="/sport_sessions/<%= s.id %>/decline/<%= current_user.id %>" class="uk-button uk-button-small">Decline</a>
               <% end %>
 
             </div>

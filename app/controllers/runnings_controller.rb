@@ -27,7 +27,12 @@ class RunningsController < SportSessionsController
 
   def edit_result
     @running = Facade::SportSession::Running.find_by id: params[:id]
+    if @running.user_id != current_user.id
+      redirect_to runnings_url, alert: 'Permission denied'
+    end
+
     # TODO Get result object
+
   end
 
 
@@ -42,12 +47,13 @@ class RunningsController < SportSessionsController
 
   # POST /runnings
   def create
-    @entry = Facade::SportSession::Running.create(running_params)
+    @running = Facade::SportSession::Running.create(running_params)
 
-    if @entry.save
+    if @running.save
       redirect_to runnings_url, notice: 'Running session successfully created'
     else
       flash[:alert] = 'Unable to create Running session'
+      @friends = current_user.friends
       render :new
     end
   end
@@ -59,6 +65,7 @@ class RunningsController < SportSessionsController
     if @running.update(running_params)
       redirect_to runnings_url, notice: 'Running session successfully updated'
     else
+      @friends = current_user.friends
       render :edit
     end
   end
