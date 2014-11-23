@@ -23,16 +23,6 @@ ActiveRecord::Schema.define(version: 20141122155933) do
     t.string   "sport"
   end
 
-  create_table "boxing_participant_results", force: true do |t|
-    t.integer  "sport_session_participant_id"
-    t.boolean  "knockout_opponent"
-    t.integer  "number_of_rounds"
-    t.integer  "time_of_fight"
-    t.integer  "points"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "categories", force: true do |t|
     t.string   "title"
     t.datetime "created_at"
@@ -50,14 +40,6 @@ ActiveRecord::Schema.define(version: 20141122155933) do
     t.integer  "user_id"
     t.integer  "friend_id"
     t.boolean  "confirmed"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "running_participant_results", force: true do |t|
-    t.integer  "sport_session_participant_id"
-    t.float    "length"
-    t.float    "time"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

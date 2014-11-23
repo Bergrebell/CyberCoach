@@ -1,48 +1,56 @@
-<%= form_for(@user) do |f| %>
-    <% if @user.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+<body class="uk-height-1-1">
+    <div class="uk-vertical-align uk-text-center uk-height-1-1">
+        <div class="uk-vertical-align-middle" style="width: 250px;">
 
-          <ul>
-            <% @user.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-            <% end %>
-          </ul>
+
+            <%= form_for @user, :html => {:class => "uk-panel uk-panel-box uk-form"} do |f| %>
+                <% if @user.errors.any? %>
+                    <div id="error_explanation">
+                      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+                      <ul>
+                        <% @user.errors.full_messages.each do |message| %>
+                            <li><%= message %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                <% end %>
+
+                <div class="uk-form-row">
+                  <br>
+                  <%= f.text_field :username, class: "uk-width-1-1 uk-form-large", placeholder: "Username" %>
+                </div>
+
+                <div class="uk-form-row">
+                  <br>
+                  <%= f.text_field :real_name, class: "uk-width-1-1 uk-form-large", placeholder: "Real name" %>
+                </div>
+
+                <div class="uk-form-row">
+                  <br>
+                  <%= f.text_field :email, class: "uk-width-1-1 uk-form-large", placeholder: "Email" %>
+                </div>
+
+                <div class="uk-form-row">
+                  <br>
+                  <%= f.password_field :password, class: "uk-width-1-1 uk-form-large", placeholder: "Password" %>
+                </div>
+
+                <div class="uk-form-row">
+                  <br>
+                  <%= f.password_field :password_confirmation, class: "uk-width-1-1 uk-form-large", placeholder: "Password confirmation" %>
+                </div>
+
+                 <div class="uk-form-row">
+                    <%= f.submit "Submit", class: "uk-width-1-1 uk-button uk-button-primary uk-button-large" %>
+                 </div>
+                <% end %>
+
+              <div class="uk-text-left">
+                <%= link_to 'Back', welcome_index_path %>
+              </div>
+
         </div>
-    <% end %>
-
-    <div class="field">
-      <%= f.label :username %>
-      <br>
-      <%= f.text_field :username %>
     </div>
+</body>
 
-    <div class="field">
-      <%= f.label :real_name %>
-      <br>
-      <%= f.text_field :real_name %>
-    </div>
-
-    <div class="field">
-      <%= f.label :email %>
-      <br>
-      <%= f.text_field :email %>
-    </div>
-
-    <div class="field">
-      <%= f.label :password %>
-      <br>
-      <%= f.password_field :password %>
-    </div>
-
-    <div class="field">
-      <%= f.label :password_confirmation %>
-      <br>
-      <%= f.password_field :password_confirmation %>
-    </div>
-
-
-    <div class="actions">
-      <%= f.submit %>
-    </div>
-<% end %>
