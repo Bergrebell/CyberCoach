@@ -8,7 +8,7 @@ class AchievementsControllerTest < ActionController::TestCase
   test "should get index" do
     get :index
     assert_response :success
-    assert_not_nil assigns(:achievements)
+    assert_not_nil assigns(:achievement)
   end
 
   test "should get new" do
