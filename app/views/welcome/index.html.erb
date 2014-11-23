@@ -1,6 +1,5 @@
-<h1>Welcome#index</h1>
 <% if not current_user %>
-    <%= link_to 'Login', session_login_path %> | <%= link_to 'Register', new_user_path %>
+    <%= render 'session/login' %>
 <% end %>
 
 <% if current_user %>
@@ -47,6 +46,3 @@
 
 
 <% end %>
-
-
-<p>Find me in app/views/welcome/index.html.erb</p>

@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   get 'welcome/index'
 
 
-  get   'session/login'
+  #get   'session/login'
   post  'session/login'
 
   get 'session/logout'
