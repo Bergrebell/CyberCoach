@@ -48,6 +48,8 @@ Rails.application.routes.draw do
     get '/unsubscribe/:user_id', :to => 'sport_sessions#unsubscribe', :as => 'unsubscribe'
   end
 
+  get 'user_achievements/index'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

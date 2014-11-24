@@ -30,3 +30,11 @@
 .social-buttons {
     line-height: 10px;
 }
+
+body.user_achievements .inactive img {
+    opacity: 0.2;
+}
+
+body.user_achievements .inactive h4 {
+    color: #CCCCCC;
+}
