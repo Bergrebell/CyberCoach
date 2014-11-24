@@ -47,9 +47,21 @@ class RunningsController < SportSessionsController
 
     @result.time = params[:time]
     @result.length = params[:length]
+
     if @result.save
-      # TODO Check achievements
-      redirect_to runnings_url, notice: 'Successfully saved results'
+
+      # Check for new Achievements!
+      achievement_checker = AchievementsChecker.new @result
+      achievements = achievement_checker.check true
+      if achievements.count > 0
+        titles = '"' + achievements.map { |a| a.achievement.title}.join('", "') + '"'
+        flash[:notice] = ["Congratulations, you obtained new achievements: #{titles}"]
+        flash[:notice] << 'Successfully saved results'
+      else
+        flash[:notice] = 'Successfully saved results'
+      end
+
+      redirect_to runnings_url
     else
       redirect_to runnings_url, alert: 'Unable to save results'
     end

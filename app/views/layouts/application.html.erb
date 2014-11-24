@@ -64,11 +64,19 @@
   </nav>
   <% # Display flash messages across the application   %>
   <% if flash[:notice] %>
-      <div class="uk-alert" data-uk-alert>
-        <a href="" class="uk-alert-close uk-close"></a>
-
-        <p><%= flash[:notice] %></p>
-      </div>
+      <% if flash[:notice].is_a? Array %>
+          <% flash[:notice].each do |notice| %>
+              <div class="uk-alert" data-uk-alert>
+                <a href="" class="uk-alert-close uk-close"></a>
+                <p><%= notice %></p>
+              </div>
+          <% end %>
+      <% else %>
+          <div class="uk-alert" data-uk-alert>
+            <a href="" class="uk-alert-close uk-close"></a>
+            <p><%= flash[:notice] %></p>
+          </div>
+      <% end %>
   <% end %>
   <% if flash[:alert] %>
       <div class="uk-alert uk-alert-danger" data-uk-alert>
