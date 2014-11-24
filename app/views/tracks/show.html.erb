@@ -1,0 +1,9 @@
+<% content_for :head do %>
+    <%= render :partial => 'google_map',:locals => { :points => @points } %>
+<% end %>
+
+<h1>Tracks#show</h1>
+
+<%= @content %>
+
+<div id="map-canvas" class="track-map uk-margin"></div>

@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :tracks
+
   resources :friendships
 
   # get 'runnings/index'

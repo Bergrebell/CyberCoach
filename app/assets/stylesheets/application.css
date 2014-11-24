@@ -21,6 +21,11 @@
     width: 100%;
 }
 
+.track-map {
+    height: 500px;
+    width: 100%;
+}
+
 .social-button {
     display: inline-block;
     margin: 0;
