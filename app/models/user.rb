@@ -106,11 +106,6 @@ class User < ActiveRecord::Base
     SportSessionParticipant.where("confirmed = ? AND sport_session_id IN (#{session_ids.join(', ')})", true).select(:user_id).distinct
   end
 
-  def sessions_with_unique_locations
-    self.sport_sessions_confirmed.select(:location).distinct
-  end
-
-
   def sport_sessions_filtered(params)
     SportSession.all_sport_sessions_filtered_from_user(self.id, params)
   end
