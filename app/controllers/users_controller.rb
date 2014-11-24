@@ -21,6 +21,10 @@ class UsersController < ApplicationController
     end
     gravatar_id = Digest::MD5.hexdigest(@user.email.downcase)
     @gravatar_url = "http://gravatar.com/avatar/#{gravatar_id}.png?s=125&d"
+    #runnings = current_user.sport_sessions_confirmed('Running')
+    #@runnings_past = runnings.select { |running| running.date < Date.today}
+    sports = current_user.sport_sessions_confirmed.all
+    @sports_past = sports.select { |sport| sport.date < Date.today }
   end
 
   # GET /users/new
