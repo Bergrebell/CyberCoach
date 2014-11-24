@@ -1,3 +1,7 @@
+<% content_for :head do %>
+<script src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+<% end %>
+
 <h2>Edit "<%= @running.title %>"</h2>
 
 <%= render 'form' %>
