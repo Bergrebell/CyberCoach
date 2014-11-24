@@ -19,5 +19,11 @@
 $(function (){
     var dateInput = $(".datepicker");
     $.UIkit.datepicker(dateInput,{format:'YYYY-MM-DD'})
-    $(".entry_location_input").geocomplete();
+    $(".entry_location_input").geocomplete({
+        details: '.geo_details',
+        detailsAttribute: 'data-geo'
+    });
+    $(".entry_location_input").focusout(function(){
+        $(".entry_location_input").trigger("geocode");
+    });
 });
