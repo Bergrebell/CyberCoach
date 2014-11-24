@@ -14,9 +14,10 @@
 //= require jquery_ujs
 //= require_tree .
 //= require uikit
-
+//= require geocomplete
 // script for calendar date pick
 $(function (){
     var dateInput = $(".datepicker");
     $.UIkit.datepicker(dateInput,{format:'YYYY-MM-DD'})
+    $(".entry_location_input").geocomplete();
 });
