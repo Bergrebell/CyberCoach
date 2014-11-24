@@ -1,28 +1,41 @@
 
-<p>
-  <strong>Username:</strong>
+<div class="uk-panel uk-panel-box">
+  <div class="uk-panel uk-text-center">
+ <p>
+  <%= image_tag @gravatar_url, class: "uk-border-circle" %>
+</p>
+</div>
+<hr>
+
+
+  <div class="uk-panel uk-text-center">
+
+
+  <p>
+  <i class="uk-icon-user"></i> <strong>Username:</strong>
   <%= @user.username %>
 </p>
 
 <p>
-  <strong>Realname:</strong>
+  <i class="uk-icon-check"></i> <strong>Realname:</strong>
   <%= @user.real_name %>
 </p>
 
 
 <p>
-  <strong>Email:</strong>
+  <i class="uk-icon-envelope"></i> <strong>Email:</strong>
   <%= @user.email %>
 </p>
 
-
+<!--
 <p>
   <strong>Public visible:</strong>
   <%= @user.public_visible %>
 </p>
+-->
 
 <p>
-<strong>Partnerships:</strong>
+  <i class="uk-icon-share-alt"></i> <strong>Friends:</strong>
   <ul>
     <% @user.partnerships.each do |p| %>
          <li> <%= p.partner_of(@user).username %> </li>
@@ -34,3 +47,5 @@
     <%= button_to 'Send friend request', controller: 'friends', action: 'create', method: :post, username: @user.username %>
 <% end %>
 <%= link_to 'Back', users_path %>
+</div>
+    </div>

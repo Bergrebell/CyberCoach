@@ -19,6 +19,8 @@ class UsersController < ApplicationController
     rescue
       redirect_to users_path
     end
+    gravatar_id = Digest::MD5.hexdigest(@user.email.downcase)
+    @gravatar_url = "http://gravatar.com/avatar/#{gravatar_id}.png?s=125&d"
   end
 
   # GET /users/new
@@ -73,6 +75,8 @@ class UsersController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+
 
 
   # Never trust parameters from the scary internet, only allow the white list through.
