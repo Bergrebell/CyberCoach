@@ -47,6 +47,7 @@ class SportSession < ActiveRecord::Base
 
 
   # Factory method to return the result object for given user
+  # @param user Rails user model
   #
   def result(user)
     participant = SportSessionParticipant.where(:user_id => user.id, :sport_session_id => self.id, :confirmed => true).first!
@@ -62,6 +63,16 @@ class SportSession < ActiveRecord::Base
 
     result
   end
+
+
+  # Return any achievement obtained by this event from the given user
+  # @param user Rails user model
+  #
+  def achievements_obtained(user)
+    user_achievements = UserAchievement.where(:sport_session_id => self.id, :user_id => user.id)
+    achievements = user_achievements.map { |user_achievement| user_achievement.achievement }
+  end
+
 
   # Return all SportSessions where the given user participated
   #

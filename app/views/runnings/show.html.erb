@@ -1,5 +1,5 @@
 <% content_for :head do %>
-    <%= render :partial => 'sport_sessions/google_map', :locals => { :session => @running } %>
+    <%= render :partial => 'sport_sessions/google_map', :locals => {:session => @running} %>
 <% end %>
 
 <% content_for :javascript do %>
@@ -10,6 +10,7 @@
 <div class="uk-grid" data-uk-grid-margin>
   <div class="uk-width-medium-3-4">
     <h1 class="uk-heading-large"><%= @running.title %></h1>
+
     <p class="uk-text-large"><%= @running.comment %></p>
   </div>
 </div>
@@ -23,30 +24,38 @@
         <div id="map-canvas" class="google-map uk-margin"></div>
     <% end %>
 
-    <%= render :partial => 'sport_sessions/social_buttons', :locals => { :session => @running } %>
+    <%= render :partial => 'sport_sessions/social_buttons', :locals => {:session => @running} %>
 
   </div>
 
   <div class="uk-width-medium-1-3">
 
-    <div class="uk-panel uk-panel-box uk-panel-box-primary">
-      <h3 class="uk-panel-title">Results</h3>
+    <% if @running.is_past %>
 
-      <dl class="uk-description-list-line">
-        <dt>Time</dt>
-        <dd>2 hours, 5 minutes</dd>
-        <dt>Length</dt>
-        <dd>25 km</dd>
-      </dl>
+        <div class="uk-panel uk-panel-box uk-panel-box-primary">
+          <h3 class="uk-panel-title">Results</h3>
 
-    </div>
+          <dl class="uk-description-list-line">
+            <dt>Time</dt>
+            <dd><%= @running.result(current_user).time %></dd>
+            <dt>Length</dt>
+            <dd><%= @running.result(current_user).length %></dd>
+          </dl>
 
-    <%= render :partial => 'sport_sessions/users_joining', :locals => { :session => @running } %>
+        </div>
 
-    <div class="uk-panel uk-panel-box">
-      <h3 class="uk-panel-title"><i class="uk-icon-star"></i> Achievements</h3>
-      Yeah :)
-    </div>
+    <% end %>
+
+    <%= render :partial => 'sport_sessions/users_joining', :locals => {:session => @running} %>
+
+    <% if @running.achievements_obtained(current_user).count > 0 %>
+        <div class="uk-panel uk-panel-box">
+          <h3 class="uk-panel-title"><i class="uk-icon-star"></i> Achievements</h3>
+          <% @running.achievements_obtained(current_user).each do |achievement| %>
+            <li><%= achievement.title %></li>
+          <% end %>
+        </div>
+    <% end %>
 
   </div>
 </div>
