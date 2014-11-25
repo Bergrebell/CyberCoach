@@ -12,7 +12,8 @@ class TracksController < ApplicationController
     uploaded_file = track_params[:file]
 
     gpx_file = GPX::File.new uploaded_file.tempfile
-    @points = gpx_file.points
+    @points = gpx_file.points.map {|p| p.to_a }
+    gpx_file.points.map {|p| puts p.time }
     render 'show'
   end
 
