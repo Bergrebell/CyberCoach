@@ -15,8 +15,16 @@ class SportSession < ActiveRecord::Base
     end
   end
 
+  def is_past
+    self.date < Date.today
+  end
+
+  def is_upcoming
+    self.date > Date.today
+  end
+
   # Invite some users to join this event
-  # @param array user_ids
+  # @param user_ids Array of User-IDs
   #
   def invite(user_ids)
 

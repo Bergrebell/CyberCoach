@@ -40,30 +40,30 @@
               <% if s.type == 'Running' %>
 
                   <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
-                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                  <% if s.user_id == current_user.id and s.is_upcoming %>
                       <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.date < Date.today %>
+                  <% if s.is_past %>
                       <%= link_to 'Edit Results', edit_running_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
               <% elsif s.type == 'Boxing' %>
 
                   <%= link_to 'View', boxing_path(s), class: "uk-button uk-button-small" %>
-                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                  <% if s.user_id == current_user.id and s.is_upcoming %>
                       <%= link_to 'Edit', edit_boxing_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.date < Date.today %>
+                  <% if s.is_past %>
                       <%= link_to 'Edit Results', edit_boxing_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
               <% elsif s.type == 'Cycling' %>
 
                   <%= link_to 'View', cycling_path(s), class: "uk-button uk-button-small" %>
-                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                  <% if s.user_id == current_user.id and s.is_upcoming %>
                       <%= link_to 'Edit', edit_cycling_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.date < Date.today %>
+                  <% if s.is_past %>
                       <%= link_to 'Edit Results', edit_cycling_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
@@ -71,16 +71,16 @@
 
                   <%= link_to 'View', soccer_path(s), class: "uk-button uk-button-small" %>
 
-                  <% if s.user_id == current_user.id and s.date > Date.today %>
+                  <% if s.user_id == current_user.id and s.is_upcoming %>
                       <%= link_to 'Edit', edit_soccer_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
-                  <% if s.date < Date.today %>
+                  <% if s.is_past %>
                       <%= link_to 'Edit Results', edit_soccer_path(s.id) + '/result', class: "uk-button uk-button-small" %>
                   <% end %>
 
               <% end %>
 
-              <% if  s.date > Date.today and s.user_id != current_user.id and not local_assigns.has_key? :confirm_decline_buttons %>
+              <% if  s.is_upcoming and s.user_id != current_user.id and not local_assigns.has_key? :confirm_decline_buttons %>
                   <a href="/sport_sessions/<%= s.id %>/unsubscribe/<%= current_user.id %>" class="uk-button uk-button-small">Unsubscribe</a>
               <% end %>
 
