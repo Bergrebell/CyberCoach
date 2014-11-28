@@ -55,8 +55,10 @@ class User < ActiveRecord::Base
   # Return array of users not yet befriended with the current user
   #
   def friends_proposals
-    users = User.all
-    users.select { |user| not self.befriended_with(user) }
+    # get all friend ids
+    friend_ids = Friendship.select(:friend_id).where user_id: self.id
+    friend_ids ||= []
+    User.where.not( id: friend_ids) # get all user that are not are not in the list of friend ids
   end
 
   # Returns true if the current user if befriended with the other user

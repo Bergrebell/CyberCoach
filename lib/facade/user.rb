@@ -191,6 +191,13 @@ module Facade
     end
 
 
+    def friends
+      self.class.query do
+        @rails_user.friends
+      end
+    end
+
+
     def friend_proposals(users)
       @cc_user.fetch! #update user and also its list of partnerships
       associated_partners = @cc_user.partnerships.map {|p| p.partner_of(@cc_user).username }

@@ -16,6 +16,7 @@ class UsersController < ApplicationController
       @user = Facade::User.query do
         User.find_by id: params[:id]
       end
+      @friends = current_user.friends
     rescue
       redirect_to users_path
     end

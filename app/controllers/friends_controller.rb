@@ -8,24 +8,15 @@ class FriendsController < ApplicationController
     @proposals = current_user.friends_proposals
   end
 
-
-  def proposals
-    @friend_proposals = current_user.sent_friend_requests
-  end
-
-
   # Conform a friend request
   # POST
   #
   def confirm
-    proposer = Facade::User.retrieve params[:username]
-    partnership = Facade::Partnership.retrieve(
-      confirmer: current_user,
-      proposer: proposer,
-    )
-    if partnership.present?
-      if partnership.save
-        redirect_to friends_index_url, notice: 'You are now friend with %s' % params[:username] and return
+    username, friend_id = friendship_params[:username], friendship_params[:friend_id]
+    friendship = Friendship.find_by user_id: friend_id, friend_id: current_user.id
+    if friendship.present?
+      if friendship.update_attribute(:confirmed, true)
+        redirect_to friends_index_url, notice: 'You are now friend with %s' % username and return
       else
         redirect_to friends_index_url, alert: 'Could not confirm friend request' and return
       end
@@ -38,23 +29,23 @@ class FriendsController < ApplicationController
   # POST
   #
   def create
-    other_user = Facade::User.retrieve params[:username]
-
-    raise 'errorror' if current_user.is_a?(RestAdapter::Models::User)
-    partnership = Facade::Partnership.create(
-        proposer: current_user,
-        confirmer: other_user
-    )
+    username, friend_id = friendship_params[:username], friendship_params[:friend_id]
+    params = { user_id: current_user.id, friend_id: friend_id, confirmed: false }
+    friendship = Friendship.where(params).first_or_initialize(params)
 
     respond_to do |format|
-      if partnership.save # if validation is ok, try to create the partnership
-        format.html { redirect_to friends_index_url, notice: 'Friend request is sent to %s.' % params[:username]  }
+      if friendship.save
+        format.html { redirect_to friends_index_url, notice: 'Friend request is sent to %s.' % username  }
       else
-        format.html { redirect_to friends_index_url, alert: 'Friend request failed! Cyber Coach server is bitchy.'  }
+        format.html { redirect_to friends_index_url, alert: 'Friend request failed!'  }
       end
     end
   end
 
+  private
 
+  def friendship_params
+    params.require(:friendship)
+  end
 
 end

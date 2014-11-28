@@ -63,7 +63,7 @@ module Facade
       elsif object.is_a? self # just for completeness: do nothing if we have a facade object
         object
       else
-        raise 'Error'
+        raise 'Error: %s' % object.class.name
       end
     end
 
@@ -145,6 +145,8 @@ module Facade
       result = yield
       case result
         when ::ActiveRecord::Relation
+          result.map {|r| wrap(r) }.select {|r| !r.nil? }
+        when Array
           result.map {|r| wrap(r) }.select {|r| !r.nil? }
         else
           wrap(result)

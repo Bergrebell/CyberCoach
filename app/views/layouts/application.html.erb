@@ -14,10 +14,11 @@
     <a href="<%= welcome_index_path %>" class="uk-navbar-brand">CyberCoach</a>
 
     <ul class="uk-navbar-nav">
+
       <% if current_user.present? %>
-          <li data-uk-dropdown class="uk-parent<%= if params[:controller] == 'sport_sessions';
-                                                     " uk-active"
-                                                   end %>">
+
+          <!-- sport session menu -->
+          <li data-uk-dropdown class="uk-parent<%= params[:controller] == 'sport_sessions' ? ' uk-active' : '' %>">
             <a href="<%= sport_sessions_index_url %>"><i class="uk-icon-soccer-ball-o"></i> Sport Sessions
               <i class="uk-icon-angle-down"></i></a>
 
@@ -30,12 +31,27 @@
               </ul>
             </div>
           </li>
-          <li<%= if params[:controller] == 'friends';
-                   " class=uk-active"
-                 end %>><a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends</a></li>
-          <li<%= if params[:controller] == 'user_achievements';
-                   " class=uk-active"
-                 end %>><a href="<%= user_achievements_index_url %>"><i class="uk-icon-star"></i> Achievements</a></li>
+
+          <!-- friends menu -->
+          <li data-uk-dropdown class="uk-parent<%= params[:controller] == 'friends' ?  ' uk-active' : '' %>">
+            <a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends
+              <i class="uk-icon-angle-down"></i></a>
+
+            <div class="uk-dropdown uk-dropdown-navbar">
+              <ul class="uk-nav uk-nav-navbar">
+                <li><%= link_to 'Friends', friends_index_url %></li>
+                <li><%= link_to 'Browse Users', friends_index_url %></li>
+                <li><a href="<%= friends_index_url %>">Find Friends</a></li>
+              </ul>
+            </div>
+          </li>
+
+          <!-- achievement menu -->
+          <li<%= params[:controller] == 'user_achievements' ? ' class=uk-active' : '' %>>
+            <a href="<%= user_achievements_index_url %>"><i class="uk-icon-star"></i> Achievements</a>
+          </li>
+
+
       <% end %>
     </ul>
 
