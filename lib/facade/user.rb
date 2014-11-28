@@ -197,32 +197,6 @@ module Facade
       users = users.select { |u| !associated_partners.include?(u.username) and u.username != @cc_user.username }
     end
 
-    # The uncommented methods below are now part of the Rails user model
-
-    # Returns all friends of this user.
-    # def friends
-    #   partnerships = cached_detailed_partnerships
-    #   active_partnerships = partnerships.select { |p| p.active? } # filter, only get active partnerships
-    #   active_partnerships.map { |p| p.partner_of(@cc_user) } # get users instead of partnerships
-    # end
-
-
-    # Returns all received friend requests of this user.
-    # def received_friend_requests
-    #   partnerships = cached_detailed_partnerships
-    #   proposed_partnerships = partnerships.select { |p| not p.confirmed_by?(@cc_user) } # filter, only get proposed partnerships
-    #   proposed_partnerships.map { |p| p.partner_of(@cc_user) } # get users instead of partnerships
-    # end
-
-
-    # Returns all sent friend requests of this user.
-    # def sent_friend_requests
-    #   partnerships = cached_detailed_partnerships
-    #   proposed_partnerships = partnerships.select { |p| p.confirmed_by?(@cc_user) and not p.active? }
-    #   proposed_partnerships.map { |p| p.partner_of(@cc_user) } # get users instead of partnerships
-    # end
-
-
     # Returns true if this user is befriended with the given 'another_user'.
     def befriended_with?(another_user)
       not partnerships.select { |p|
