@@ -28,6 +28,17 @@ class SportSession < ActiveRecord::Base
     self.sport_session_participants.where(:confirmed => true).count
   end
 
+  def is_confirmed_participant(user)
+    self.sport_session_participants.where(:user_id =>  user.id, :confirmed => true).exists?
+  end
+
+  def is_unconfirmed_participant(user)
+    self.sport_session_participants.where(:user_id =>  user.id, :confirmed => false).exists?
+  end
+
+  def is_participant(user)
+    self.sport_session_participants.where(:user_id =>  user.id).exists?
+  end
 
   # Invite some users to join this event
   # @param user_ids Array of User-IDs
@@ -68,6 +79,13 @@ class SportSession < ActiveRecord::Base
     end
 
     result
+  end
+
+
+  # Return results of all users participated at this session
+  #
+  def get_all_results
+    raise 'Must be implemented by subclass!'
   end
 
 

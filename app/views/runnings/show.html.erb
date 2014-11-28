@@ -9,14 +9,76 @@
 
 <div class="uk-grid" data-uk-grid-margin>
   <div class="uk-width-medium-3-4">
-    <h1 class="uk-heading-large"><%= @running.title %></h1>
+    <h1><%= @running.title %></h1>
 
     <p class="uk-text-large"><%= @running.comment %></p>
   </div>
+
+  <div class="uk-width-medium-1-4">
+
+    <% if @running.is_participant(current_user) %>
+        <div class="uk-button-group uk-align-right">
+          <button class="uk-button">Actions</button>
+          <div data-uk-dropdown="{mode:'click'}">
+            <a href="#" class="uk-button"><i class="uk-icon uk-icon-caret-down"></i></a>
+            <div class="uk-dropdown uk-dropdown-small">
+              <ul class="uk-nav uk-nav-dropdown">
+                <% if @running.is_upcoming and @running.user_id == current_user.id %>
+                    <li><a href="<%= edit_running_path @running %>">Edit</a></li>
+                <% end %>
+                <% if @running.is_past %>
+                    <li><a href="<%= edit_running_path(@running.id) + '/result' %>">Edit Results</a></li>
+                <% end %>
+                <% if @running.is_upcoming and @running.is_unconfirmed_participant(current_user) %>
+                    <li><a href="/sport_sessions/<%= @running.id %>/confirm/<%= current_user.id %>">Confirm</a></li>
+                    <li><a href="/sport_sessions/<%= @running.id %>/decline/<%= current_user.id %>">Decline</a></li>
+                <% end %>
+                <% if @running.is_upcoming and @running.is_confirmed_participant(current_user) and not @running.user_id == current_user.id %>
+                    <li><a href="/sport_sessions/<%= @running.id %>/unsubscribe/<%= current_user.id %>">Unsubscribe</a>
+                    </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+    <% end %>
+  </div>
+
 </div>
 
 <div class="uk-grid" data-uk-grid-margin>
   <div class="uk-width-medium-2-3">
+
+    <% if @running.is_past %>
+
+        <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+          <h3 class="uk-panel-title">Results</h3>
+
+          <table class="uk-table uk-table-striped">
+            <thead>
+            <tr>
+              <th>Participant</th>
+              <th>Time</th>
+              <th>Length</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @running.get_all_results.each do |result| %>
+                <tr class="
+                  <% if result.user.id == current_user.id %>highlight
+                  <% end %>">
+                  <td><%= link_to result.user.username, result.user %></td>
+                  <td><%= result.time %></td>
+                  <td><%= result.length %></td>
+                </tr>
+            <% end %>
+            </tbody>
+          </table>
+
+        </div>
+
+
+    <% end %>
 
     <%= render :partial => 'table_attributes', :locals => {:running => @running} %>
 
@@ -24,43 +86,29 @@
         <div id="map-canvas" class="google-map uk-margin"></div>
     <% end %>
 
-    <%= render :partial => 'sport_sessions/social_buttons', :locals => {:session => @running} %>
-
   </div>
 
   <div class="uk-width-medium-1-3">
 
-    <% if @running.is_past %>
-
-        <div class="uk-panel uk-panel-box uk-panel-box-primary">
-          <h3 class="uk-panel-title">Results</h3>
-
-          <dl class="uk-description-list-line">
-            <dt>Time</dt>
-            <dd><%= @running.result(current_user).time %></dd>
-            <dt>Length</dt>
-            <dd><%= @running.result(current_user).length %></dd>
-          </dl>
-
-        </div>
-
+    <% if @running.is_upcoming %>
+        <%= render :partial => 'sport_sessions/users_joining', :locals => {:session => @running} %>
     <% end %>
-
-    <%= render :partial => 'sport_sessions/users_joining', :locals => {:session => @running} %>
 
     <% if @running.achievements_obtained(current_user).count > 0 %>
         <div class="uk-panel uk-panel-box">
           <h3 class="uk-panel-title"><i class="uk-icon-star"></i> Achievements</h3>
           <% @running.achievements_obtained(current_user).each do |achievement| %>
-            <li class="uk-margin-small-bottom">
-              <div class="uk-thumbnail uk-border-circle uk-margin-right">
-                <img class="uk-border-circle" width="50" height=50" src="<%= image_path("achievement_icons/#{achievement.id}.svg") %>">
-              </div>
-              <%= achievement.title %>
-            </li>
+              <li class="uk-margin-small-bottom">
+                <div class="uk-thumbnail uk-border-circle uk-margin-right">
+                  <img class="uk-border-circle" width="50" height=50" src="<%= image_path("achievement_icons/#{achievement.id}.svg") %>">
+                </div>
+                <%= achievement.title %>
+              </li>
           <% end %>
         </div>
     <% end %>
+
+    <%= render :partial => 'sport_sessions/social_buttons', :locals => {:session => @running} %>
 
   </div>
 </div>

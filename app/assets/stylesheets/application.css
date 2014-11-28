@@ -16,6 +16,19 @@
  *= require jquery-ui/datepicker
  */
 
+body {
+    background-color: #F4F4F4;
+}
+
+#main-container {
+    background-color: #ffffff;
+    padding-bottom: 30px;
+}
+
+tr.highlight {
+    background-color: #EBF7FD !important;
+}
+
 .google-map {
     height: 300px;
     width: 100%;
@@ -23,7 +36,7 @@
 
 .social-button {
     display: inline-block;
-    margin: 0;
+    margin-right: 10px;
     padding: 0;
 }
 

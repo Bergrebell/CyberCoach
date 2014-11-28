@@ -1,6 +1,9 @@
 <h1>Running Sessions</h1>
 
-<a href="<%= new_running_path %>" class="uk-button uk-button-primary uk-align-right">Create Running Session</a>
+<a href="<%= new_running_path %>" class="uk-button uk-button-primary uk-align-right">
+  <i class="uk-icon uk-icon-plus"></i>
+  Create Running Session
+</a>
 
 <ul class="uk-tab uk-margin-large-top" data-uk-tab="{connect: '#tabs-content'}">
   <li class="uk-active"><a href="#">Upcoming Events</a></li>
@@ -27,7 +30,7 @@
   <!-- Invitations -->
   <li>
 
-    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @invitations, :confirm_decline_buttons => true } %>
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @invitations } %>
 
   </li>
 

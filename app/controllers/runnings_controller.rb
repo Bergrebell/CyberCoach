@@ -28,8 +28,12 @@ class RunningsController < SportSessionsController
   # Edit result
   #
   def edit_result
-    # TODO Check that the current user is participant of object or catch exception
     @running = Facade::SportSession::Running.find_by id: params[:id]
+
+    if not @running.is_participant(current_user)
+      redirect_to runnings_url, alert: 'Permission denied'
+    end
+
     if @running.date > Date.today
       redirect_to runnings_url, alert: 'Storing results only possible if event is passed'
     end
@@ -41,8 +45,12 @@ class RunningsController < SportSessionsController
   # Save a result for current user
   #
   def save_result
-    # TODO Check that the current user can save results or catch exception
     @running = Facade::SportSession::Running.find_by id: params[:id]
+
+    if not @running.is_confirmed_participant(current_user)
+      redirect_to runnings_url, alert: 'Permission denied'
+    end
+
     @result = @running.result(current_user)
 
     @result.time = params[:time]
@@ -89,6 +97,10 @@ class RunningsController < SportSessionsController
 
   def update
     @running = Facade::SportSession::Running.find_by id: params[:id]
+
+    if not @running.user_id == current_user.id
+      redirect_to runnings_url, alert: 'Permission denied'
+    end
 
     if @running.update(running_params)
       redirect_to runnings_url, notice: 'Running session successfully updated'

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="uk-height-1-1">
 <head>
   <title>CyberCoach</title>
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => false %>
@@ -7,10 +7,10 @@
   <%= csrf_meta_tags %>
   <%= yield(:head) %>
 </head>
-<body class="<%= controller_name %> <%= action_name %>">
+<body class="uk-height-1-1 <%= controller_name %> <%= action_name %>">
 
-<div class="uk-container uk-container-center">
-  <nav class="uk-navbar uk-margin">
+<div id="main-container" class="uk-container uk-container-center uk-height-viewport">
+  <nav class="uk-navbar uk-margin uk-margin-large-bottom uk-margin-top">
     <a href="<%= welcome_index_path %>" class="uk-navbar-brand">CyberCoach</a>
 
     <ul class="uk-navbar-nav">

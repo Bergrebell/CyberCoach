@@ -85,11 +85,11 @@
 
               <% end %>
 
-              <% if  s.is_upcoming and s.user_id != current_user.id and not local_assigns.has_key? :confirm_decline_buttons %>
+              <% if  s.is_upcoming and s.user_id != current_user.id and s.is_confirmed_participant(current_user) %>
                   <a href="/sport_sessions/<%= s.id %>/unsubscribe/<%= current_user.id %>" class="uk-button uk-button-small">Unsubscribe</a>
               <% end %>
 
-              <% if local_assigns.has_key? :confirm_decline_buttons %>
+              <% if  s.is_upcoming and s.user_id != current_user.id and s.is_unconfirmed_participant(current_user) %>
                   <a href="/sport_sessions/<%= s.id %>/confirm/<%= current_user.id %>" class="uk-button uk-button-small">Confirm</a>
                   <a href="/sport_sessions/<%= s.id %>/decline/<%= current_user.id %>" class="uk-button uk-button-small">Decline</a>
               <% end %>
