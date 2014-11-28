@@ -31,10 +31,11 @@
     line-height: 10px;
 }
 
-body.user_achievements .inactive img {
+.achievement-missing img {
     opacity: 0.2;
 }
 
-body.user_achievements .inactive h4 {
+.achievement-missing,
+.achievement-missing h4 {
     color: #CCCCCC;
 }

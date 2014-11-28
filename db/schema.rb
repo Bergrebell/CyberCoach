@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141123156236) do
+ActiveRecord::Schema.define(version: 20141128113650) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 20141123156236) do
     t.integer  "validator_id"
     t.text     "rules"
     t.string   "sport"
+    t.string   "description"
   end
 
   create_table "boxing_participant_results", force: true do |t|

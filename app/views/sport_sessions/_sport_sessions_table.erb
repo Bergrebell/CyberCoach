@@ -19,7 +19,12 @@
           <% if local_assigns.has_key? :show_type %>
               <td><%= s.type %></td>
           <% end %>
-          <td><%= s.title %></td>
+          <td>
+            <% if s.achievements_obtained(current_user).count > 0 %>
+                <i class="uk-icon uk-icon-star"></i>
+            <% end %>
+            <%= s.title %>
+          </td>
           <td><%= s.date %></td>
           <td><%= s.location %></td>
           <td>

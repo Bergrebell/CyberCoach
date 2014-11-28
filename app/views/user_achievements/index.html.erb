@@ -1,55 +1,19 @@
-
 <h1>Achievements</h1>
 
 <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
   <h3 class="uk-title">Running</h3>
 
   <div class="uk-grid" data-uk-grid-margin>
-    <div class="uk-width-small-1-10 uk-text-center">
-      <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-        <div class="uk-overlay">
-          <img class="uk-border-circle" width="50" height=50" src="<%= image_path('achievement_icons/running31.svg') %>">
-        </div>
-      </div>
-      <h4 class="uk-margin-small-top">Basic Runner</h4>
-      </div>
 
-    <div class="uk-width-small-1-10 uk-text-center inactive">
-      <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-        <div class="uk-overlay">
-          <img class="uk-border-circle" width="50" height=50" src="<%= image_path('achievement_icons/runer.svg') %>">
+  <% @achievements.where(:sport => 'Running').order(:points).each do |achievement| %>
+        <div class="uk-width-small-1-10 uk-text-center<% if not @user_achievements.include?(achievement) %> achievement-missing<% end %>" data-uk-tooltip title="<%= achievement.description %>">
+          <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
+            <div class="uk-overlay">
+              <img class="uk-border-circle" width="50" height=50" src="<%= image_path("achievement_icons/#{achievement.id}.svg") %>">
+            </div>
+          </div>
+          <h4 class="uk-margin-small-top"><%= achievement.title %></h4>
         </div>
-      </div>
-      <h4 class="uk-margin-small-top">Usian Bolt</h4>
+  <% end %>
     </div>
-
-    <div class="uk-width-small-1-10 uk-text-center inactive">
-      <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-        <div class="uk-overlay">
-          <img class="uk-border-circle" width="50" height=50" src="<%= image_path('achievement_icons/man255.svg') %>">
-        </div>
-      </div>
-      <h4 class="uk-margin-small-top">Train Hard</h4>
-    </div>
-
-    <div class="uk-width-small-1-10 uk-text-center inactive">
-      <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-        <div class="uk-overlay">
-          <img class="uk-border-circle" width="50" height=50" src="<%= image_path('achievement_icons/group9.svg') %>">
-        </div>
-      </div>
-      <h4 class="uk-margin-small-top">Social Runner</h4>
-    </div>
-
-    <div class="uk-width-small-1-10 uk-text-center inactive">
-      <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-        <div class="uk-overlay">
-          <img class="uk-border-circle" width="50" height=50" src="<%= image_path('achievement_icons/brazil6.svg') %>">
-        </div>
-      </div>
-      <h4 class="uk-margin-small-top">Runner</h4>
-    </div>
-
-
   </div>
-</div>

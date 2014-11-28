@@ -7,47 +7,34 @@ class AchievementsChecker
   #
   def initialize(participant_result)
     @participant_result = participant_result
-    @participant = @participant_result.sport_session_participant
-    @session = @participant.sport_session
-    @user_achievements = UserAchievement.where(:user_id => @participant.user_id)
-    user_achievement_ids = @user_achievements.map { |a| a.achievement_id }
-    @achievements = Achievement.where(:sport => @session.type).where.not(:id => user_achievement_ids)
+    init
   end
 
   # Check against all achievements not yet obtained by the user
   # Returns an array of UserAchievement object that the user should obtain based on the validator
   # @param create_achievements If true, also stores the obtained achievements to database
   #
-  def check(create_achievements=false)
+  def check(create_achievements = false)
 
     user_achievements = []
 
     @achievements.each do |achievement|
 
       validator = achievement.validator
+      validator.set_participant_result(@participant_result)
 
-      # Ugly switch but rather having each Validator be implemented without a dependency on result or session...
-      case validator.type
-        when 'AttributeValidator'
-
-          # This gets all attributes of result object as hash
-          attributes = @participant_result.attributes
-          if validator.validate(achievement.rules, attributes)
-            user_achievement = UserAchievement.new(
-                :user_id => @participant.user_id,
-                :achievement_id => achievement.id,
-                :sport_session_id => @session.id
-            )
-            user_achievements.push(user_achievement)
-          end
-
-        else
-          raise "Validator #{validator.type} not yet implemented in Achievements layer"
+      if validator.validate(achievement.rules)
+        user_achievement = UserAchievement.new(
+            :user_id => @participant.user_id,
+            :achievement_id => achievement.id,
+            :sport_session_id => @sport_session.id
+        )
+        user_achievements.push(user_achievement)
       end
 
     end
 
-    #
+    # Save achievements?
     if create_achievements
       user_achievements.each do |achievement|
         achievement.save
@@ -56,6 +43,18 @@ class AchievementsChecker
 
     user_achievements
 
+  end
+
+  private
+
+  # Init
+  #
+  def init
+    @participant = @participant_result.sport_session_participant
+    @sport_session = @participant_result.sport_session
+    @user_achievements = UserAchievement.where(:user_id => @participant.user_id)
+    user_achievement_ids = @user_achievements.map { |a| a.achievement_id }
+    @achievements = Achievement.where(:sport => @sport_session.type).where.not(:id => user_achievement_ids)
   end
 
 end

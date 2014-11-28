@@ -23,6 +23,12 @@ class SportSession < ActiveRecord::Base
     self.date > Date.today
   end
 
+  # Return the number of confirmed participants
+  def n_participants
+    self.sport_session_participants.where(:confirmed => true).count
+  end
+
+
   # Invite some users to join this event
   # @param user_ids Array of User-IDs
   #

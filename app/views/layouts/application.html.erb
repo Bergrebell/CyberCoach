@@ -33,9 +33,9 @@
           <li<%= if params[:controller] == 'friends';
                    " class=uk-active"
                  end %>><a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends</a></li>
-          <li<%= if params[:controller] == 'achievements';
+          <li<%= if params[:controller] == 'user_achievements';
                    " class=uk-active"
-                 end %>><a href="<%= achievements_url %>"><i class="uk-icon-star"></i> Achievements</a></li>
+                 end %>><a href="<%= user_achievements_index_url %>"><i class="uk-icon-star"></i> Achievements</a></li>
       <% end %>
     </ul>
 
