@@ -64,13 +64,11 @@ class User < ActiveRecord::Base
   # Returns true if the current user if befriended with the other user
   #
   def befriended_with(other_user)
-    Friendship.where('(user_id = ? OR friend_id = ?) AND (user_id = ? OR friend_id = ?) AND confirmed = ?',
-                     self.id,
-                     self.id,
-                     other_user.id,
-                     other_user.id,
-                     true
-    ).exists?
+    sql_stmt = '(user_id = :first_id OR friend_id = :first_id)
+                  AND (user_id = :second_id OR friend_id = :second_id)
+                    AND (:first_id != :second_id)
+                      AND confirmed = :confirmed'
+    Friendship.where(sql_stmt, first_id: self.id, second_id: other_user.id, confirmed: true).exists?
   end
 
   # create some virtual attributes
