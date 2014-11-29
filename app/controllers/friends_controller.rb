@@ -8,6 +8,10 @@ class FriendsController < ApplicationController
     @proposals = current_user.friends_proposals
   end
 
+  def browse
+    @users = User.paginate(per_page: 5, page: params[:page])
+  end
+
   # Conform a friend request
   # POST
   #

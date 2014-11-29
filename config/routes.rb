@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   post 'sport_sessions/destroy'
 
   get 'friends/index'
+  get 'friends/browse'
   post 'friends/confirm'
   post 'friends/create'
 

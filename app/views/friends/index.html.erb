@@ -47,14 +47,8 @@
       <table class="uk-table">
         <% @proposals.each do |user| %>
             <tr>
-
-              <%= form_for Friendship.new, url: friends_create_url, method: :post do |f| %>
-                  <%= f.hidden_field :friend_id, value: user.id %>
-                  <%= f.hidden_field :username, value: user.username %>
-                  <td> <%= user.username %> </td>
-                  <td> <%= f.button 'Send request', class: 'uk-button uk-button-small' %> </td>
-              <% end %>
-
+              <td> <%= user.username %> </td>
+              <td> <%= render partial: 'request_form', locals: { user: user } %> </td>
             </tr>
         <% end %>
 
