@@ -25,6 +25,7 @@ class RunningsController < SportSessionsController
   end
 
 
+  # GET /runnings/:id/result/edit
   # Edit result
   #
   def edit_result
@@ -42,6 +43,7 @@ class RunningsController < SportSessionsController
   end
 
 
+  # POST /runnings/:id/result/save
   # Save a result for current user
   #
   def save_result
@@ -53,8 +55,8 @@ class RunningsController < SportSessionsController
 
     @result = @running.result(current_user)
 
-    @result.time = params[:time]
-    @result.length = params[:length]
+    @result.time = results_params[:time]
+    @result.length = results_params[:length]
 
     if @result.save
 
@@ -129,7 +131,7 @@ class RunningsController < SportSessionsController
   end
 
   def results_params
-    params[:results]
+    params.require(:sport_session_result).permit(:time, :length)
   end
 
 end
