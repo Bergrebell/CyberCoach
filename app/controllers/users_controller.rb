@@ -16,7 +16,7 @@ class UsersController < ApplicationController
       @user = Facade::User.query do
         User.find_by id: params[:id]
       end
-      @friends = current_user.friends
+      @friends = @user.friends
     rescue
       redirect_to users_path
     end
@@ -24,7 +24,8 @@ class UsersController < ApplicationController
     @gravatar_url = "http://gravatar.com/avatar/#{gravatar_id}.png?s=125&d"
     #runnings = current_user.sport_sessions_confirmed('Running')
     #@runnings_past = runnings.select { |running| running.date < Date.today}
-    sports = current_user.sport_sessions_confirmed.all
+    sports = @user.sport_sessions_confirmed.all
+    @upcoming_activities = sports.select { |sport| sport.date >= Date.today }
     @sports_past = sports.select { |sport| sport.date < Date.today }
   end
 
