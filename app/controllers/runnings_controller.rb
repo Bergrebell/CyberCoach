@@ -59,6 +59,17 @@ class RunningsController < SportSessionsController
     @result.length = results_params[:length]
 
     if @result.save
+      # save uploaded file content
+      #TODO: refactor the following if block and put into a method or something like that.
+      if results_params[:file].present? # check if uploaded file is present
+        participant_id, user_id = @result.sport_session_participant.id, @result.sport_session_participant.user_id
+        track = Track.where(sport_session_participant_id: participant_id, user_id: user_id ).first_or_initialize
+        File.open(results_params[:file].tempfile) do |file|
+          track.data = file.read
+          track.format = File.extname results_params[:file].original_filename
+          track.save
+        end
+      end
 
       # Check for new Achievements!
       achievement_checker = AchievementsChecker.new @result
@@ -131,7 +142,7 @@ class RunningsController < SportSessionsController
   end
 
   def results_params
-    params.require(:sport_session_result).permit(:time, :length)
+    params.require(:sport_session_result).permit(:time, :length, :file)
   end
 
 end

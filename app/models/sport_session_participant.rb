@@ -1,6 +1,7 @@
 class SportSessionParticipant < ActiveRecord::Base
   belongs_to :user
   belongs_to :sport_session
+  has_one :track
 
   # Return the correct result object
   #

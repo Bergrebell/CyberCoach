@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   has_many :sport_sessions, through: :sport_session_participants
   has_many :sport_session_participants
 
+  has_many :tracks
+
   validates :password, presence: true, confirmation: true, length: {within: 4..10}
   validates :real_name, presence: true
   validates :username, presence: true, length: {within: 4..50}
