@@ -1,0 +1,34 @@
+<%= form_for :track, action: :upload, multipart: true, :html => {:class => 'uk-form uk-form-stacked'} do |f| %>
+
+    <div class="uk-grid" data-uk-grid-margin>
+
+      <div class="uk-width-medium-2-3">
+
+        <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-panel-header">
+
+          <h3 class="uk-title">File upload</h3>
+
+          <!-- File upload -->
+          <div class="uk-form-row">
+            <label class="uk-form-label" for="entry_location">GPX File</label>
+
+            <div class="uk-form-controls">
+              <%= f.file_field 'file', class: 'uk-width-1-1' %>
+            </div>
+          </div>
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="uk-form-row uk-margin-top">
+      <div class="uk-form-controls">
+        <%= f.button 'Upload', class: 'uk-button uk-button-primary'  %>
+      </div>
+    </div>
+
+<% end %>
