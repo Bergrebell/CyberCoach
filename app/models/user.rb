@@ -58,7 +58,7 @@ class User < ActiveRecord::Base
     # get all friend ids
     friend_ids = Friendship.select(:friend_id).where user_id: self.id
     friend_ids ||= []
-    User.where.not( id: friend_ids) # get all user that are not are not in the list of friend ids
+    User.where.not( id: friend_ids).where.not( id: self.id) # get all user that are not are not in the list of friend ids
   end
 
   # Returns true if the current user if befriended with the other user
