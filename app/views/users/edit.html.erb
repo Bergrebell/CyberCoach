@@ -1,7 +1,6 @@
 <h1>Editing user</h1>
-
+<% content_for :head do %>
+    <script src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+<% end %>
 
 <%= render 'form' %>
-
-<%= link_to 'Show', action: 'show', id: @user.id %> |
-<%= link_to 'Back', users_path %>

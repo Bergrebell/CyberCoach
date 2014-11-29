@@ -31,6 +31,18 @@
                   <%= f.text_field :email, class: "uk-width-1-1 uk-form-large", placeholder: "Email" %>
                 </div>
 
+              <!-- Location -->
+              <div class="uk-form-row">
+                <br>
+                  <%= f.text_field :location, class: 'entry_location_input uk-width-1-1' %>
+              </div>
+
+              <div class="geo_details">
+                <%= f.hidden_field :latitude, class: 'lat', :'data-geo' => 'lat' %>
+                <%= f.hidden_field :longitude, class: 'lng', :'data-geo' => 'lng' %>
+              </div>
+
+
                 <div class="uk-form-row">
                   <br>
                   <%= f.password_field :password, class: "uk-width-1-1 uk-form-large", placeholder: "Password" %>
@@ -42,13 +54,9 @@
                 </div>
 
                  <div class="uk-form-row">
-                    <%= f.submit "Submit", class: "uk-width-1-1 uk-button uk-button-primary uk-button-large" %>
+                    <%= f.button 'Submit', class: "uk-width-1-1 uk-button uk-button-primary uk-button-large" %>
                  </div>
                 <% end %>
-
-              <div class="uk-text-left">
-                <%= link_to 'Back', welcome_index_path %>
-              </div>
 
         </div>
     </div>
