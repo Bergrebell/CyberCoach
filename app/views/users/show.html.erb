@@ -1,5 +1,5 @@
 <% content_for :head do %>
-    <%= render :partial => 'google_map' %>
+    <%= render :partial => 'google_map', locals: { latitude: @user.latitude, longitude: @user.longitude} %>
 <% end %>
 
 
@@ -50,7 +50,7 @@
             </tr>
             <tr>
               <td><i class="uk-icon-home"> </i> <strong>Location</strong></td>
-              <td><%= 'TODO' %></td>
+              <td><%= @user.location %></td>
             </tr>
             </tbody>
           </table>
@@ -87,14 +87,15 @@
   <div class="uk-width-medium-2-3">
     <div class="uk-grid">
 
-      <!-- google map -->
-        <div class="uk-width-medium-1-2">
-          <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
-            <i class="uk-icon-home"></i> <strong>Location</strong>
-            <div id="map-canvas" class="google-map uk-margin"></div>
-          </div>
-        </div>
-
+        <% if @user.latitude and @user.longitude %>
+            <!-- google map -->
+            <div class="uk-width-medium-1-2">
+              <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
+                <i class="uk-icon-home"></i> <strong>Location</strong>
+                <div id="map-canvas" class="google-map uk-margin"></div>
+              </div>
+            </div>
+        <% end %>
 
         <div class="uk-width-medium-1-2">
 
