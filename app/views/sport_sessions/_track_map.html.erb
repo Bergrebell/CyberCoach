@@ -1,0 +1,36 @@
+<% if points %>
+    <script>
+        var track_map;
+        var track_map_center;
+        function initialize() {
+            var points = <%= points %>;
+            var cords = [];
+            for (var i = 0; i < points.length; i++) {
+                var lat = points[i][0];
+                var lng = points[i][1];
+                cords.push(new google.maps.LatLng(lat, lng));
+            }
+            var gravity_point = <%= gravity_point %>;
+            track_map_center = new google.maps.LatLng(gravity_point[0], gravity_point[1])
+            var trackPath = new google.maps.Polyline({
+                path: cords,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            var mapOptions = {
+                zoom: 13,
+                center: track_map_center,
+                zoomControl: true,
+                scaleControl: true,
+                panControl: true
+            };
+            track_map = new google.maps.Map(document.getElementById('track-map-canvas'),
+                    mapOptions);
+            trackPath.setMap(track_map);
+        };
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+<% end %>

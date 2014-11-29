@@ -51,6 +51,8 @@ GEM
     diff-lcs (1.2.5)
     erubis (2.7.0)
     execjs (2.2.1)
+    flot-rails (0.0.6)
+      jquery-rails
     geocomplete_rails (1.6.3)
       railties (>= 3.1)
     hike (1.2.3)
@@ -68,9 +70,12 @@ GEM
     mail (2.6.1)
       mime-types (>= 1.16, < 3)
     mime-types (2.3)
+    mini_portile (0.6.1)
     minitest (5.4.2)
     multi_json (1.10.1)
     netrc (0.7.7)
+    nokogiri (1.6.4.1)
+      mini_portile (~> 0.6.0)
     pg (0.17.1)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -165,10 +170,12 @@ DEPENDENCIES
   activerecord-tableless (~> 1.0)
   addressable
   coffee-rails (~> 4.0.0)
+  flot-rails
   geocomplete_rails
   jbuilder (~> 2.0)
   jquery-rails
   jquery-ui-rails
+  nokogiri
   pg
   rails (= 4.1.6)
   rails_12factor

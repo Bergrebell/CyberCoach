@@ -15,6 +15,13 @@
 //= require_tree .
 //= require uikit
 //= require geocomplete
+//= require jquery.flot
+//= require jquery.flot.time
+//= require jquery.flot.resize
+//= require jquery.flot.navigate.js
+//= require jquery.konami.min.js
+
+
 // script for calendar date pick
 $(function (){
     var dateInput = $(".datepicker");

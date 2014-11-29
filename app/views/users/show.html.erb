@@ -2,6 +2,8 @@
     <%= render :partial => 'google_map', locals: { latitude: @user.latitude, longitude: @user.longitude} %>
 <% end %>
 
+<%= render :partial => 'modal_box' %>
+
 <!-- First box -->
 <div class="uk-grid" data-uk-grid-margin>
 
@@ -178,3 +180,4 @@
 
   </div>
 </div>
+<%= render :partial => 'hidden_achievements', locals: { user: @user } %>
