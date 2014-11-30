@@ -10,31 +10,41 @@
 
     <div class="uk-panel uk-panel-header uk-panel-box uk-panel-box-secondary">
       <h3 class="uk-title">Edit Results</h3>
-      <form class="uk-form uk-form-stacked" action="<%= running_path @running %>/result/save" method="POST">
 
-        <%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %>
+      <%= form_for :sport_session_result, url: running_path(@running) + '/result/save', action: :post, html: { class: 'uk-form uk-form-stacked' } do |f| %>
 
-        <div class="uk-form-row">
-          <label class="uk-form-label">Time</label>
-          <div class="uk-form-controls">
-            <input type="text" name="time" placeholder="" class="uk-width-1-1" value="<%= @result.time %>">
+          <div class="uk-form-row">
+            <label class="uk-form-label">Time</label>
+            <div class="uk-form-controls">
+              <%= f.text_field :time, placeholder: '', value: @result.time, class: 'uk-width-1-1' %>
+            </div>
           </div>
-        </div>
 
-        <div class="uk-form-row">
-          <label class="uk-form-label">Length</label>
-          <div class="uk-form-controls">
-            <input type="text" name="length" placeholder="" class="uk-width-1-1" value="<%= @result.length %>">
+          <div class="uk-form-row">
+            <label class="uk-form-label">Length</label>
+            <div class="uk-form-controls">
+              <%= f.text_field :length, placeholder: '', value: @result.length, class: 'uk-width-1-1' %>
+            </div>
           </div>
-        </div>
 
-        <div class="uk-form-row">
-          <div class="uk-form-controls">
-            <button class="uk-button uk-button-primary">Save</button>
+          <!-- File upload -->
+          <div class="uk-form-row">
+            <label class="uk-form-label" for="entry_location">GPX File</label>
+
+            <div class="uk-form-controls">
+              <%= f.file_field 'file', class: 'uk-width-1-1' %>
+            </div>
           </div>
-        </div>
 
-      </form>
+          <div class="uk-form-row">
+            <div class="uk-form-controls">
+              <%= f.button 'Save', class: 'uk-button uk-button-primary' %>
+            </div>
+          </div>
+
+      <% end %>
+
+
     </div>
 
     <%= render :partial => 'table_attributes', :locals => {:running => @running} %>

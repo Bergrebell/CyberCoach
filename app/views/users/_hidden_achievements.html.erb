@@ -1,0 +1,37 @@
+<% content_for :head do %>
+    <% if @user.present? and @user.id == current_user.id %>
+        <script>
+            $( window ).konami({
+                code : [38,38,40,40,37,39,37,39],
+                cheat: function() {
+                    $('#modal-box-link').trigger('click');
+                    $('#modal-box-text').text("You've earned the コナミコマンド achievement! Congrats!");
+                }
+            });
+
+            $(window).konami({
+                code: [65,87,69,83,79,77,69],
+                cheat: function(){
+                    $('#modal-box-link').trigger('click');
+                    $('#modal-box-text').text("You've earned the awesome achievement! Congrats!");
+                    var awesome = $('#awesome')[0];
+                    awesome.play();
+                }
+            });
+
+            $(window).konami({
+                code: [84,73,71,69,82],
+                cheat: function(){
+                    $('#modal-box-link').trigger('click');
+                    $('#modal-box-text').text("You've earned the tiger achievement! Congrats!");
+                    var tiger = $('#tiger')[0];
+                    tiger.play();
+                }
+            });
+        </script>
+    <% end %>
+<% end %>
+
+<a href="#modal-box" id="modal-box-link" data-uk-modal></a>
+<audio id="awesome" src="http://www.moviesoundclips.net/download.php?id=4356&ft=ogg" type="audio/ogg"> </audio>
+<audio id="tiger" src="http://stickr.com/upload/audio/1600982.mp3" type="audio/mpeg"> </audio>
