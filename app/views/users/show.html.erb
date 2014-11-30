@@ -88,17 +88,20 @@
 
 </div>
 
-<!-- Third box -->
+<!-- Achievements -->
 <div class="uk-grid" data-uk-grid-margin>
-  <!-- details -->
+
   <div class="uk-width-medium-2-3">
 
     <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
       <h3 class="uk-title"><i class="uk-icon-star"></i> Achievements</h3>
       <div class="uk-grid">
-        <div class="uk-width-medium-1-1">
-          TODO
-        </div>
+        <% @achievements.each do |achievement| %>
+            <div class="uk-width-medium-1-4">
+              <%= achievement.title %>
+              <%= image_tag achievement.url %>
+            </div>
+        <% end %>
       </div>
     </div>
   </div>
@@ -132,13 +135,13 @@
                 <i class="uk-icon-calendar-o"></i> <strong>Upcoming activities</strong>
 
                 <dl class="uk-description-list-line">
-                  <% @upcoming_activities.map do |f| %>
+                  <% @upcoming_activities.map do |sport_session| %>
 
-                      <dt> <%= f.type %> <%= " - #{f.title}" if f.title.present? %> </dt>
+                      <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
                       <dd>
                         <ul class="uk-list">
-                          <% if f.location.present? %> <li><i class="uk-icon-home"></i> <%= f.location %> </li> <% end %>
-                          <% if f.date.present? %> <li><i class="uk-icon-clock-o"></i> <%= f.date %> </li> <% end %>
+                          <% if sport_session.location.present? %> <li><i class="uk-icon-home"></i> <%= sport_session.location %> </li> <% end %>
+                          <% if sport_session.date.present? %> <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li> <% end %>
                         </ul>
                       </dd>
 
@@ -154,13 +157,13 @@
                 <i class="uk-icon-calendar-o"></i> <strong>Past activities</strong>
 
                 <dl class="uk-description-list-line">
-                  <% @sports_past.map do |f| %>
+                  <% @sports_past.map do |sport_session| %>
 
-                      <dt> <%= f.type %> <%= " - #{f.title}" if f.title.present? %> </dt>
+                      <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
                       <dd>
                         <ul class="uk-list">
-                          <% if f.location.present? %> <li><i class="uk-icon-home"></i> <%= f.location %> </li> <% end %>
-                          <% if f.date.present? %> <li><i class="uk-icon-clock-o"></i> <%= f.date %> </li> <% end %>
+                          <% if sport_session.location.present? %> <li><i class="uk-icon-home"></i> <%= sport_session.location %> </li> <% end %>
+                          <% if sport_session.date.present? %> <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li> <% end %>
                         </ul>
                       </dd>
 

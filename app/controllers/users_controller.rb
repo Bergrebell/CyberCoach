@@ -17,6 +17,9 @@ class UsersController < ApplicationController
         User.find_by id: params[:id]
       end
       @friends = @user.friends
+      #TODO: remove mock achievements
+      @achievements = [ OpenStruct.new(title: 'Achievement 1', url: 'http://cdn.flaticon.com/png/256/48295.png'),
+                          OpenStruct.new(title: 'Achievement 2', url: 'http://cdn.flaticon.com/png/256/48295.png')]
     rescue
       redirect_to users_path
     end
