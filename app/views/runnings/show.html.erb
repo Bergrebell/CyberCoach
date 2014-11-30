@@ -13,23 +13,33 @@
 <% end %>
 
 <script>
+    // load tab dynamically and show and hide them if the corresponding tab is selected
+    // tries to mimic something like a controller action
     $(function () {
-        // some fun
+        // list of available tab ids
         var tabs = ['#tab_results','#tab_track','#tab_details'];
+
+        // hides all tabs
         var hideTabs = function(){
             tabs.forEach(function(tab_id){
                 $(tab_id + '_page').hide();
             });
         };
 
+        // tab controller functions
+
+        // results tab controller
         $('#tab_results').click(function(){
+            $(location).attr('hash','#results');
             hideTabs();
             $('#tab_results_page').fadeIn(500);
             google.maps.event.trigger(map, 'resize');
             map.setCenter(map_center);
         });
 
+        // track tab controller
         $('#tab_track').click(function(){
+            $(location).attr('hash','#track');
             hideTabs();
             $('#tab_track_page').fadeIn(500);
             google.maps.event.trigger(track_map, 'resize');
@@ -39,14 +49,24 @@
             plot_speeds();
         });
 
+        // details tab controller
         $('#tab_details').click(function(){
+            $(location).attr('hash','#details');
             hideTabs();
             $('#tab_details_page').fadeIn(500);
         });
 
         // init
-        hideTabs();
-        $('#tab_results_page').show();
+        hideTabs(); // first hide all tabs
+        var anchor = $(location).attr('hash');
+        console.log(anchor);
+        if(anchor) {
+            $('#tab_' + anchor.substr(1) + '_page').show();
+            $('#tab_' + anchor.substr(1)).addClass('uk-active');
+        } else {
+            $('#tab_results_page').show();
+            $('#tab_results').addClass('uk-active');
+        }
     });
 </script>
 
@@ -97,9 +117,15 @@
     <div class="uk-panel">
       <!-- Tab menu -->
       <ul class="uk-tab" data-uk-tab>
-        <li class="uk-active"><a href="" id="tab_results">Results</a></li>
-        <% if @points %><li><a href="" id="tab_track">Track</a></li> <% end %>
-        <li><a href="" id="tab_details">Details</a></li>
+
+        <!-- Link for result tab -->
+        <li id="tab_results"><a href="#results" id="tab_results">Results</a></li>
+
+        <!-- Link for track tab -->
+        <% if @points %><li id="tab_track"><a href="#track" id="tab_track">Track</a></li> <% end %>
+
+        <!-- Link for details tab -->
+        <li id="tab_details"><a href="#details" id="tab_details">Details</a></li>
       </ul>
     </div>
 
