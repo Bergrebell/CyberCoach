@@ -1,6 +1,7 @@
 class SportSession < ActiveRecord::Base
   has_many :sport_session_participants
   has_many :users, through: :sport_session_participants
+  belongs_to :user
 
 
   # Virtual attribute, this one is merged into the date

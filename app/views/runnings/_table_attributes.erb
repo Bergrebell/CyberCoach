@@ -11,6 +11,10 @@
         <td><%= running.location %></td>
       </tr>
       <tr>
+        <td><strong>Initiator</strong></td>
+        <td><%= link_to running.user.username, user_path(running.user) %></td>
+      </tr>
+      <tr>
         <td><strong>Duration</strong></td>
         <td><%= running.entry_duration %></td>
       </tr>
