@@ -5,6 +5,7 @@ class CreateTracks < ActiveRecord::Migration
       t.string :format
       t.belongs_to :sport_session_participant
       t.belongs_to :user
+      t.belongs_to :sport_session
       t.timestamps
     end
   end

@@ -34,6 +34,11 @@ tr.highlight {
     width: 100%;
 }
 
+.track-map {
+    height: 300px;
+    width: 100%;
+}
+
 .social-button {
     display: inline-block;
     margin-right: 10px;

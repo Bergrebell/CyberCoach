@@ -1,0 +1,31 @@
+<% if @paces %>
+<script>
+
+  function plot_paces(){
+      var d1 = [];
+      for (var i = 0; i < 14; i += 0.5) {
+          d1.push([i, Math.sin(i)]);
+      }
+      var paces = {
+          label: 'pace [minutes / 1 km]',
+          data: <%= @paces %>,
+          color: 'red',
+          lines: { show: true }
+      };
+
+      function kmFormatter(v,axis){
+          return v.toFixed(axis.tickDecimals) + ' km';
+      }
+
+      function sFormatter(v,axis){
+          return v.toFixed(axis.tickDecimals) + ' m';
+      }
+
+      $.plot("#pace_plot", [paces],{
+          xaxes: [ { tickFormatter: kmFormatter} ],
+          yaxes: [ { tickFormatter: sFormatter} ]
+      });
+  }
+
+</script>
+<% end %>

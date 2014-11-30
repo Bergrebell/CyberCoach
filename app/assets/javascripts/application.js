@@ -15,6 +15,11 @@
 //= require_tree .
 //= require uikit
 //= require geocomplete
+//= require jquery.flot
+//= require jquery.flot.time
+//= require jquery.flot.resize
+
+
 // script for calendar date pick
 $(function (){
     var dateInput = $(".datepicker");

@@ -1,0 +1,31 @@
+<% if @heights %>
+<script>
+
+  function plot_profile(){
+      var d1 = [];
+      for (var i = 0; i < 14; i += 0.5) {
+          d1.push([i, Math.sin(i)]);
+      }
+      var heights = {
+          label: 'height [m]',
+          data: <%= @heights %>,
+          color: 'blue',
+          lines: { show: true }
+      };
+
+      function kmFormatter(v,axis){
+          return v.toFixed(axis.tickDecimals) + ' km';
+      }
+
+      function mFormatter(v,axis){
+          return v.toFixed(axis.tickDecimals) + ' m';
+      }
+
+      $.plot("#profile_plot", [heights],{
+          xaxes: [ { tickFormatter: kmFormatter} ],
+          yaxes: [ { tickFormatter: mFormatter} ]
+      });
+  }
+
+</script>
+<% end %>
