@@ -90,8 +90,8 @@ class RunningsController < SportSessionsController
   end
 
   def show
+    #TODO: refactor this and integrate it with the sport session results
     track = Track.find_by user_id: current_user.id, sport_session_id: params[:id]
-
     if track.present?
       gpx_file = GPX::File.new track.data
       @points = gpx_file.raw_points
