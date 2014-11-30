@@ -52,9 +52,24 @@ module GPX
       speed = Hash.new
       zipped = acc_distances.zip(@times)
       zipped.each_with_index do |(km,time),index|
-        pace[km.floor] = Array.new if pace[km.floor].nil?
-        pace[km.floor] << [km, @times[index]]
+        pace[km.round(1)] = Array.new if pace[km.round(1)].nil?
+        pace[km.round(1)] << [km, @times[index]]
       end
+
+      zipped.each_with_index do |(km,time),index|
+        speed[km.round(1)] = Array.new if speed[km.round(1)].nil?
+        speed[km.round(1)] << [km, @times[index]]
+      end
+
+
+      speed.each do |key,value|
+        km1, time1 = speed[key].first
+        km2, time2 = speed[key].last
+        xd = km2 - km1
+        td = time2 - time1
+        speed[key] = (xd/(td.to_f/3600.0)).round(2)
+      end
+
 
       pace.each do |key,value|
         km1, time1 = pace[key].first
@@ -62,11 +77,9 @@ module GPX
         xd = km2 - km1
         td = time2 - time1
         pace[key] = (td/60.0)/(xd.to_f)
-        speed[key] = (xd/(td.to_f/3600.0)).round(2)
       end
 
-      @paces = pace.map {|k,v| [k+1,v]}
-      @speeds = speed.map {|k,v| [k+1,v]}
+      mpace = pace.values.reduce(:+)/pace.length
 
       @heights = acc_distances.zip(@raw_heights)
       time_delta = @times.last - @times.first
@@ -77,6 +90,9 @@ module GPX
           :speed => "#{(total_distance/(time_delta.to_f/3600.0)).round(2)} km/h", #km/h
           :pace => "#{Time.at(time_delta/(total_distance.to_f)).utc.strftime('%H:%M:%S')} time/km"
       }
+
+      @speeds = speed.map {|k,v| [k+1,v]}
+      @paces = pace.map {|k,v| [k+1,v]}.select {|(k,v)| v < 3*mpace }
 
     end
 
