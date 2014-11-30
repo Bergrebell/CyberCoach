@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141128113650) do
+ActiveRecord::Schema.define(version: 20141129031840) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
@@ -112,6 +112,9 @@ ActiveRecord::Schema.define(version: 20141128113650) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "password"
+    t.string   "location"
+    t.float    "latitude"
+    t.float    "longitude"
   end
 
   create_table "validators", force: true do |t|
