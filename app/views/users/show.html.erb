@@ -15,7 +15,7 @@
   <!-- Friend request button -->
   <div class="uk-width-medium-1-4">
     <div class="uk-align-right">
-      <%= render(partial: 'friends/request_form', locals: { user: @user }) if current_user.id != @user.id && !current_user.befriended_with(@user) %>
+      <%= render(partial: 'friends/request_form', locals: { user: @user }) if current_user.present? && current_user.id != @user.id && !current_user.befriended_with(@user) %>
     </div>
 
   </div>

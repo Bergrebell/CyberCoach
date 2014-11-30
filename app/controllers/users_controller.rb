@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @users = Facade::User.paginate(per_page: 5, page: params[:page])
+    redirect_to friends_browse_url
   end
 
   # GET /users/1
