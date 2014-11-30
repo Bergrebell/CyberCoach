@@ -30,7 +30,7 @@
 
         // results tab controller
         $('#tab_results').click(function(){
-            $(location).attr('hash','#results');
+            //$(location).attr('hash','#results');
             hideTabs();
             $('#tab_results_page').fadeIn(500);
             google.maps.event.trigger(map, 'resize');
@@ -39,34 +39,30 @@
 
         // track tab controller
         $('#tab_track').click(function(){
-            $(location).attr('hash','#track');
+            //$(location).attr('hash','#track');
             hideTabs();
             $('#tab_track_page').fadeIn(500);
             google.maps.event.trigger(track_map, 'resize');
             track_map.setCenter(track_map_center);
+
+        });
+
+        // details tab controller
+        $('#tab_details').click(function(){
+            //$(location).attr('hash','#details');
+            hideTabs();
+            $('#tab_details_page').fadeIn(500);
             plot_profile();
             plot_paces();
             plot_speeds();
         });
 
-        // details tab controller
-        $('#tab_details').click(function(){
-            $(location).attr('hash','#details');
-            hideTabs();
-            $('#tab_details_page').fadeIn(500);
-        });
-
         // init
         hideTabs(); // first hide all tabs
-        var anchor = $(location).attr('hash');
-        console.log(anchor);
-        if(anchor) {
-            $('#tab_' + anchor.substr(1) + '_page').show();
-            $('#tab_' + anchor.substr(1)).addClass('uk-active');
-        } else {
-            $('#tab_results_page').show();
-            $('#tab_results').addClass('uk-active');
-        }
+
+        $('#tab_results_page').show();
+        $('#tab_results').addClass('uk-active');
+
     });
 </script>
 
@@ -185,6 +181,12 @@
           <div id="track-map-canvas" class="track-map uk-margin"></div>
          </div>
 
+
+
+      </div>
+
+    <!-- Details tab page -->
+      <div class="uk-width-medium-1-1" id="tab_details_page">
         <!-- Statistics -->
         <%= render partial: 'sport_sessions/statistics', locals: { stats: @stats, paces: @paces } %>
 
@@ -205,12 +207,6 @@
           <h3 class="uk-panel-title">Speed</h3>
           <div id="speed_plot" style="height:250px;"></div>
         </div>
-
-      </div>
-
-    <!-- Details tab page -->
-      <div class="uk-width-medium-1-1" id="tab_details_page">
-        dsfkdsdsadasdsjk
       </div>
 
     </div>
