@@ -9,11 +9,12 @@ class SessionController < ApplicationController
         session[:username] = user.username
         session[:password] = user.password
         ObjectStore::Store.set(user.username, user) # store logged in user as facade user in the object store
-        redirect_to '/welcome/index', notice: 'Logged in successfully'
+        redirect_to '/welcome/index', notice: 'Logged in successfully' and return
       else
-        flash[:error] = 'User credentials not valid'
+        redirect_to '/welcome/index', alert: 'User credentials not valid' and return
       end
     end
+    redirect_to '/welcome/index', alert: 'User credentials not valid'
   end
 
   def logout
