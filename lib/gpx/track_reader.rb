@@ -96,8 +96,8 @@ module GPX
 
       begin
         total_time = valid_points.last.time - valid_points.first.time
-        avg_speed = "#{(valid_total_distance/(time_delta.to_f/3600.0)).round(2)} km/h"
-        avg_pace = "#{Time.at(time_delta/(valid_total_distance.to_f)).utc.strftime('%H:%M:%S')} time/km"
+        avg_speed = "#{(valid_total_distance/(total_time.to_f/3600.0)).round(2)} km/h"
+        avg_pace = "#{Time.at(total_time/(valid_total_distance.to_f)).utc.strftime('%H:%M:%S')} time/km"
       rescue
         avg_speed = '-'
         avg_pace = '-'
