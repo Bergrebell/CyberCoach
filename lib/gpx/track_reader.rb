@@ -53,18 +53,13 @@ module GPX
 
      # preprocessing
       valid_zipped.each do |(km, point)|
-
           pace[km.round(1)] = Array.new if pace[km.round(1)].nil?
           pace[km.round(1)] << [km, point.time]
-
       end
 
-
       valid_zipped.each do |(km, point)|
-
           speed[km.round(1)] = Array.new if speed[km.round(1)].nil?
           speed[km.round(1)] << [km, point.time]
-
       end
 
       # compute speed
@@ -99,10 +94,8 @@ module GPX
       total_distance = acc_distances.last
       valid_total_distance = valid_acc_distances.last
 
-
       begin
-        time_delta = valid_points.last.time - valid_points.first.time
-        total_time = (Time.at(time_delta).utc.strftime('%H:%M:%S'))
+        total_time = valid_points.last.time - valid_points.first.time
         avg_speed = "#{(valid_total_distance/(time_delta.to_f/3600.0)).round(2)} km/h"
         avg_pace = "#{Time.at(time_delta/(valid_total_distance.to_f)).utc.strftime('%H:%M:%S')} time/km"
       rescue
@@ -111,10 +104,8 @@ module GPX
         total_time = '-'
       end
 
-
-
       @stats = {
-          :distance => "#{total_distance.round(2)} km",
+          :distance => (total_distance * 1000).round(2),
           :time => total_time,
           :speed => avg_speed, #km/h
           :pace => avg_pace
