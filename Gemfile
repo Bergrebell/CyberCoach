@@ -74,3 +74,4 @@ gem 'will_paginate', '~> 3.0'
 gem 'geocomplete_rails'
 gem 'nokogiri'
 gem "flot-rails"
+gem 'gpx_ruby'

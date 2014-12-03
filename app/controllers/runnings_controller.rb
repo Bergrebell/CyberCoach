@@ -93,13 +93,14 @@ class RunningsController < SportSessionsController
     #TODO: refactor this and integrate it with the sport session results
     track = Track.find_by user_id: current_user.id, sport_session_id: params[:id]
     if track.present?
-      gpx_file = GPX::File.new track.data
-      @points = gpx_file.raw_points
-      @gravity_point = gpx_file.gravity_point
-      @heights = gpx_file.heights
-      @stats = gpx_file.stats
-      @paces = gpx_file.paces
-      @speeds = gpx_file.speeds
+      track_reader = GPX::TrackReader.new(track.data)
+      @points = track_reader.points
+
+      @gravity_point = track_reader.center_of_gravity
+      @heights = track_reader.heights
+      @stats = track_reader.stats
+      @paces = track_reader.paces
+      @speeds = track_reader.speeds
     end
 
     @running = Facade::SportSession.find_by id: params[:id]
