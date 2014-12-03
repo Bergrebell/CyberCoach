@@ -1,11 +1,11 @@
-<%content_for :head do %>
+<% content_for :head do %>
     <!-- load google maps only once -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <%= render :partial => 'sport_sessions/google_map', :locals => {:session => @running} %>
-    <%= render :partial => 'sport_sessions/track_map', :locals => {:points=> @points, :gravity_point => @gravity_point } %>
-    <%= render :partial => 'sport_sessions/height_profile', :locals => {:heights => @heights } %>
-    <%= render :partial => 'sport_sessions/pace_profile', :locals => {:paces => @paces } %>
-    <%= render :partial => 'sport_sessions/speed_profile', :locals => {:speeds => @speeds } %>
+    <%= render :partial => 'sport_sessions/track_map', :locals => {:points => @points, :gravity_point => @gravity_point} %>
+    <%= render :partial => 'sport_sessions/height_profile', :locals => {:heights => @heights} %>
+    <%= render :partial => 'sport_sessions/pace_profile', :locals => {:paces => @paces} %>
+    <%= render :partial => 'sport_sessions/speed_profile', :locals => {:speeds => @speeds} %>
 <% end %>
 
 <% content_for :javascript do %>
@@ -13,15 +13,15 @@
 <% end %>
 
 <script>
-    // load tab dynamically and show and hide them if the corresponding tab is selected
+    // load tabs dynamically and show and hide them if the corresponding tab is selected
     // tries to mimic something like a controller action
     $(function () {
         // list of available tab ids
-        var tabs = ['#tab_results','#tab_track','#tab_details'];
+        var tabs = ['#tab_results', '#tab_track', '#tab_statistics', '#tab_pace', '#tab_speed', '#tab_height'];
 
         // hides all tabs
-        var hideTabs = function(){
-            tabs.forEach(function(tab_id){
+        var hideTabs = function () {
+            tabs.forEach(function (tab_id) {
                 $(tab_id + '_page').hide();
             });
         };
@@ -29,8 +29,7 @@
         // tab controller functions
 
         // results tab controller
-        $('#tab_results').click(function(){
-            //$(location).attr('hash','#results');
+        $('#tab_results').click(function () {
             hideTabs();
             $('#tab_results_page').fadeIn(500);
             google.maps.event.trigger(map, 'resize');
@@ -38,8 +37,7 @@
         });
 
         // track tab controller
-        $('#tab_track').click(function(){
-            //$(location).attr('hash','#track');
+        $('#tab_track').click(function () {
             hideTabs();
             $('#tab_track_page').fadeIn(500);
             google.maps.event.trigger(track_map, 'resize');
@@ -48,13 +46,30 @@
         });
 
         // details tab controller
-        $('#tab_details').click(function(){
-            //$(location).attr('hash','#details');
+        $('#tab_statistics').click(function () {
             hideTabs();
-            $('#tab_details_page').fadeIn(500);
-            plot_profile();
-            plot_paces();
-            plot_speeds();
+            $('#tab_statistics_page').fadeIn(500);
+        });
+
+        // speed tab controller
+        $('#tab_speed').click(function () {
+            hideTabs();
+            $('#tab_speed_page').fadeIn(500);
+            plot_speed_profile();
+        });
+
+        // pace tab controller
+        $('#tab_pace').click(function () {
+            hideTabs();
+            $('#tab_pace_page').fadeIn(500);
+            plot_pace_profile();
+        });
+
+        // pace tab controller
+        $('#tab_height').click(function () {
+            hideTabs();
+            $('#tab_height_page').fadeIn(500);
+            plot_height_profile();
         });
 
         // init
@@ -62,7 +77,6 @@
 
         $('#tab_results_page').show();
         $('#tab_results').addClass('uk-active');
-
     });
 </script>
 
@@ -118,10 +132,30 @@
         <li id="tab_results"><a href="#results" id="tab_results">Results</a></li>
 
         <!-- Link for track tab -->
-        <% if @points %><li id="tab_track"><a href="#track" id="tab_track">Track</a></li> <% end %>
+        <% if @points.present? %>
+            <li id="tab_track"><a href="#track" id="tab_track">Track</a></li>
+        <% end %>
 
-        <!-- Link for details tab -->
-        <li id="tab_details"><a href="#details" id="tab_details">Details</a></li>
+        <!-- Link for statistics tab -->
+        <% if @points.present? %>
+            <li id="tab_statistics"><a href="#statistics" id="tab_statistics">Statistics</a></li>
+        <% end %>
+
+        <!-- Link for pace tab -->
+        <% if @paces.present? %>
+            <li id="tab_pace"><a href="#pace" id="tab_details">Pace profile</a></li>
+        <% end %>
+
+        <!-- Link for speed tab -->
+        <% if @speeds.present? %>
+            <li id="tab_speed"><a href="#speed" id="tab_speed">Speed profile</a></li>
+        <% end %>
+
+        <!-- Link for height tab -->
+        <% if @heights.present? %>
+            <li id="tab_height"><a href="#height" id="tab_height">Height profile</a></li>
+        <% end %>
+
       </ul>
     </div>
 
@@ -131,7 +165,8 @@
 
   <div class="uk-width-medium-2-3">
 
-    <div class="uk-grid" >
+    <div class="uk-grid">
+
       <!-- Result tab page -->
       <div class="uk-width-medium-1-1" id="tab_results_page">
         <% if @running.is_past %>
@@ -164,49 +199,66 @@
 
         <% end %>
 
+        <!-- Details table -->
         <%= render :partial => 'table_attributes', :locals => {:running => @running} %>
 
+        <!-- Location map -->
         <% if @running.latitude and @running.longitude %>
             <div id="map-canvas" class="google-map uk-margin"></div>
         <% end %>
 
       </div>
 
-    <!-- Track tab page -->
+      <!-- Track tab page -->
       <div class="uk-width-medium-1-1" id="tab_track_page">
-
         <!-- Track map -->
         <div class="uk-panel uk-panel-box uk-panel-box-secondary">
           <h3 class="uk-panel-title">Track map</h3>
+
           <div id="track-map-canvas" class="track-map uk-margin"></div>
-         </div>
-
-
-
+        </div>
       </div>
 
-    <!-- Details tab page -->
-      <div class="uk-width-medium-1-1" id="tab_details_page">
+      <!-- Statistics tab page -->
+      <div class="uk-width-medium-1-1" id="tab_statistics_page">
         <!-- Statistics -->
-        <%= render partial: 'sport_sessions/statistics', locals: { stats: @stats, paces: @paces } %>
+        <%= render partial: 'sport_sessions/statistics', locals: {stats: @stats, paces: @paces} %>
+      </div>
 
-        <!-- Height profile plot -->
-        <div class="uk-panel uk-panel-box uk-panel-box-secondary">
-          <h3 class="uk-panel-title">Height profile</h3>
-          <div id="profile_plot" style="height:250px;"></div>
-        </div>
+      <!-- Pace tab page -->
+      <div class="uk-width-medium-1-1" id="tab_pace_page">
+        <% if @paces.present? %>
+            <!-- Pace plot -->
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              <h3 class="uk-panel-title">Pace profile</h3>
 
-        <!-- Pace plot -->
-        <div class="uk-panel uk-panel-box uk-panel-box-secondary">
-          <h3 class="uk-panel-title">Pace</h3>
-          <div id="pace_plot" style="height:250px;"></div>
-        </div>
+              <div id="pace_plot" style="height:250px;"></div>
+            </div>
+        <% end %>
+      </div>
 
-        <!-- Speed plot -->
-        <div class="uk-panel uk-panel-box uk-panel-box-secondary">
-          <h3 class="uk-panel-title">Speed</h3>
-          <div id="speed_plot" style="height:250px;"></div>
-        </div>
+      <!-- Speed tab page -->
+      <div class="uk-width-medium-1-1" id="tab_speed_page">
+        <% if @speeds.present? %>
+            <!-- Speed plot -->
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              <h3 class="uk-panel-title">Speed profile</h3>
+
+              <div id="speed_plot" style="height:250px;"></div>
+            </div>
+        <% end %>
+      </div>
+
+      <!-- Height tab page -->
+      <div class="uk-width-medium-1-1" id="tab_height_page">
+        <% if @heights.present? %>
+            <!-- Height profile plot -->
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              <h3 class="uk-panel-title">Height profile</h3>
+
+              <div id="profile_plot" style="height:250px;"></div>
+            </div>
+        <% end %>
       </div>
 
     </div>

@@ -1,41 +1,39 @@
-<% if @speeds %>
-    <script>
+<script>
+    function plot_speed_profile() {
+        <% if @speeds.present? %>
+        var speeds = {
+            label: 'speed [km/h]',
+            data: <%= @speeds %>,
+            color: 'green',
+            lines: { show: true }
+        };
 
-        function plot_speeds(){
-            var d1 = [];
-            for (var i = 0; i < 14; i += 0.5) {
-                d1.push([i, Math.sin(i)]);
-            }
-            var speeds = {
-                label: 'speed [km/h]',
-                data: <%= @speeds %>,
-                color: 'green',
-                lines: { show: true }
-            };
-
-            function kmFormatter(v,axis){
-                return v.toFixed(axis.tickDecimals) + ' km';
-            }
-
-            function kmhFormatter(v,axis){
-                return v.toFixed(axis.tickDecimals) + ' km/h';
-            }
-
-            $.plot("#speed_plot", [speeds],{
-                xaxes: [ { tickFormatter: kmFormatter} ],
-                yaxes: [ { tickFormatter: kmhFormatter} ],
-                zoom: {
-                    interactive: true
-                },
-                pan: {
-                    interactive: true
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true
-                }
-            });
+        function kmFormatter(v, axis) {
+            return v.toFixed(axis.tickDecimals) + ' km';
         }
 
-    </script>
-<% end %>
+        function kmhFormatter(v, axis) {
+            return v.toFixed(axis.tickDecimals) + ' km/h';
+        }
+
+        $.plot("#speed_plot", [speeds], {
+            xaxes: [
+                { tickFormatter: kmFormatter}
+            ],
+            yaxes: [
+                { tickFormatter: kmhFormatter}
+            ],
+            zoom: {
+                interactive: true
+            },
+            pan: {
+                interactive: true
+            },
+            grid: {
+                hoverable: true,
+                clickable: true
+            }
+        });
+        <% end %>
+    }
+</script>
