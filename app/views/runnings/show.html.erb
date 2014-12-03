@@ -23,6 +23,7 @@
         var hideTabs = function () {
             tabs.forEach(function (tab_id) {
                 $(tab_id + '_page').hide();
+                $(tab_id).removeClass('uk-active');
             });
         };
 
@@ -31,6 +32,7 @@
         // results tab controller
         $('#tab_results').click(function () {
             hideTabs();
+            $('#tab_results').addClass('uk-active');
             $('#tab_results_page').fadeIn(500);
             google.maps.event.trigger(map, 'resize');
             map.setCenter(map_center);
@@ -39,6 +41,7 @@
         // track tab controller
         $('#tab_track').click(function () {
             hideTabs();
+            $('#tab_track').addClass('uk-active');
             $('#tab_track_page').fadeIn(500);
             google.maps.event.trigger(track_map, 'resize');
             track_map.setCenter(track_map_center);
@@ -48,12 +51,14 @@
         // details tab controller
         $('#tab_statistics').click(function () {
             hideTabs();
+            $('#tab_statistics').addClass('uk-active');
             $('#tab_statistics_page').fadeIn(500);
         });
 
         // speed tab controller
         $('#tab_speed').click(function () {
             hideTabs();
+            $('#tab_speed').addClass('uk-active');
             $('#tab_speed_page').fadeIn(500);
             plot_speed_profile();
         });
@@ -61,6 +66,7 @@
         // pace tab controller
         $('#tab_pace').click(function () {
             hideTabs();
+            $('#tab_pace').addClass('uk-active');
             $('#tab_pace_page').fadeIn(500);
             plot_pace_profile();
         });
@@ -68,6 +74,7 @@
         // pace tab controller
         $('#tab_height').click(function () {
             hideTabs();
+            $('#tab_height').addClass('uk-active');
             $('#tab_height_page').fadeIn(500);
             plot_height_profile();
         });
