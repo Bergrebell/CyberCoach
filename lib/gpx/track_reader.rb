@@ -16,13 +16,23 @@ module GPX
 
     def compute
       points = @track.points
+      valid_points = points.select {|p| p.time.nil? == false }
 
       # compute acc distances
       zipped_points = points[0...-1].zip(points.dup[1..-1])
 
+      valid_zipped_points = valid_points[0...-1].zip(valid_points.dup[1..-1])
+
       # get distances in meters
-      distances = [0] + zipped_points.map { |(p, q)| p.distance(q) / 1000.to_f }
+      distances = [0]
+      valid_distances = [0]
+      zipped_points.each  do |(p, q)|
+        distances << p.distance(q) / 1000.to_f
+        (valid_distances << p.distance(q) / 1000.to_f) if p.time.nil? == false
+      end
+
       acc_distances = []
+      valid_acc_distances = []
 
       distances.reduce do |acc, d|
         acc += d
@@ -30,20 +40,31 @@ module GPX
         acc
       end
 
+      valid_distances.reduce do |acc,d|
+        acc += d
+        valid_acc_distances << acc
+        acc
+      end
+
       # compute pace and speed for different intervals
       pace, speed = Hash.new, Hash.new
       zipped = acc_distances.zip(points)
+      valid_zipped = valid_acc_distances.zip(valid_points)
 
      # preprocessing
-      zipped.each do |(km, point)|
-        pace[km.round(1)] = Array.new if pace[km.round(1)].nil?
-        pace[km.round(1)] << [km, point.time]
+      valid_zipped.each do |(km, point)|
+
+          pace[km.round(1)] = Array.new if pace[km.round(1)].nil?
+          pace[km.round(1)] << [km, point.time]
+
       end
 
 
-      zipped.each do |(km, point)|
-        speed[km.round(1)] = Array.new if speed[km.round(1)].nil?
-        speed[km.round(1)] << [km, point.time]
+      valid_zipped.each do |(km, point)|
+
+          speed[km.round(1)] = Array.new if speed[km.round(1)].nil?
+          speed[km.round(1)] << [km, point.time]
+
       end
 
       # compute speed
@@ -76,12 +97,14 @@ module GPX
       end
 
       total_distance = acc_distances.last
+      valid_total_distance = valid_acc_distances.last
+
 
       begin
-        time_delta = points.last.time - points.first.time
+        time_delta = valid_points.last.time - valid_points.first.time
         total_time = (Time.at(time_delta).utc.strftime('%H:%M:%S'))
-        avg_speed = "#{(total_distance/(time_delta.to_f/3600.0)).round(2)} km/h"
-        avg_pace = "#{Time.at(time_delta/(total_distance.to_f)).utc.strftime('%H:%M:%S')} time/km"
+        avg_speed = "#{(valid_total_distance/(time_delta.to_f/3600.0)).round(2)} km/h"
+        avg_pace = "#{Time.at(time_delta/(valid_total_distance.to_f)).utc.strftime('%H:%M:%S')} time/km"
       rescue
         avg_speed = '-'
         avg_pace = '-'
@@ -97,7 +120,7 @@ module GPX
           :pace => avg_pace
       }
 
-      @heights = acc_distances.zip(points.map {|p| p.elevation }) || []
+      @heights = acc_distances.zip(points.map {|p| p.elevation }).select {|(_,ele)| ele.nil? == false } || []
       @speeds = speed.map {|k,v| [k+1,v]}
       @paces = pace.map {|k,v| [k+1,v]}.select {|(k,v)| v < 3*mean_pace }
       @points = points.map { |p| p.to_a }
