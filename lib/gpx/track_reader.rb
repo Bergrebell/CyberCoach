@@ -9,17 +9,21 @@ module GPX
       # read the xml string as a gpx file
       @gpx_file = GpxRuby::XML(xml)
 
+      @heights = @paces = @speeds = @statistics = @points = []
+
       # get track data
       @track = @gpx_file.tracks.first # only consider the first track
-      @center_of_gravity = @track.center_of_gravity.to_a
-      @track_points = @track.points
-      @points = @track_points.map { |p| p.to_a }
+      if @track
+        @center_of_gravity = @track.center_of_gravity.to_a
+        @track_points = @track.points
+        @points = @track_points.map { |p| p.to_a }
 
-      preprocess_data
-      compute_height_profile
-      compute_pace_profile
-      compute_speed_profile
-      compute_average_statistics
+        preprocess_data
+        compute_height_profile
+        compute_pace_profile
+        compute_speed_profile
+        compute_average_statistics
+      end
     end
 
     private
@@ -30,7 +34,7 @@ module GPX
       @time_points = @track_points.select { |p| !p.time.nil? }
 
       # compute total time in seconds
-      @total_time = @time_points.last.time - @time_points.first.time
+      @total_time = @time_points.last.time - @time_points.first.time rescue 0
 
       # computes point distances for a sequence of track points
       @point_distances = compute_point_distances(@track_points) # in meters
@@ -57,13 +61,14 @@ module GPX
       # compute pace stats
       # compute pace value for different km intervals
       paces = compute_buckets(@accumulated_time_point_distances, @time_points, 1) do |dx_m, dt_seconds|
-        dt_seconds/(dx_m.to_f) # pace in seconds per meters
+        if dx_m == 0
+          nil
+        else
+          dt_seconds/(dx_m.to_f) # pace in seconds per meters
+        end
       end
-      mean_pace = paces.values.reduce(:+)/paces.length rescue 0
       # map to a list of key value pairs
       @paces = paces.map { |k, v| [k, v] }
-      # filter paces
-      #@paces = @paces.select { |(_, v)| v < 3*mean_pace }
     end
 
 
@@ -71,7 +76,11 @@ module GPX
       # compute speed stats
       # compute speed value for different km intervals
       speeds = compute_buckets(@accumulated_time_point_distances, @time_points, 1) do |dx_m, dt_seconds|
-        (dx_m)/dt_seconds.to_f # speed in m per seconds
+        if dt_seconds == 0
+          0
+        else
+          (dx_m)/dt_seconds.to_f # speed in m per seconds
+        end
       end
       # map to a list of key value pairs
       @speeds = speeds.map { |k, v| [k, v] }
@@ -80,34 +89,21 @@ module GPX
 
     def compute_average_statistics
       total_time, total_distance = @total_time, @total_distance_for_time_points
-      begin
-        avg_speed = total_distance/total_time.to_f
-        avg_pace = total_time/total_distance.to_f
 
-        max_pace = @paces.map { |(_, v)| v }.max
-        min_pace = @paces.map { |(_, v)| v }.min
+      avg_speed = total_distance/total_time.to_f rescue nil
+      avg_pace = total_time/total_distance.to_f rescue nil
 
-        max_speed = @speeds.map { |(_, v)| v }.max
-        min_speed = @speeds.map { |(_, v)| v }.min
-      rescue
-        avg_speed = ''
-        avg_pace = ''
-        total_time = ''
-        max_speed = ''
-        min_speed = ''
-        max_pace = ''
-        min_pace = ''
-      end
+      max_pace = @paces.map { |(_, v)| v }.max rescue nil
+      min_pace = @paces.map { |(_, v)| v }.min rescue nil
 
-      begin
-        max_height = @heights.map { |(_, v)| v }.max
-        min_height = @heights.map { |(_, v)| v }.min
-      rescue
-        max_height = ''
-        min_height = ''
-      end
+      max_speed = @speeds.map { |(_, v)| v }.max rescue nil
+      min_speed = @speeds.map { |(_, v)| v }.min rescue nil
 
-      @statistics = [
+      max_height = @heights.map { |(_, v)| v }.max rescue nil
+      min_height = @heights.map { |(_, v)| v }.min rescue nil
+
+
+      statistics = [
           {key: :total_distance, value: total_distance, unit: :meters},
           {key: :total_time, value: total_time, unit: :seconds},
           {key: :average_speed, value: avg_speed, unit: :meters_per_seconds},
@@ -119,6 +115,8 @@ module GPX
           {key: :min_height, value: min_height, unit: :meters},
           {key: :max_height, value: max_height, unit: :meters},
       ]
+      # dirty hack for removing nil and NaN values
+      @statistics = statistics.select { |measure|  JSON.parse(measure.to_json)['value'] != nil  }
     end
 
 
@@ -142,9 +140,13 @@ module GPX
     # @param [List] points
     # @return [List] list of distances
     def compute_point_distances(points)
-      paired_points = points[0...-1].zip(points[1..-1])
-      distances = [0]
-      distances + paired_points.map { |(p, q)| p.distance(q) }
+      if points.size >= 2
+        paired_points = points[0...-1].zip(points[1..-1])
+        distances = [0]
+        distances + paired_points.map { |(p, q)| p.distance(q) }
+      else
+        []
+      end
     end
 
 
@@ -153,7 +155,11 @@ module GPX
     # @param [List] distances
     # @return [Float] total distance
     def compute_total_distance(distances)
-      distances.reduce(:+)
+      if distances.size != 0
+        distances.reduce(:+)
+      else
+        0
+      end
     end
 
 
@@ -182,10 +188,12 @@ module GPX
           second_distance_m, second_time = a_list.last
           dx_m = second_distance_m - first_distance_m
           dt_seconds = second_time - first_time
-          buckets[key] = block.call dx_m, dt_seconds
-          raise 'Error' unless buckets[key] < Float::INFINITY
+          value = block.call dx_m, dt_seconds
+          buckets[key] = value if !value.nil? #ignore nil values
+          raise 'Error' if  !value.nil? && !(value < Float::INFINITY)
         end
-      rescue
+      rescue => e
+        raise e #TODO: remove this line
         buckets = Hash.new
       end
       buckets

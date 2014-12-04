@@ -55,7 +55,7 @@ class Track < ActiveRecord::Base
   class Speed < Measure
 
     def to_s
-      "#{(@value * 3.6).round(2)} km/h"
+      "#{(@value * 3.6).round(2)} km/h" rescue @value.class.name
     end
 
   end
@@ -83,11 +83,7 @@ class Track < ActiveRecord::Base
   class Height < Measure
 
     def to_s
-      if @value > 1000
-        "#{@value/1000} km"
-      else
-        "#{@value} m"
-      end
+      "#{@value.round(2)} m"
     end
 
   end
@@ -96,7 +92,7 @@ class Track < ActiveRecord::Base
   class MyTime < Measure
 
     def to_s
-      Time.at(@value).strftime('%-H hours, %-M minutes, %-S seconds')
+      Time.at(@value).utc.strftime('%-H hours, %-M minutes, %-S seconds')
     end
 
   end
@@ -106,14 +102,15 @@ class Track < ActiveRecord::Base
 
     attr_accessor :speeds, :paces, :heights, :points, :center_of_gravity
 
-    def initialize(a_hash={})
-      @speeds = a_hash[:speeds]
-      @paces = a_hash[:paces]
+    def initialize(a_hash={points: [], speeds: [], paces: [], heights: [], statistics: [], center_of_gravity: [0, 0]})
+      @speeds = a_hash[:speeds].map { |(km, v)| [km, v *3.6] }
+      @paces = a_hash[:paces].map { |(km, v)| [km, v * 60/3.6] }
       @heights = a_hash[:heights]
-      @statistics = a_hash[:statistics].map { |measure| Measure.create(measure) }
+      @statistics = a_hash[:statistics].select { |measure| measure[:value] }.map { |measure| Measure.create(measure) }
       @points = a_hash[:points]
       @center_of_gravity = a_hash[:center_of_gravity]
     end
+
 
     def statistics(key=nil)
       if key
@@ -152,10 +149,10 @@ class Track < ActiveRecord::Base
 
   def read_track_data
     json = self.data
-    begin
+    if json.present?
       a_hash = JSON.parse(json, symbolize_names: true)
       TrackDataContainer.new(a_hash)
-    rescue
+    else
       TrackDataContainer.new
     end
   end

@@ -92,8 +92,8 @@ class RunningsController < SportSessionsController
 
   def show
     track = Track.find_by(user_id: current_user.id, sport_session_id: params[:id])
-    if track.present? && track.data.present?
-      @track = track.read_track_data
+    @track = track.try(:read_track_data) do
+      Track::TrackDataContainer.new
     end
 
     @running = Facade::SportSession.find_by id: params[:id]
