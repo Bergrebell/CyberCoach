@@ -91,8 +91,10 @@ class RunningsController < SportSessionsController
   end
 
   def show
-    track = Track.find_by(user_id: current_user.id, sport_session_id: params[:id])
-    @track = track.try(:read_track_data) do
+    @track = begin
+      track = Track.find_by!(user_id: current_user.id, sport_session_id: params[:id])
+      track.read_track_data
+    rescue
       Track::TrackDataContainer.new
     end
 
