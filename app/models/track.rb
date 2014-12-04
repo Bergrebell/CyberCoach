@@ -74,7 +74,7 @@ class Track < ActiveRecord::Base
   class Distance < Measure
 
     def to_s
-      "#{(@value/1000.to_f).round(2)} km/h"
+      "#{(@value/1000.to_f).round(2)} km"
     end
 
   end
