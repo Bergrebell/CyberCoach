@@ -18,8 +18,8 @@ class SportSessionsController < ApplicationController
 
   def show
     # We redirect to the correct type, this is possible due to single table inheritance returning the correct object
-    @session = SportSession.find params[:id]
-    redirect_to @session
+    @session = SportSession.find_by id: params[:id]
+    redirect_to polymorphic_path(@session, user_id: params[:user_id]) #don't ask me, it does the job!
   end
 
   def edit
