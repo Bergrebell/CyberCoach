@@ -92,6 +92,9 @@
     <h1><%= @running.title %></h1>
 
     <p class="uk-text-large"><%= @running.comment %></p>
+    <% if @running.is_participant(@user) %>
+        <h2> Results for <%= @user.username %> </h2>
+    <% end %>
   </div>
 
   <div class="uk-width-medium-1-4">
@@ -194,7 +197,7 @@
                     <tr class="
                   <% if result.user.id == current_user.id %>highlight
                   <% end %>">
-                      <td><%= link_to result.user.username, result.user %></td>
+                      <td><%= link_to result.user.username, sport_session_path(@running, user_id: result.user) %></td>
                       <td><%= result.time %></td>
                       <td><%= result.length %></td>
                     </tr>

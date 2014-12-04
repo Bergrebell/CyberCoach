@@ -100,7 +100,11 @@ class RunningsController < SportSessionsController
 
   def show
     @track = begin
-      track = Track.find_by!(user_id: current_user.id, sport_session_id: params[:id])
+      @user = Facade::User.query do
+        user = User.find_by id: params[:user_id]
+        user ||= current_user
+      end
+      track = Track.find_by!(user_id: @user.id, sport_session_id: params[:id])
       track.read_track_data
     rescue
       Track::TrackDataContainer.new
