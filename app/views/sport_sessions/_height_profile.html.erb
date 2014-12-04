@@ -1,9 +1,9 @@
 <script>
     function plot_height_profile() {
-        <% if @heights.present? %>
+        <% if heights.present? %>
         var heights = {
             label: 'height [m]',
-            data: <%= @heights %>,
+            data: <%= heights %>,
             color: 'blue',
             lines: { show: true }
         };

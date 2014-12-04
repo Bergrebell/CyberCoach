@@ -2,120 +2,193 @@ module GPX
 
   class TrackReader
 
-    attr_accessor :points, :points, :center_of_gravity, :heights, :stats, :paces, :speeds
+    attr_accessor :points, :center_of_gravity, :heights, :statistics, :paces, :speeds
 
     def initialize(xml)
-      @gpx_file = GpxRuby::XML xml
+
+      # read the xml string as a gpx file
+      @gpx_file = GpxRuby::XML(xml)
+
+      # get track data
       @track = @gpx_file.tracks.first # only consider the first track
       @center_of_gravity = @track.center_of_gravity.to_a
-      compute
+      @track_points = @track.points
+      @points = @track_points.map { |p| p.to_a }
+
+      preprocess_data
+      compute_height_profile
+      compute_pace_profile
+      compute_speed_profile
+      compute_average_statistics
     end
 
     private
 
+    # Processes track data and computes necessary help variables.
+    def preprocess_data
+      # select all points where a time value is present
+      @time_points = @track_points.select { |p| !p.time.nil? }
 
-    def compute
-      points = @track.points
-      valid_points = points.select {|p| p.time.nil? == false }
+      # compute total time in seconds
+      @total_time = @time_points.last.time - @time_points.first.time
 
-      # compute acc distances
-      zipped_points = points[0...-1].zip(points.dup[1..-1])
+      # computes point distances for a sequence of track points
+      @point_distances = compute_point_distances(@track_points) # in meters
+      @total_distance = compute_total_distance(@point_distances) # in meters
+      @accumulated_point_distances = compute_accumulated_distances(@point_distances) # in meters
 
-      valid_zipped_points = valid_points[0...-1].zip(valid_points.dup[1..-1])
+      # computes time points distances for a sequence of time points
+      @time_point_distances = compute_point_distances(@time_points) # in meters
+      @total_distance_for_time_points = compute_total_distance(@time_point_distances) # in meters
+      @accumulated_time_point_distances = compute_accumulated_distances(@time_point_distances) # in meters
+    end
 
-      # get distances in meters
-      distances = [0]
-      valid_distances = [0]
-      zipped_points.each  do |(p, q)|
-        distances << p.distance(q) / 1000.to_f
-        (valid_distances << p.distance(q) / 1000.to_f) if p.time.nil? == false
+
+    def compute_height_profile
+      # compute height stats
+      # zip height values with different accumulated km values
+      height_values = @track_points.map { |p| p.elevation } # map to height values
+      accumulated_point_distances_in_km = @accumulated_point_distances.map {|distance| distance / 1000.to_f }
+      @heights = accumulated_point_distances_in_km.zip(height_values).select { |(_, ele)| !ele.nil? } || []
+    end
+
+
+    def compute_pace_profile
+      # compute pace stats
+      # compute pace value for different km intervals
+      paces = compute_buckets(@accumulated_time_point_distances, @time_points, 1) do |dx_m, dt_seconds|
+        dt_seconds/(dx_m.to_f) # pace in seconds per meters
+      end
+      mean_pace = paces.values.reduce(:+)/paces.length rescue 0
+      # map to a list of key value pairs
+      @paces = paces.map { |k, v| [k, v] }
+      # filter paces
+      #@paces = @paces.select { |(_, v)| v < 3*mean_pace }
+    end
+
+
+    def compute_speed_profile
+      # compute speed stats
+      # compute speed value for different km intervals
+      speeds = compute_buckets(@accumulated_time_point_distances, @time_points, 1) do |dx_m, dt_seconds|
+        (dx_m)/dt_seconds.to_f # speed in m per seconds
+      end
+      # map to a list of key value pairs
+      @speeds = speeds.map { |k, v| [k, v] }
+    end
+
+
+    def compute_average_statistics
+      total_time, total_distance = @total_time, @total_distance_for_time_points
+      begin
+        avg_speed = total_distance/total_time.to_f
+        avg_pace = total_time/total_distance.to_f
+
+        max_pace = @paces.map { |(_, v)| v }.max
+        min_pace = @paces.map { |(_, v)| v }.min
+
+        max_speed = @speeds.map { |(_, v)| v }.max
+        min_speed = @speeds.map { |(_, v)| v }.min
+      rescue
+        avg_speed = ''
+        avg_pace = ''
+        total_time = ''
+        max_speed = ''
+        min_speed = ''
+        max_pace = ''
+        min_pace = ''
       end
 
-      acc_distances = []
-      valid_acc_distances = []
+      begin
+        max_height = @heights.map { |(_, v)| v }.max
+        min_height = @heights.map { |(_, v)| v }.min
+      rescue
+        max_height = ''
+        min_height = ''
+      end
 
-      distances.reduce do |acc, d|
-        acc += d
+      @statistics = [
+          {key: :total_distance, value: total_distance, unit: :meters},
+          {key: :total_time, value: total_time, unit: :seconds},
+          {key: :average_speed, value: avg_speed, unit: :meters_per_seconds},
+          {key: :average_pace, value: avg_pace, unit: :seconds_per_meters},
+          {key: :max_speed, value: max_speed, unit: :meters_per_seconds},
+          {key: :min_speed, value: min_speed, unit: :meters_per_seconds},
+          {key: :min_pace, value: min_pace, unit: :seconds_per_meters},
+          {key: :max_pace, value: max_pace, unit: :seconds_per_meters},
+          {key: :min_height, value: min_height, unit: :meters},
+          {key: :max_height, value: max_height, unit: :meters},
+      ]
+    end
+
+
+    # Computes the accumulated distance of a list of distances between points,
+    #
+    # @param [List] distances
+    # @return [List]
+    def compute_accumulated_distances(distances)
+      acc_distances = []
+      distances.reduce do |acc, distance|
+        acc += distance
         acc_distances << acc
         acc
       end
+      acc_distances
+    end
 
-      valid_distances.reduce do |acc,d|
-        acc += d
-        valid_acc_distances << acc
-        acc
+
+    # Computes the distance of a sequence of points.
+    #
+    # @param [List] points
+    # @return [List] list of distances
+    def compute_point_distances(points)
+      paired_points = points[0...-1].zip(points[1..-1])
+      distances = [0]
+      distances + paired_points.map { |(p, q)| p.distance(q) }
+    end
+
+
+    # Computes the total distance of a list of distances.
+    #
+    # @param [List] distances
+    # @return [Float] total distance
+    def compute_total_distance(distances)
+      distances.reduce(:+)
+    end
+
+
+    # Computes buckets for a list of accumulated distances and a list of points.
+    #
+    # @param [List] accumulated_distances
+    # @param [List] points
+    # @param [Integer] precision
+    # @param [Block] block
+    # @return [Hash] buckets
+    #
+    def compute_buckets(accumulated_distances, points, precision, &block)
+      paired_distances_and_points = accumulated_distances.zip(points)
+      # hash time points in the same distance buckets with a precision of one fractional digit
+      intervals = {}
+      paired_distances_and_points.each do |(distance_m, point)|
+        distance_km = distance_m / 1000.to_f
+        intervals[distance_km.round(precision)] ||= []
+        intervals[distance_km.round(precision)] << [distance_m, point.time]
       end
 
-      # compute pace and speed for different intervals
-      pace, speed = Hash.new, Hash.new
-      zipped = acc_distances.zip(points)
-      valid_zipped = valid_acc_distances.zip(valid_points)
-
-     # preprocessing
-      valid_zipped.each do |(km, point)|
-          pace[km.round(1)] = Array.new if pace[km.round(1)].nil?
-          pace[km.round(1)] << [km, point.time]
-      end
-
-      valid_zipped.each do |(km, point)|
-          speed[km.round(1)] = Array.new if speed[km.round(1)].nil?
-          speed[km.round(1)] << [km, point.time]
-      end
-
-      # compute speed
+      buckets = {}
       begin
-        speed.each do |key, a_list|
-          km1, time1 = a_list.first
-          km2, time2 = a_list.last
-          xd = km2 - km1
-          td = time2 - time1
-          speed[key] = (xd/(td.to_f/3600.0)).round(2)
-          raise 'Error' unless speed[key] < Float::INFINITY
+        intervals.each do |key, a_list|
+          first_distance_m, first_time = a_list.first
+          second_distance_m, second_time = a_list.last
+          dx_m = second_distance_m - first_distance_m
+          dt_seconds = second_time - first_time
+          buckets[key] = block.call dx_m, dt_seconds
+          raise 'Error' unless buckets[key] < Float::INFINITY
         end
       rescue
-        speed = Hash.new
+        buckets = Hash.new
       end
-
-      # compute pace
-      begin
-        pace.each do |key, a_list|
-          km1, time1 = a_list.first
-          km2, time2 = a_list.last
-          xd = km2 - km1
-          td = time2 - time1
-          pace[key] = (td/60.0)/(xd.to_f)
-          raise 'Error' unless pace[key] < Float::INFINITY
-        end
-        mean_pace = pace.values.reduce(:+)/pace.length
-      rescue
-        pace = Hash.new
-      end
-
-      total_distance = acc_distances.last
-      valid_total_distance = valid_acc_distances.last
-
-      begin
-        total_time = valid_points.last.time - valid_points.first.time
-        avg_speed = "#{(valid_total_distance/(total_time.to_f/3600.0)).round(2)} km/h"
-        avg_pace = "#{Time.at(total_time/(valid_total_distance.to_f)).utc.strftime('%H:%M:%S')} time/km"
-      rescue
-        avg_speed = '-'
-        avg_pace = '-'
-        total_time = '-'
-      end
-
-      @stats = {
-          :distance => (total_distance * 1000).round(2),
-          :time => total_time,
-          :speed => avg_speed, #km/h
-          :pace => avg_pace
-      }
-
-      @heights = acc_distances.zip(points.map {|p| p.elevation }).select {|(_,ele)| ele.nil? == false } || []
-      @speeds = speed.map {|k,v| [k+1,v]}
-      @paces = pace.map {|k,v| [k+1,v]}.select {|(k,v)| v < 3*mean_pace }
-      @points = points.map { |p| p.to_a }
-
+      buckets
     end
 
   end

@@ -1,25 +1,15 @@
-<% if @stats %>
+<% if statistics %>
     <div class="uk-panel uk-panel-box uk-panel-box-secondary">
       <h3 class="uk-panel-title">Statistics</h3>
 
       <table class="uk-table uk-text-nowrap">
         <tbody>
-        <tr>
-          <td><strong>Total time</strong></td>
-          <td><%= @stats[:time] %></td>
-        </tr>
-        <tr>
-          <td><strong>Total distance</strong></td>
-          <td><%= @stats[:distance] %></td>
-        </tr>
-        <tr>
-          <td><strong>Average speed</strong></td>
-          <td><%= @stats[:speed] %></td>
-        </tr>
-        <tr>
-          <td><strong>Pace</strong></td>
-          <td><%= @stats[:pace] %></td>
-        </tr>
+        <% statistics.each do |measure| %>
+            <tr>
+              <td><strong><%= measure.name %></strong></td>
+              <td> <%= measure %> </td>
+            </tr>
+        <% end %>
         </tbody>
       </table>
 

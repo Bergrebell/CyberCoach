@@ -10,7 +10,7 @@
                 var lng = points[i][1];
                 cords.push(new google.maps.LatLng(lat, lng));
             }
-            var gravity_point = <%= gravity_point %>;
+            var gravity_point = <%= center_of_gravity %>;
             track_map_center = new google.maps.LatLng(gravity_point[0], gravity_point[1])
             var trackPath = new google.maps.Polyline({
                 path: cords,

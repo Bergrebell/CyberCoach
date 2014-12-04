@@ -1,9 +1,9 @@
 <script>
     function plot_pace_profile() {
-        <% if @paces.present? %>
+        <% if paces.present? %>
         var paces = {
             label: 'pace [minutes per 1 km]',
-            data: <%= @paces %>,
+            data: <%= paces %>,
             color: 'red',
             lines: { show: true }
         };

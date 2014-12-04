@@ -53,30 +53,24 @@ class RunningsController < SportSessionsController
       redirect_to runnings_url, alert: 'Permission denied'
     end
 
-    if results_params[:file].present?
-      gpx_xml = File.open(results_params[:file].tempfile) { |file| file.read }
-      track_hash = gpx_to_hash gpx_xml
-    end
-
     @result = @running.result(current_user)
 
-    @result.time = track_hash[:stats][:time].nil? ? results_params[:time] : track_hash[:stats][:time]
-    @result.length = track_hash[:stats][:distance].nil? ? results_params[:length] : track_hash[:stats][:distance]
+    # read gpx file if present
+    if results_params[:file].present?
+      participant_id, user_id, sport_session_id = @result.sport_session_participant.id, @result.sport_session_participant.user_id, @result.sport_session_participant.sport_session_id
+      track = Track.where(sport_session_participant_id: participant_id, user_id: user_id, sport_session_id: sport_session_id).first_or_initialize
+      track_data_container = track.store_gpx_file(results_params[:file])
+      # set result values
+      @result.time = track_data_container.statistics(:total_time).nil? ? results_params[:time] : track_data_container.statistics(:total_time)
+      @result.length = track_data_container.statistics(:total_distance).nil? ? results_params[:length] : track_data_container.statistics(:total_distance)
+    else
+      @result.time = results_params[:time]
+      @result.length = results_params[:length]
+    end
+
 
     if @result.save
-      # save uploaded file content
-      #TODO: refactor the following if block and put into a method or something like that.
-      if track_hash
-        participant_id, user_id, sport_session_id = @result.sport_session_participant.id, @result.sport_session_participant.user_id, @result.sport_session_participant.sport_session_id
-        track = Track.where(sport_session_participant_id: participant_id, user_id: user_id, sport_session_id: sport_session_id).first_or_initialize
-        File.open(results_params[:file].tempfile) do |file|
-          gpx_xml = file.read
-          track.raw_data = gpx_xml
-          track.data = track_hash.to_json
-          track.format = File.extname results_params[:file].original_filename
-          track.save
-        end
-      end
+      track.save if track.present?
 
       # Check for new Achievements!
       achievement_checker = AchievementsChecker.new @result
@@ -97,10 +91,9 @@ class RunningsController < SportSessionsController
   end
 
   def show
-    #TODO: refactor this and integrate it with the sport session results
-    track = Track.find_by user_id: current_user.id, sport_session_id: params[:id]
+    track = Track.find_by(user_id: current_user.id, sport_session_id: params[:id])
     if track.present? && track.data.present?
-      json_to_vars(track.data)
+      @track = track.read_track_data
     end
 
     @running = Facade::SportSession.find_by id: params[:id]
@@ -159,32 +152,5 @@ class RunningsController < SportSessionsController
     params.require(:sport_session_result).permit(:time, :length, :file)
   end
 
-
-  def gpx_to_hash(xml)
-    track_reader = GPX::TrackReader.new(xml)
-    {
-        points: track_reader.points,
-        center_of_gravity: track_reader.center_of_gravity,
-        heights: track_reader.heights,
-        paces: track_reader.paces,
-        speeds: track_reader.speeds,
-        stats: track_reader.stats
-    }
-  end
-
-
-  def json_to_vars(json)
-    begin
-      a_hash = JSON.parse(json, symbolize_names: true)
-      @points = a_hash[:points]
-      @stats = a_hash[:stats]
-      @heights = a_hash[:heights]
-      @gravity_point = a_hash[:center_of_gravity]
-      @speeds = a_hash[:speeds]
-      @paces = a_hash[:paces]
-    rescue
-      # do nothing
-    end
-  end
 
 end

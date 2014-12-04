@@ -2,10 +2,10 @@
     <!-- load google maps only once -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <%= render :partial => 'sport_sessions/google_map', :locals => {:session => @running} %>
-    <%= render :partial => 'sport_sessions/track_map', :locals => {:points => @points, :gravity_point => @gravity_point} %>
-    <%= render :partial => 'sport_sessions/height_profile', :locals => {:heights => @heights} %>
-    <%= render :partial => 'sport_sessions/pace_profile', :locals => {:paces => @paces} %>
-    <%= render :partial => 'sport_sessions/speed_profile', :locals => {:speeds => @speeds} %>
+    <%= render :partial => 'sport_sessions/track_map', :locals => {:points => @track.points, :center_of_gravity => @track.center_of_gravity } %>
+    <%= render :partial => 'sport_sessions/height_profile', :locals => {:heights => @track.heights} %>
+    <%= render :partial => 'sport_sessions/pace_profile', :locals => {:paces => @track.paces} %>
+    <%= render :partial => 'sport_sessions/speed_profile', :locals => {:speeds => @track.speeds} %>
 <% end %>
 
 <% content_for :javascript do %>
@@ -139,27 +139,27 @@
         <li id="tab_results"><a href="#results" id="tab_results">Results</a></li>
 
         <!-- Link for track tab -->
-        <% if @points.present? %>
+        <% if @track.points.present? %>
             <li id="tab_track"><a href="#track" id="tab_track">Track</a></li>
         <% end %>
 
         <!-- Link for statistics tab -->
-        <% if @points.present? %>
+        <% if @track.statistics.present? %>
             <li id="tab_statistics"><a href="#statistics" id="tab_statistics">Statistics</a></li>
         <% end %>
 
         <!-- Link for pace tab -->
-        <% if @paces.present? %>
+        <% if @track.paces.present? %>
             <li id="tab_pace"><a href="#pace" id="tab_details">Pace profile</a></li>
         <% end %>
 
         <!-- Link for speed tab -->
-        <% if @speeds.present? %>
+        <% if @track.speeds.present? %>
             <li id="tab_speed"><a href="#speed" id="tab_speed">Speed profile</a></li>
         <% end %>
 
         <!-- Link for height tab -->
-        <% if @heights.present? %>
+        <% if @track.heights.present? %>
             <li id="tab_height"><a href="#height" id="tab_height">Height profile</a></li>
         <% end %>
 
@@ -229,12 +229,12 @@
       <!-- Statistics tab page -->
       <div class="uk-width-medium-1-1" id="tab_statistics_page">
         <!-- Statistics -->
-        <%= render partial: 'sport_sessions/statistics', locals: {stats: @stats, paces: @paces} %>
+        <%= render partial: 'sport_sessions/statistics', locals: {statistics: @track.statistics } %>
       </div>
 
       <!-- Pace tab page -->
       <div class="uk-width-medium-1-1" id="tab_pace_page">
-        <% if @paces.present? %>
+        <% if @track.paces.present? %>
             <!-- Pace plot -->
             <div class="uk-panel uk-panel-box uk-panel-box-secondary">
               <h3 class="uk-panel-title">Pace profile</h3>
@@ -246,7 +246,7 @@
 
       <!-- Speed tab page -->
       <div class="uk-width-medium-1-1" id="tab_speed_page">
-        <% if @speeds.present? %>
+        <% if @track.speeds.present? %>
             <!-- Speed plot -->
             <div class="uk-panel uk-panel-box uk-panel-box-secondary">
               <h3 class="uk-panel-title">Speed profile</h3>
@@ -258,7 +258,7 @@
 
       <!-- Height tab page -->
       <div class="uk-width-medium-1-1" id="tab_height_page">
-        <% if @heights.present? %>
+        <% if @track.heights.present? %>
             <!-- Height profile plot -->
             <div class="uk-panel uk-panel-box uk-panel-box-secondary">
               <h3 class="uk-panel-title">Height profile</h3>

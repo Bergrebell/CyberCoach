@@ -1,9 +1,9 @@
 <script>
     function plot_speed_profile() {
-        <% if @speeds.present? %>
+        <% if speeds.present? %>
         var speeds = {
             label: 'speed [km/h]',
-            data: <%= @speeds %>,
+            data: <%= speeds %>,
             color: 'green',
             lines: { show: true }
         };
