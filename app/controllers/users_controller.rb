@@ -19,8 +19,6 @@ class UsersController < ApplicationController
     rescue
       redirect_to users_path
     end
-    gravatar_id = Digest::MD5.hexdigest(@user.email.downcase)
-    @gravatar_url = "http://gravatar.com/avatar/#{gravatar_id}.png?s=125&d"
     @upcoming_activities = @user.sport_sessions_confirmed.where('date >= ?', Date.today).limit(3)  #TODO: refactor this
     @sports_past = @user.sport_sessions_confirmed.where('date < ?', Date.today).limit(3)  #TODO: refactor this
   end
