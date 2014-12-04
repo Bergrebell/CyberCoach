@@ -123,4 +123,34 @@ class SportSession < ActiveRecord::Base
     self.all_sessions_from_user(user_id, type, false)
   end
 
+
+  # find the given user's sport sessions based on filters (based on Stefan's CarTrading filter for offers)
+  def self.all_sport_sessions_filtered_from_user(user_id, params, confirmed, type)
+    if confirmed
+      filtered_sessions = self.all_sport_sessions_confirmed_from_user(user_id, type)
+    else
+      filtered_sessions = self.all_sport_sessions_unconfirmed_from_user(user_id, type)
+    end
+
+    if params[:entry_location].present?
+      filtered_sessions = filtered_sessions.where('location LIKE ?', "%#{params[:entry_location]}%")
+
+    end
+
+    if params[:date_to].present? && params[:date_from].present?
+      date_from = DateTime.strptime(params[:date_from], Facade::SportSession::DATETIME_FORMAT)
+      date_to = DateTime.strptime(params[:date_to], Facade::SportSession::DATETIME_FORMAT)+1
+      date_range = {date: date_from..date_to}
+      filtered_sessions = filtered_sessions.where(date_range)
+    end
+
+    if params[:participant].present?
+      participant = {user_id: params[:participant]}
+      filtered_sessions = filtered_sessions.joins(:sport_session_participants).where(sport_session_participants: participant)
+    end
+
+    filtered_sessions
+
+  end
+
 end

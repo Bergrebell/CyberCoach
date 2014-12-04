@@ -1,12 +1,19 @@
 class SportSessionsController < ApplicationController
 
-
   def index
-    sessions = current_user.sport_sessions_confirmed
-    @sessions_upcoming = sessions.select { |s| s.date > Date.today}
-    @sessions_past = sessions.select { |s| s.date < Date.today}
-    @invitations = current_user.sport_sessions_unconfirmed
-
+    @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
+    # If sessions must be filtered, use the passed params for filtering
+    # display all confirmed sessions otherwise
+    if params.count > 0
+      @sessions_upcoming = current_user.sport_sessions_filtered(params, true).select { |s| s.is_upcoming }
+      @sessions_past = current_user.sport_sessions_filtered(params, true).select { |s| s.is_past }
+      @invitations = current_user.sport_sessions_filtered(params, false)
+    else
+      sessions = current_user.sport_sessions_confirmed
+      @sessions_upcoming = sessions.select { |s| s.is_upcoming }
+      @sessions_past = sessions.select { |s| s.is_past }
+      @invitations = current_user.sport_sessions_unconfirmed
+    end
   end
 
   def show

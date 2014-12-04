@@ -3,11 +3,19 @@ class RunningsController < SportSessionsController
 
   # List all running sessions
   def index
-    # Grab all the running sessions where the current user is a participant
-    runnings = current_user.sport_sessions_confirmed('Running')
-    @runnings_upcoming = runnings.select { |running| running.is_upcoming }
-    @runnings_past = runnings.select { |running| running.is_past }
-    @invitations = current_user.sport_sessions_unconfirmed('Running')
+    @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
+    # If sessions must be filtered, use the passed params for filtering
+    # display all running sessions otherwise, upcoming, past or unconfirmed, respectively.
+    if params.count > 0
+      @runnings_upcoming = current_user.sport_sessions_filtered(params, true, 'Running').select { |s| s.is_upcoming }
+      @runnings_past = current_user.sport_sessions_filtered(params, true, 'Running').select { |s| s.is_past }
+      @invitations = current_user.sport_sessions_filtered(params, false, 'Running')
+    else
+      runnings = current_user.sport_sessions_confirmed('Running')
+      @runnings_upcoming = runnings.select { |s| s.is_upcoming }
+      @runnings_past = runnings.select { |s| s.is_past }
+      @invitations = runnings_user.sport_sessions_unconfirmed('Running')
+    end
   end
 
   def new
