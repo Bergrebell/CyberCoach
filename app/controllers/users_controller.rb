@@ -13,13 +13,9 @@ class UsersController < ApplicationController
   # GET /users/1.json
   def show
     begin
-      @user = Facade::User.query do
-        User.find_by id: params[:id]
-      end
+      @user = Facade::User.query { User.find_by id: params[:id] }
       @friends = @user.friends
-      #TODO: remove mock achievements
-      @achievements = [ OpenStruct.new(title: 'Achievement 1', url: 'http://cdn.flaticon.com/png/256/48295.png'),
-                          OpenStruct.new(title: 'Achievement 2', url: 'http://cdn.flaticon.com/png/256/48295.png')]
+      @achievements = @user.achievements.order('user_achievements.created_at').limit(5)
     rescue
       redirect_to users_path
     end
