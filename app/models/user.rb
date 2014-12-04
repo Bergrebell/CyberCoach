@@ -5,6 +5,8 @@ class User < ActiveRecord::Base
   has_many :sport_session_participants
 
   has_many :tracks
+  has_many :user_achievements
+  has_many :achievements, through: :user_achievements
 
   validates :password, presence: true, confirmation: true, length: {within: 4..10}
   validates :real_name, presence: true
