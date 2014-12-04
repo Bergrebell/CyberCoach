@@ -142,7 +142,7 @@
                 <i class="uk-icon-calendar-o"></i> <strong>Upcoming activities</strong>
 
                 <dl class="uk-description-list-line">
-                  <% @upcoming_activities.map do |sport_session| %>
+                  <% @upcoming_sport_sessions.map do |sport_session| %>
 
                       <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
                       <dd>
@@ -164,7 +164,7 @@
                 <i class="uk-icon-calendar-o"></i> <strong>Past activities</strong>
 
                 <dl class="uk-description-list-line">
-                  <% @sports_past.map do |sport_session| %>
+                  <% @past_sport_sessions.map do |sport_session| %>
 
                       <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
                       <dd>

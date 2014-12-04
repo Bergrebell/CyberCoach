@@ -15,12 +15,12 @@ class UsersController < ApplicationController
     begin
       @user = Facade::User.query { User.find_by id: params[:id] }
       @friends = @user.friends
-      @achievements = @user.achievements.order('user_achievements.created_at').limit(5)
+      @achievements = @user.latest_achievements
     rescue
       redirect_to users_path
     end
-    @upcoming_activities = @user.sport_sessions_confirmed.where('date >= ?', Date.today).limit(3)  #TODO: refactor this
-    @sports_past = @user.sport_sessions_confirmed.where('date < ?', Date.today).limit(3)  #TODO: refactor this
+    @upcoming_sport_sessions = @user.upcoming_sport_sessions
+    @past_sport_sessions = @user.past_sport_sessions
   end
 
   # GET /users/new

@@ -14,6 +14,30 @@ class User < ActiveRecord::Base
   validates :email, email_format: {message: "Doesn't look like an email address!"}
 
 
+  # Returns a list of past sport sessions.
+  # @return [List]
+  #
+  def past_sport_sessions
+    sport_sessions_confirmed.where('date < ?', Date.today).limit(3)  #TODO: maybe we should use DateTime.now or Date.now
+  end
+
+
+  # Returns a list of upcoming sport sessions.
+  # @return [List]
+  #
+  def upcoming_sport_sessions
+    sport_sessions_confirmed.where('date >= ?', Date.today).limit(3)  #TODO: maybe we should use DateTime.now or Date.now
+  end
+
+
+  # Returns a list of the latest obtained achievements.
+  # @return [List]
+  #
+  def latest_achievements
+    achievements.order('user_achievements.created_at').limit(5)
+  end
+
+
   # Return friends of this user
   #
   def friends
