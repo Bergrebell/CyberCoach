@@ -193,9 +193,9 @@ module Facade
 
     def method_missing(method, *args, &block)
       begin
-        rails_model.send method, *args, &block
-      rescue
         cc_model.send method, *args, &block
+      rescue
+        rails_model.send method, *args, &block
       end
     end
 

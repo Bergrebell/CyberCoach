@@ -130,6 +130,10 @@ module Facade
       end
     end
 
+    def entry_date
+      @rails_sport_session.entry_date
+    end
+
 
     def self.create(params)
       # preconditions
