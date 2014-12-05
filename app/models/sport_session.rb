@@ -17,6 +17,8 @@ class SportSession < ActiveRecord::Base
   def entry_time
     if date.present?
       date.strftime('%H:%M')
+    else
+      @entry_time
     end
   end
 
@@ -26,7 +28,9 @@ class SportSession < ActiveRecord::Base
 
   def entry_date
     if date.present?
-      date.strftime '%Y-%m-%d'
+      date.strftime('%Y-%m-%d')
+    else
+      @entry_date
     end
   end
 

@@ -137,7 +137,8 @@ module Facade
       raise 'Type is nil or empty string!' if params[:type].nil? or params[:type].empty?
       raise 'Facade::User has no cc_model. cc_model is nil!' if params[:user].cc_model.nil?
       raise 'Facade::User has no auth proxy. auth proxy is nil!' if params[:user].auth_proxy.nil?
-      entry_date = DateTime.strptime(params[:entry_date] + ' ' + params[:entry_time], '%Y-%m-%d %H:%M') rescue nil
+
+      entry_date = DateTime.strptime(params[:entry_date] + params[:entry_time],'%Y-%m-%d %H:%M') rescue nil
 
       # hidden dependencies
       facade_user = params[:user]
@@ -145,10 +146,13 @@ module Facade
       auth_proxy  = facade_user.auth_proxy
       rails_user = facade_user.rails_model
       rails_model_class = RailsModelClass[params[:type]]
-      rails_sport_session = rails_model_class.new(
+      rails_sport_session = rails_class.new
+      rails_sport_session.assign_attributes(
           user_id: rails_user.id,
           type: params[:type],
           date: entry_date,
+          entry_date: params[:entry_date],
+          entry_time: params[:entry_time],
           location: params[:entry_location],
           title: params[:title],
           latitude: params[:latitude],
@@ -175,6 +179,8 @@ module Facade
 
     def save(params={})
       begin
+
+
         if @rails_sport_session.save && entry_uri = @auth_proxy.save(@cc_entry)
           raise 'Error' if entry_uri.nil? || entry_uri.empty?
           @rails_sport_session.cybercoach_uri = entry_uri
@@ -202,12 +208,14 @@ module Facade
     def update(params={})
       type = Facade::SportSession::EntryTypeLookup[@rails_sport_session.type]
       entry_hash = params.dup.merge(type: type)
+      entry_date = DateTime.strptime(params[:entry_date] + params[:entry_time],'%Y-%m-%d %H:%M') rescue nil
       begin
-
         # sync rails sport session properties
         rails_sport_session_properties = {
             location: entry_hash[:entry_location],
-            date: entry_hash[:entry_date],
+            date: entry_date,
+            entry_date: params[:entry_date],
+            entry_time: params[:entry_time],
             title: entry_hash[:title],
             latitude: params[:latitude],
             longitude: params[:longitude]
