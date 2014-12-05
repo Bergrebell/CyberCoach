@@ -77,6 +77,17 @@ class Track < ActiveRecord::Base
       "#{(@value/1000.to_f).round(2)} km"
     end
 
+    def to_meters
+      @value.to_f.round(2)
+    end
+
+    def to_kilometers
+      (@value.to_f/1000).round(2)
+    end
+
+    alias_method :m, :to_meters
+    alias_method :km, :to_kilometers
+
   end
 
 
@@ -86,6 +97,17 @@ class Track < ActiveRecord::Base
       "#{@value.round(2)} m"
     end
 
+    def to_meters
+      @value.to_f.round(2)
+    end
+
+    def to_kilometers
+      (@value.to_f/1000).round(2)
+    end
+
+    alias_method :m, :to_meters
+    alias_method :km, :to_kilometers
+
   end
 
 
@@ -94,6 +116,22 @@ class Track < ActiveRecord::Base
     def to_s
       Time.at(@value).utc.strftime('%-H hours, %-M minutes, %-S seconds')
     end
+
+    def to_seconds
+      @value.to_f.round(2)
+    end
+
+    def to_minutes
+      (@value.to_f/60).round(2)
+    end
+
+    def to_hours
+      (@value.to_f/60*60).round(2)
+    end
+
+    alias_method :m, :to_minutes
+    alias_method :s, :to_seconds
+    alias_method :h, :to_hours
 
   end
 
