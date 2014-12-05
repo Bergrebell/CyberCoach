@@ -43,6 +43,40 @@ namespace :achievements do
     Achievement.all.map { |achievement| achievement.delete}
   end
 
+  desc "Updates all achievements"
+  task :update => :environment do
+    # get all validators and group them
+    validators = Validator.all.group_by {|v| v.type }
+    validators = Hash[validators.map {|k,v| [k, v.first] }] # use the first one
+
+    defined_achievements = DefinedAchievements.list
+
+    # create all defined achievements
+    defined_achievements.each do |defined_achievement|
+      a_hash = defined_achievement.to_hash
+
+      validator = validators[a_hash[:validator]]
+
+      achievement = Achievement.new
+
+      a_hash.each do |key,_|
+        # delete keys that are not present in the achievement model object
+        a_hash.delete(key) if !achievement.attributes.include?(key.to_s)
+      end
+
+      params = a_hash.merge(validator_id: validator.id)
+
+      if found = Achievement.find_by(title: a_hash[:title])
+        found.assign_attributes(params)
+        found.save
+      else
+        achievement.assign_attributes(params)
+        achievement.save
+      end
+    end
+
+  end
+
 end
 
 namespace :user_achievements do
