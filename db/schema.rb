@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141203072249) do
+ActiveRecord::Schema.define(version: 20141205113249) do
 
   create_table "achievements", force: true do |t|
     t.string   "title"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20141203072249) do
     t.text     "rules"
     t.string   "sport"
     t.string   "description"
+    t.string   "icon"
   end
 
   create_table "boxing_participant_results", force: true do |t|
