@@ -2,8 +2,19 @@ class SoccersController < ApplicationController
 
     # List all soccer sessions
     def index
-      @soccers = Facade::SportSession.where(user_id: current_user.id, type: 'Soccer')
-      @friends = current_user.friends
+      @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
+      # If sessions must be filtered, use the passed params for filtering
+      # display all running sessions otherwise, upcoming, past or unconfirmed, respectively.
+      if params.count > 0
+        @soccers_upcoming = current_user.sport_sessions_filtered(params, true, 'Soccer').select { |s| s.is_upcoming }
+        @soccers_past = current_user.sport_sessions_filtered(params, true, 'Soccer').select { |s| s.is_past }
+        @invitations = current_user.sport_sessions_filtered(params, false, 'Soccer')
+      else
+        soccers = current_user.sport_sessions_confirmed('Soccer')
+        @soccers_upcoming = soccers.select { |s| s.is_upcoming }
+        @soccers_past = soccers.select { |s| s.is_past }
+        @invitations = current_user.sport_sessions_unconfirmed('Soccer')
+      end
     end
 
     def new

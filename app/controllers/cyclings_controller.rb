@@ -3,8 +3,19 @@ class CyclingsController < ApplicationController
 
   # List all running sessions
   def index
-    @cyclings = Facade::SportSession.where(user_id: current_user.id, type: 'Cycling') # pretty cool hehehe...don't get used to it :-)
-    @friends = current_user.friends
+    @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
+    # If sessions must be filtered, use the passed params for filtering
+    # display all running sessions otherwise, upcoming, past or unconfirmed, respectively.
+    if params.count > 0
+      @cyclings_upcoming = current_user.sport_sessions_filtered(params, true, 'Cycling').select { |s| s.is_upcoming }
+      @cyclings_past = current_user.sport_sessions_filtered(params, true, 'Cycling').select { |s| s.is_past }
+      @invitations = current_user.sport_sessions_filtered(params, false, 'Cycling')
+    else
+      cyclings = current_user.sport_sessions_confirmed('Cycling')
+      @cyclings_upcoming = cyclings.select { |s| s.is_upcoming }
+      @cyclings_past = cyclings.select { |s| s.is_past }
+      @invitations = current_user.sport_sessions_unconfirmed('Cycling')
+    end
   end
 
   def new
@@ -21,7 +32,7 @@ class CyclingsController < ApplicationController
   end
 
 
-  # POST /runnings
+  # POST /cyclings
   def create
     date_time_object = DateTime.strptime(params[:date], Facade::SportSession::DATETIME_FORMAT)
     entry_params = params.merge({user: current_user, type: 'Cycling', entry_date: date_time_object})

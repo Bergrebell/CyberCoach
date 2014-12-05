@@ -14,7 +14,7 @@ class RunningsController < SportSessionsController
       runnings = current_user.sport_sessions_confirmed('Running')
       @runnings_upcoming = runnings.select { |s| s.is_upcoming }
       @runnings_past = runnings.select { |s| s.is_past }
-      @invitations = runnings_user.sport_sessions_unconfirmed('Running')
+      @invitations = current_user.sport_sessions_unconfirmed('Running')
     end
   end
 
