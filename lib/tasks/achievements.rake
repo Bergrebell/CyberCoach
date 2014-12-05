@@ -15,8 +15,16 @@ namespace :achievements do
       a_hash = defined_achievement.to_hash
 
       validator = validators[a_hash[:validator]]
-      a_hash.delete(:validator) # remove validator attribute
-      Achievement.new(a_hash.merge(validator_id: validator.id)).save
+
+      achievement = Achievement.new
+
+      a_hash.each do |key,_|
+        # delete keys that are not present in the achievement model object
+        a_hash.delete(key) if !achievement.attributes.include?(key.to_s)
+      end
+
+      achievement.assign_attributes(a_hash.merge(validator_id: validator.id))
+      achievement.save unless Achievement.find_by(title: achievement.title)
     end
   end
 
