@@ -95,4 +95,18 @@ class SportSessionsController < ApplicationController
     end
   end
 
+  private
+
+  def set_friends
+    @friends = current_user.friends rescue []
+  end
+
+  def set_user
+    @user = Facade::User.query do
+      user = User.find_by id: params[:user_id]
+      user ||= current_user
+    end
+    @user
+  end
+
 end
