@@ -1,7 +1,7 @@
 require 'json'
 #
-# Helper module to collect to all achievements that are defined
-# using the achievement method.
+# Helper module to collect all achievements by means of
+# the achievement method.
 # Just a dsl. Why? I like dsl...
 #
 module AchievementsCollector
