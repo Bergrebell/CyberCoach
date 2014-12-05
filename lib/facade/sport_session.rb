@@ -146,7 +146,7 @@ module Facade
       auth_proxy  = facade_user.auth_proxy
       rails_user = facade_user.rails_model
       rails_model_class = RailsModelClass[params[:type]]
-      rails_sport_session = rails_class.new
+      rails_sport_session =  rails_model_class.new
       rails_sport_session.assign_attributes(
           user_id: rails_user.id,
           type: params[:type],
