@@ -4,6 +4,11 @@ class Track < ActiveRecord::Base
   belongs_to :sport_session_participant
   belongs_to :sport_session
 
+  #
+  # This helper class represents a measure.
+  # It helps to convert a measure to a desired unit like meters, kilometers etc.
+  # Internally the variable @value uses SI units for the common measures (meters, seconds, meters per seconds).
+  #
   class Measure
 
     attr_accessor :name, :value, :unit, :key
@@ -16,6 +21,15 @@ class Track < ActiveRecord::Base
     end
 
 
+    #
+    # Measure factory method. Maps a hash to a measure object by means of the value a_hash[:key].
+    # @params [Hash] a_hash - a_hash which represents a measure
+    #
+    # By means of the key value its mapped to the right measure object.
+    # ====Examples
+    # a_hash[:key] = :total_distance => mapped to an instance of Distance
+    # a_hash[:key] = :total_time => mapped to an instance of MyTime
+    #
     def self.create(a_hash)
       key = a_hash[:key]
       case key
@@ -52,6 +66,11 @@ class Track < ActiveRecord::Base
   end
 
 
+  # Specialized measures
+
+  #
+  # This class represents a speed measure. Internally speed is saved in meters per seconds.
+  #
   class Speed < Measure
 
     def to_s
@@ -61,6 +80,9 @@ class Track < ActiveRecord::Base
   end
 
 
+  #
+  # This class represents a pace measure. Internally pace is saved in seconds per meters.
+  #
   class Pace < Measure
 
     def to_s
@@ -71,6 +93,9 @@ class Track < ActiveRecord::Base
   end
 
 
+  #
+  # This class represents a distance measure. Internally distance is saved in meters.
+  #
   class Distance < Measure
 
     def to_s
@@ -91,6 +116,9 @@ class Track < ActiveRecord::Base
   end
 
 
+  #
+  # This class represents a height measure. Internally height is saved in meters.
+  #
   class Height < Measure
 
     def to_s
@@ -111,6 +139,9 @@ class Track < ActiveRecord::Base
   end
 
 
+  #
+  # This class represents a time measure. Internally time is saved in seconds.
+  #
   class MyTime < Measure
 
     def to_s
@@ -136,13 +167,17 @@ class Track < ActiveRecord::Base
   end
 
 
+  #
+  # This helper class represents a data container which is used in the views
+  # to avoid passing to much variables to a view.
+  #
   class TrackDataContainer
 
     attr_accessor :speeds, :paces, :heights, :points, :center_of_gravity
 
     def initialize(a_hash={points: [], speeds: [], paces: [], heights: [], statistics: [], center_of_gravity: [0, 0]})
-      @speeds = a_hash[:speeds].map { |(km, v)| [km, v *3.6] }
-      @paces = a_hash[:paces].map { |(km, v)| [km, v * 60/3.6] }
+      @speeds = a_hash[:speeds].map { |(km, v)| [km, v *3.6] } # map to meters per seconds
+      @paces = a_hash[:paces].map { |(km, v)| [km, v * 60/3.6] } # map to seconds per meters
       @heights = a_hash[:heights]
       @statistics = a_hash[:statistics].select { |measure| measure[:value] }.map { |measure| Measure.create(measure) }
       @points = a_hash[:points]
@@ -158,6 +193,19 @@ class Track < ActiveRecord::Base
       end
     end
 
+  end
+
+
+  def self.create_track_and_update_result(result, uploaded_file)
+    # get necessary values to create a track object
+    participant_id, user_id, sport_session_id = result.sport_session_participant.id, result.sport_session_participant.user_id, result.sport_session_participant.sport_session_id
+    track = Track.where(sport_session_participant_id: participant_id, user_id: user_id, sport_session_id: sport_session_id).first_or_initialize
+    track_data_container = track.store_gpx_file(uploaded_file)
+
+    # set result values
+    result.time = track_data_container.statistics(:total_time).nil? ? results_params[:time] : track_data_container.statistics(:total_time).to_minutes
+    result.length = track_data_container.statistics(:total_distance).nil? ? results_params[:length] : track_data_container.statistics(:total_distance).to_meters
+    track
   end
 
 

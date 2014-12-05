@@ -68,15 +68,11 @@ class RunningsController < SportSessionsController
 
     # read gpx file if present
     if results_params[:file].present?
-      participant_id, user_id, sport_session_id = @result.sport_session_participant.id, @result.sport_session_participant.user_id, @result.sport_session_participant.sport_session_id
-      track = Track.where(sport_session_participant_id: participant_id, user_id: user_id, sport_session_id: sport_session_id).first_or_initialize
-      track_data_container = track.store_gpx_file(results_params[:file])
-      # set result values
-      @result.time = track_data_container.statistics(:total_time).nil? ? results_params[:time] : track_data_container.statistics(:total_time).to_minutes
-      @result.length = track_data_container.statistics(:total_distance).nil? ? results_params[:length] : track_data_container.statistics(:total_distance).to_meters
+      track = Track.create_track_and_update_result(@result, results_params[:file])
     else
       @result.time = results_params[:time]
       @result.length = results_params[:length]
+      track = nil
     end
 
 
