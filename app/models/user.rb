@@ -133,7 +133,11 @@ class User < ActiveRecord::Base
   end
 
   def is_participant_of(sport_session_id)
-    SportSessionParticipant.where(:user_id => self.id, :sport_session_id => sport_session_id).exists?
+    if sport_session_id.nil?
+      false
+    else
+      SportSessionParticipant.where(:user_id => self.id, :sport_session_id => sport_session_id).exists?
+    end
   end
 
   def sport_sessions_confirmed(type='')
