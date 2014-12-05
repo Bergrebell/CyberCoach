@@ -4,31 +4,31 @@
       <tbody>
       <tr>
         <td><strong>Date/Time</strong></td>
-        <td><%= running.date %></td>
+        <td><%= sport_session.date %></td>
       </tr>
       <tr>
         <td><strong>Location</strong></td>
-        <td><%= running.location %></td>
+        <td><%= sport_session.location %></td>
       </tr>
       <tr>
         <td><strong>Initiator</strong></td>
-        <td><%= link_to running.user.username, user_path(running.user) %></td>
+        <td><%= link_to sport_session.user.username, user_path(sport_session.user) %></td>
       </tr>
       <tr>
         <td><strong>Duration</strong></td>
-        <td><%= running.entry_duration %></td>
+        <td><%= sport_session.entry_duration %></td>
       </tr>
       <tr>
         <td><strong>Course length</strong></td>
-        <td><%= running.course_length %></td>
+        <td><%= sport_session.course_length %></td>
       </tr>
       <tr>
         <td><strong>Course type</strong></td>
-        <td><%= running.course_type %></td>
+        <td><%= sport_session.course_type %></td>
       </tr>
       <tr>
         <td><strong>Number of rounds</strong></td>
-        <td><%= running.number_of_rounds %></td>
+        <td><%= sport_session.number_of_rounds %></td>
       </tr>
       </tbody>
     </table>

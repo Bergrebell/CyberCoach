@@ -210,7 +210,7 @@
         <% end %>
 
         <!-- Details table -->
-        <%= render :partial => 'table_attributes', :locals => {:running => @running} %>
+        <%= render :partial => 'table_attributes', :locals => {:sport_session => @running} %>
 
         <!-- Location map -->
         <% if @running.latitude and @running.longitude %>
@@ -278,7 +278,7 @@
   <div class="uk-width-medium-1-3">
 
     <% if @running.is_upcoming %>
-        <%= render :partial => 'sport_sessions/users_joining', :locals => {:session => @running} %>
+        <%= render :partial => 'sport_sessions/users_joining', :locals => {:sport_session => @running} %>
     <% end %>
 
     <% if @running.achievements_obtained(current_user).count > 0 %>

@@ -4,19 +4,19 @@
       <tbody>
       <tr>
         <td><strong>Date/Time</strong></td>
-        <td><%= soccer.date %></td>
+        <td><%= sport_session.date %></td>
       </tr>
       <tr>
         <td><strong>Location</strong></td>
-        <td><%= soccer.location %></td>
+        <td><%= sport_session.location %></td>
       </tr>
       <tr>
         <td><strong>Initiator</strong></td>
-        <td><%= link_to soccer.user.username, user_path(soccer.user) %></td>
+        <td><%= link_to sport_session.user.username, user_path(sport_session.user) %></td>
       </tr>
       <tr>
         <td><strong>Duration</strong></td>
-        <td><%= soccer.entry_duration %></td>
+        <td><%= sport_session.entry_duration %></td>
       </tr>
       </tbody>
     </table>

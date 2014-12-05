@@ -103,6 +103,11 @@ class SportSessionsController < ApplicationController
   end
 
 
+  def results_params
+    params.require(:sport_session_result).permit(:time, :length, :file)
+  end
+
+
   def set_friends
     @friends = current_user.friends rescue []
   end

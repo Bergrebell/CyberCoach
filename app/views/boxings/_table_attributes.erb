@@ -4,26 +4,26 @@
       <tbody>
       <tr>
         <td><strong>Date/Time</strong></td>
-        <td><%= boxing.date %></td>
+        <td><%= sport_session.date %></td>
       </tr>
       <tr>
         <td><strong>Location</strong></td>
-        <td><%= boxing.location %></td>
+        <td><%= sport_session.location %></td>
       </tr>
       <tr>
         <td><strong>Initiator</strong></td>
-        <td><%= link_to boxing.user.username, user_path(boxing.user) %></td>
+        <td><%= link_to sport_session.user.username, user_path(sport_session.user) %></td>
       </tr>
       <tr>
         <td><strong>Duration</strong></td>
-        <td><%= boxing.entry_duration %></td>
+        <td><%= sport_session.entry_duration %></td>
       </tr>
       <tr>
         <td><strong>Round duration</strong></td>
-        <td><%= boxing.round_duration %></td>
+        <td><%= sport_session.round_duration %></td>
       </tr>
         <td><strong>Number of rounds</strong></td>
-        <td><%= boxing.number_of_rounds %></td>
+        <td><%= sport_session.number_of_rounds %></td>
       </tr>
       </tbody>
     </table>

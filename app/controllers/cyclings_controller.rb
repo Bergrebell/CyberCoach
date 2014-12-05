@@ -29,6 +29,73 @@ class CyclingsController < SportSessionsController
     @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
   end
 
+
+  # GET /cyclings/:id/result/edit
+  # Edit result
+  #
+  def edit_result
+    @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
+
+    if not @cycling.is_participant(current_user)
+      redirect_to cyclings_url, alert: 'Permission denied'
+    end
+
+    if @cycling.date > Date.today
+      redirect_to cyclings_url, alert: 'Storing results only possible if event is passed'
+    end
+
+    @result = @cycling.result(current_user)
+  end
+
+
+  # POST /cyclings/:id/result/save
+  # Save a result for current user
+  #
+  def save_result
+    @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
+
+    if not @cycling.is_confirmed_participant(current_user)
+      redirect_to cyclings_url, alert: 'Permission denied'
+    end
+
+    @result = @cycling.result(current_user)
+
+    # read gpx file if present
+    if results_params[:file].present?
+      participant_id, user_id, sport_session_id = @result.sport_session_participant.id, @result.sport_session_participant.user_id, @result.sport_session_participant.sport_session_id
+      track = Track.where(sport_session_participant_id: participant_id, user_id: user_id, sport_session_id: sport_session_id).first_or_initialize
+      track_data_container = track.store_gpx_file(results_params[:file])
+      # set result values
+      @result.time = track_data_container.statistics(:total_time).nil? ? results_params[:time] : track_data_container.statistics(:total_time).to_minutes
+      @result.length = track_data_container.statistics(:total_distance).nil? ? results_params[:length] : track_data_container.statistics(:total_distance).to_meters
+    else
+      @result.time = results_params[:time]
+      @result.length = results_params[:length]
+    end
+
+
+    if @result.save
+      track.save if track.present?
+
+      # Check for new Achievements!
+      achievement_checker = AchievementsChecker.new @result
+      achievements = achievement_checker.check true
+      if achievements.count > 0
+        titles = '"' + achievements.map { |a| a.achievement.title}.join('", "') + '"'
+        flash[:notice] = ["Congratulations, you obtained new achievements: #{titles}"]
+        flash[:notice] << 'Successfully saved results'
+      else
+        flash[:notice] = 'Successfully saved results'
+      end
+
+      redirect_to cyclings_url
+    else
+      redirect_to cyclings_url, alert: 'Unable to save results'
+    end
+
+  end
+
+
   def show
     @track = begin
       track = Track.find_by!(user_id: @user.id, sport_session_id: params[:id])

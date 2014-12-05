@@ -162,8 +162,4 @@ class RunningsController < SportSessionsController
   end
 
 
-  def results_params
-    params.require(:sport_session_result).permit(:time, :length, :file)
-  end
-
 end

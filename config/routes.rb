@@ -32,8 +32,12 @@ Rails.application.routes.draw do
   resources :runnings
 
 
+  get 'cyclings/:id/edit/result' => 'cyclings#edit_result'
+  post 'cyclings/:id/result/save' => 'cyclings#save_result'
+
   get 'runnings/:id/edit/result' => 'runnings#edit_result'
   post 'runnings/:id/result/save' => 'runnings#save_result'
+
   get 'boxings/:id/edit/result' => 'boxings#edit_result'
   post 'boxings/:id/result/save' => 'boxings#save_result'
 

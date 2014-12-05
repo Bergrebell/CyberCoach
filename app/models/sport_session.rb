@@ -93,6 +93,8 @@ class SportSession < ActiveRecord::Base
         result = RunningParticipantResult.where(:sport_session_participant_id => participant.id).first_or_create
       when 'Boxing'
         result = BoxingParticipantResult.where(:sport_session_participant_id => participant.id).first_or_create
+      when 'Cycling'
+        result = CyclingParticipantResult.where(:sport_session_participant_id => participant.id).first_or_create
       else
         raise 'Unknown Type'
     end
