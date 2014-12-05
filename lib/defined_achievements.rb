@@ -81,6 +81,32 @@ module DefinedAchievements
 ## Special achievements
 
   achievement do
+    title 'Fixed Object'
+    description 'You must be a stone or a plant!'
+    points 42 # the answer to everything!
+    validator 'AttributeValidator'
+    sport 'Running'
+    rules [
+              {operator: '<=', attribute: 'length', value: 1},
+              {operator: '>', attribute: 'length', value: 0},
+              {operator: '>=', attribute: 'time', value: 60}
+          ]
+  end
+
+  achievement do
+    title 'Prison inmate'
+    description 'You must be a prison inmate! '
+    points 42 # the answer to everything!
+    validator 'AttributeValidator'
+    sport 'Running'
+    rules [
+              {operator: '<=', attribute: 'length', value: 25},
+              {operator: '>', attribute: 'length', value: 10},
+              {operator: '>=', attribute: 'time', value: 60}
+          ]
+  end
+
+  achievement do
     title 'Snail Walker'
     description 'Slower than a normal person and a cute Zombie. You must be a Snail Walker?!'
     points 42 # the answer to everything!
@@ -88,7 +114,7 @@ module DefinedAchievements
     sport 'Running'
     rules [
               {operator: '<=', attribute: 'length', value: 1000},
-              {operator: '>', attribute: 'length', value: 0},
+              {operator: '>', attribute: 'length', value: 100},
               {operator: '>=', attribute: 'time', value: 60}
           ]
   end
