@@ -67,12 +67,12 @@ class RunningsController < SportSessionsController
     @result = @running.result(current_user)
 
     # read gpx file if present
+    track = nil
     if results_params[:file].present?
       track = Track.create_track_and_update_result(@result, results_params[:file])
     else
       @result.time = results_params[:time]
       @result.length = results_params[:length]
-      track = nil
     end
 
 

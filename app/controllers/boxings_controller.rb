@@ -36,6 +36,58 @@ class BoxingsController < SportSessionsController
   end
 
 
+  # GET /boxings/:id/result/edit
+  # Edit result
+  #
+  def edit_result
+    @boxing = Facade::SportSession::Boxing.find_by id: params[:id]
+
+    if not @boxing.is_participant(current_user)
+      redirect_to boxings_url, alert: 'Permission denied'
+    end
+
+    if @boxing.date > Date.today
+      redirect_to boxings_url, alert: 'Storing results only possible if event is passed'
+    end
+
+    @result = @boxing.result(current_user)
+  end
+
+  # GET /boxings/:id/result/save
+  # Save result
+  #
+  def save_result
+    @boxing = Facade::SportSession::Boxing.find_by id: params[:id]
+
+    if not @boxing.is_confirmed_participant(current_user)
+      redirect_to boxings_url, alert: 'Permission denied'
+    end
+
+    @result = @boxing.result(current_user)
+    @result.assign_attributes(results_params)
+
+    if @result.save
+
+
+      # Check for new Achievements!
+      achievement_checker = AchievementsChecker.new @result
+      achievements = achievement_checker.check true
+      if achievements.count > 0
+        titles = '"' + achievements.map { |a| a.achievement.title }.join('", "') + '"'
+        flash[:notice] = ["Congratulations, you obtained new achievements: #{titles}"]
+        flash[:notice] << 'Successfully saved results'
+      else
+        flash[:notice] = 'Successfully saved results'
+      end
+
+      redirect_to boxings_url
+    else
+      redirect_to boxings_url, alert: 'Unable to save results'
+    end
+
+  end
+
+
   # POST /boxings
   def create
     @boxing = Facade::SportSession::Boxing.create(boxing_params)
