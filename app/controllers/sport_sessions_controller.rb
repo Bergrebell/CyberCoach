@@ -16,7 +16,7 @@ class SportSessionsController < ApplicationController
     end
   end
 
-  
+
   def show
     # We redirect to the correct type, this is possible due to single table inheritance returning the correct object
     @session = SportSession.find_by id: params[:id]
@@ -109,10 +109,11 @@ class SportSessionsController < ApplicationController
 
 
   def set_user
-    Facade::User.query do
+    @user = Facade::User.query do
       user = User.find_by id: params[:user_id]
       user ||= current_user
     end
+    @user
   end
 
 end

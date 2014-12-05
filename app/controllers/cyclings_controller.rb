@@ -1,5 +1,7 @@
-class CyclingsController < ApplicationController
+class CyclingsController < SportSessionsController
 
+  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :set_user, only: [:show]
 
   # List all running sessions
   def index
@@ -19,26 +21,29 @@ class CyclingsController < ApplicationController
   end
 
   def new
-    @cycling = Facade::SportSession.create(user: current_user, type: 'Cycling')
+    @cycling = Facade::SportSession::Cycling.create(user: current_user, type: 'Cycling')
   end
 
 
   def edit
-    @cycling = Facade::SportSession.find_by id: params[:id]
+    @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
   end
 
   def show
-    @cycling = Facade::SportSession.find_by id: params[:id]
+    @track = begin
+      track = Track.find_by!(user_id: @user.id, sport_session_id: params[:id])
+      track.read_track_data
+    rescue
+      Track::TrackDataContainer.new
+    end
+    @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
   end
 
 
   # POST /cyclings
   def create
-    date_time_object = DateTime.strptime(params[:date], Facade::SportSession::DATETIME_FORMAT)
-    entry_params = params.merge({user: current_user, type: 'Cycling', entry_date: date_time_object})
-    entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
-    @entry = Facade::SportSession.create(entry_params)
-    if @entry.save
+    @cycling = Facade::SportSession::Cycling.create(cycling_params)
+    if @cycling.save
       redirect_to cyclings_url, notice: 'Cycling session successfully created'
     else
       flash[:notice] = 'Unable to create Cycling session'
@@ -48,9 +53,8 @@ class CyclingsController < ApplicationController
 
 
   def update
-    @cycling = Facade::SportSession.find_by id: params[:id]
-    entry_params = sport_session_params.merge({user: current_user, type: 'Cycling'})
-    if @running.update(entry_params)
+    @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
+    if @cycling.update(cycling_params)
       redirect_to cyclings_url, notice: 'Cycling session successfully updated'
     else
       render :edit
@@ -67,8 +71,10 @@ class CyclingsController < ApplicationController
     end
   end
 
-  def sport_session_params
-    Hash[params[:sport_session].map {|k,v| [k.to_sym,v]}]
+  private
+
+  def cycling_params
+    sport_session_params('cycling')
   end
 
 end
