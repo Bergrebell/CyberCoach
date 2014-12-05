@@ -67,8 +67,6 @@ class BoxingsController < SportSessionsController
     @result.assign_attributes(results_params)
 
     if @result.save
-
-
       # Check for new Achievements!
       achievement_checker = AchievementsChecker.new @result
       achievements = achievement_checker.check true
@@ -82,7 +80,8 @@ class BoxingsController < SportSessionsController
 
       redirect_to boxings_url
     else
-      redirect_to boxings_url, alert: 'Unable to save results'
+      flash[:notice] =  'Unable to save results'
+      render :edit_result
     end
 
   end

@@ -75,10 +75,8 @@ class RunningsController < SportSessionsController
       @result.length = results_params[:length]
     end
 
-
     if @result.save
       track.save if track.present?
-
       # Check for new Achievements!
       achievement_checker = AchievementsChecker.new @result
       achievements = achievement_checker.check true
@@ -92,7 +90,8 @@ class RunningsController < SportSessionsController
 
       redirect_to runnings_url
     else
-      redirect_to runnings_url, alert: 'Unable to save results'
+      flash[:notice] =  'Unable to save results'
+      render :edit_result
     end
 
   end
