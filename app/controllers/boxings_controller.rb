@@ -3,8 +3,19 @@ class BoxingsController < ApplicationController
 
   # List all running sessions
   def index
-    @boxings = Facade::SportSession.where(user_id: current_user.id, type: 'Boxing') # pretty cool hehehe...don't get used to it :-)
-    @friends = current_user.friends
+    @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
+    # If sessions must be filtered, use the passed params for filtering
+    # display all running sessions otherwise, upcoming, past or unconfirmed, respectively.
+    if params.count > 0
+      @boxings_upcoming = current_user.sport_sessions_filtered(params, true, 'Boxing').select { |s| s.is_upcoming }
+      @boxings_past = current_user.sport_sessions_filtered(params, true, 'Boxing').select { |s| s.is_past }
+      @invitations = current_user.sport_sessions_filtered(params, false, 'Boxing')
+    else
+      boxings = current_user.sport_sessions_confirmed('Boxing')
+      @boxings_upcoming = boxings.select { |s| s.is_upcoming }
+      @boxings_past = boxings.select { |s| s.is_past }
+      @invitations = current_user.sport_sessions_unconfirmed('Boxing')
+    end
   end
 
   def new
