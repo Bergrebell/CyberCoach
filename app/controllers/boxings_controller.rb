@@ -1,5 +1,6 @@
-class BoxingsController < ApplicationController
+class BoxingsController < SportSessionsController
 
+  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
 
   # List all running sessions
   def index
@@ -19,26 +20,28 @@ class BoxingsController < ApplicationController
   end
 
   def new
-    @boxing = Facade::SportSession.create(user: current_user, type: 'Boxing')
+    @boxing = Facade::SportSession::Boxing.create(user: current_user)
   end
 
 
   def edit
-    @boxing = Facade::SportSession.find_by id: params[:id]
+    @boxing = Facade::SportSession::Boxing.find_by id: params[:id]
+    raise 'Error' if @boxing.is_a? RestAdapter::Models::Entry
   end
 
   def show
+    @user = Facade::User.query do
+      user = User.find_by id: params[:user_id]
+      user ||= current_user
+    end
     @boxing = Facade::SportSession.find_by id: params[:id]
   end
 
 
   # POST /boxings
   def create
-    date_time_object = DateTime.strptime(params[:date], Facade::SportSession::DATETIME_FORMAT)
-    entry_params = params.merge({user: current_user, type: 'Boxing', entry_date: date_time_object})
-    entry_params = Hash[entry_params.map {|k,v| [k.to_sym,v]}]
-    @entry = Facade::SportSession.create(entry_params)
-    if @entry.save
+    @boxing = Facade::SportSession::Boxing.create(boxing_params)
+    if @boxing.save
       redirect_to boxings_url, notice: 'Boxing session successfully created'
     else
       flash[:notice] = 'Unable to create Boxing session'
@@ -49,8 +52,7 @@ class BoxingsController < ApplicationController
 
   def update
     @boxing = Facade::SportSession.find_by id: params[:id]
-    entry_params = sport_session_params.merge({user: current_user, type: 'Boxing'})
-    if @boxing.update(entry_params)
+    if @boxing.update(boxing_params)
       redirect_to boxings_url, notice: 'Boxing session successfully updated'
     else
       render :edit
@@ -67,8 +69,14 @@ class BoxingsController < ApplicationController
     end
   end
 
-  def sport_session_params
-    Hash[params[:sport_session].map {|k,v| [k.to_sym,v]}]
+  private
+
+  def boxing_params
+    sport_session_params('boxing')
+  end
+
+  def set_friends
+    @friends = current_user.friends rescue []
   end
 
 end
