@@ -122,16 +122,6 @@ module Facade
 
 
     # Correct entry_date string for the views.
-    def entry_date
-      begin #Try if we can format entry date. If it fails then its probably nil.
-        @cc_entry.entry_date.strftime(DATETIME_FORMAT)
-      rescue # if nil or another exception is raised just use an empty string
-        ''
-      end
-    end
-
-
-    # Correct entry_date string for the views.
     def date_created
       begin #Try if we can format entry date. If it fails then its probably nil.
         @cc_entry.date_created.strftime(DATETIME_FORMAT)
@@ -140,13 +130,14 @@ module Facade
       end
     end
 
-    
+
     def self.create(params)
       # preconditions
       raise 'User is not of type Facade::User!' if params[:user].nil? or not params[:user].is_a?(Facade::User)
       raise 'Type is nil or empty string!' if params[:type].nil? or params[:type].empty?
       raise 'Facade::User has no cc_model. cc_model is nil!' if params[:user].cc_model.nil?
       raise 'Facade::User has no auth proxy. auth proxy is nil!' if params[:user].auth_proxy.nil?
+      entry_date = DateTime.strptime(params[:entry_date] + ' ' + params[:entry_time], '%Y-%m-%d %H:%M') rescue nil
 
       # hidden dependencies
       facade_user = params[:user]
@@ -157,7 +148,7 @@ module Facade
       rails_sport_session = rails_model_class.new(
           user_id: rails_user.id,
           type: params[:type],
-          date: params[:entry_date],
+          date: entry_date,
           location: params[:entry_location],
           title: params[:title],
           latitude: params[:latitude],
@@ -174,7 +165,7 @@ module Facade
       cc_visible = RestAdapter::Privacy::Public
 
       # create entry
-      entry_hash = params.merge(subscription: cc_subscription, public_visible: cc_visible, type: cc_type)
+      entry_hash = params.merge(subscription: cc_subscription, public_visible: cc_visible, type: cc_type, entry_date: entry_date)
       cc_entry = RestAdapter::Models::Entry.new entry_hash
 
       # inject dependencies
@@ -184,8 +175,8 @@ module Facade
 
     def save(params={})
       begin
-        if entry_uri = @auth_proxy.save(@cc_entry)
-          raise Error if entry_uri.nil? or entry_uri.empty? or entry_uri.size==1 # hack alert: is this a higgs bugson???
+        if @rails_sport_session.save && entry_uri = @auth_proxy.save(@cc_entry)
+          raise 'Error' if entry_uri.nil? || entry_uri.empty?
           @rails_sport_session.cybercoach_uri = entry_uri
           @rails_sport_session.save
 
@@ -207,15 +198,10 @@ module Facade
       end
     end
 
+
     def update(params={})
       type = Facade::SportSession::EntryTypeLookup[@rails_sport_session.type]
-      update_attributes(params.merge(type: type))
-      @auth_proxy.save(@cc_entry)
-    end
-
-
-    def update_attributes(params)
-      entry_hash = params.dup
+      entry_hash = params.dup.merge(type: type)
       begin
 
         # sync rails sport session properties
@@ -227,7 +213,7 @@ module Facade
             longitude: params[:longitude]
         }
 
-        @rails_sport_session.update rails_sport_session_properties
+        @rails_sport_session.assign_attributes rails_sport_session_properties
 
         # Also update invited friends
         users_invited = (entry_hash[:users_invited].present? and entry_hash[:users_invited].kind_of?(Array)) ? entry_hash[:users_invited] : []
@@ -235,9 +221,9 @@ module Facade
 
         entry_hash = entry_hash.merge(uri: @rails_sport_session.cybercoach_uri, cc_id: @cc_entry.cc_id)
         @cc_entry = RestAdapter::Models::Entry.new entry_hash
-      rescue => e
-        # do nothing
-        raise e
+        @rails_sport_session.save && @auth_proxy.save(@cc_entry)
+      rescue
+        false
       end
     end
 

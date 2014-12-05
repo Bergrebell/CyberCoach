@@ -3,6 +3,10 @@ class SportSession < ActiveRecord::Base
   has_many :users, through: :sport_session_participants
   belongs_to :user
 
+  validates :title, presence: true
+  validates :location, presence: true
+  validates :entry_time, presence: true
+  validates :entry_date, presence: true
 
   # Virtual attribute, this one is merged into the date
   #
@@ -11,8 +15,18 @@ class SportSession < ActiveRecord::Base
   end
 
   def entry_time
-    if self.date.present?
-      self.date.strftime('%H:%M')
+    if date.present?
+      date.strftime('%H:%M')
+    end
+  end
+
+  def entry_date=(param)
+    @entry_date = param
+  end
+
+  def entry_date
+    if date.present?
+      date.strftime '%Y-%m-%d'
     end
   end
 

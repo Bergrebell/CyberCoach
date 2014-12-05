@@ -81,7 +81,7 @@ class SportSessionsController < ApplicationController
 
   def sport_session_params(type)
     _params = Hash[params[type].map {|k,v| [k.to_sym,v]}]
-    _params[:entry_date] = DateTime.strptime(_params[:entry_date] + ' ' + _params[:entry_time], '%Y-%m-%d %H:%M') # Where's this constant? ;)
+    #_params[:entry_date] = DateTime.strptime(_params[:entry_date] + ' ' + _params[:entry_time], '%Y-%m-%d %H:%M') # Where's this constant? ;)
     _params[:user] = current_user
     _params
   end

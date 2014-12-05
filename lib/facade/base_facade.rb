@@ -97,6 +97,16 @@ module Facade
     end
 
 
+    def valid?
+      rails_model.valid?
+    end
+
+
+    def errors
+      rails_model.errors
+    end
+
+
     # Integrates the gem WillPaginate into the BaseFacade
     def self.paginate(options)
       page = options[:page] || 1 # use page = 1 as default
@@ -183,9 +193,9 @@ module Facade
 
     def method_missing(method, *args, &block)
       begin
-        cc_model.send method, *args, &block
-      rescue
         rails_model.send method, *args, &block
+      rescue
+        cc_model.send method, *args, &block
       end
     end
 
