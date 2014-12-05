@@ -89,7 +89,7 @@ module DefinedAchievements
     rules [
               {operator: '<=', attribute: 'length', value: 1000},
               {operator: '>', attribute: 'length', value: 0},
-              {operator: '>', attribute: 'time', value: 60}
+              {operator: '>=', attribute: 'time', value: 60}
           ]
   end
 
@@ -102,7 +102,7 @@ module DefinedAchievements
     rules [
               {operator: '<=', attribute: 'length', value: 2000},
               {operator: '>', attribute: 'length', value: 1000},
-              {operator: '>', attribute: 'time', value: 60}
+              {operator: '>=', attribute: 'time', value: 60}
           ]
   end
 
@@ -115,7 +115,7 @@ module DefinedAchievements
     rules [
               {operator: '<=', attribute: 'length', value: 3000},
               {operator: '>', attribute: 'length', value: 2000},
-              {operator: '>', attribute: 'time', value: 60}
+              {operator: '>=', attribute: 'time', value: 60}
           ]
   end
 
@@ -128,7 +128,7 @@ module DefinedAchievements
     rules [
               {operator: '<=', attribute: 'length', value: 4000},
               {operator: '>', attribute: 'length', value: 3000},
-              {operator: '>', attribute: 'time', value: 60}
+              {operator: '>=', attribute: 'time', value: 60}
           ]
   end
 
