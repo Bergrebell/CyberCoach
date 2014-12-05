@@ -1,5 +1,6 @@
 class RunningsController < SportSessionsController
 
+  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :set_user, only: [:show]
 
   # List all running sessions
