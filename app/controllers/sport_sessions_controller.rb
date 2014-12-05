@@ -16,16 +16,19 @@ class SportSessionsController < ApplicationController
     end
   end
 
+  
   def show
     # We redirect to the correct type, this is possible due to single table inheritance returning the correct object
     @session = SportSession.find_by id: params[:id]
     redirect_to polymorphic_path(@session, user_id: params[:user_id]) #don't ask me, it does the job!
   end
 
+
   def edit
     @session = SportSession.find params[:id]
     redirect_to @session, action: 'edit'
   end
+
 
   # Confirm attendance to sport session
   #
@@ -45,6 +48,7 @@ class SportSessionsController < ApplicationController
     false
   end
 
+
   # Decline attendance to sport session
   #
   def decline
@@ -61,6 +65,7 @@ class SportSessionsController < ApplicationController
 
     false
   end
+
 
   # Unsubscribe from an event by deleting the SportSessionParticipant object
   #
@@ -79,13 +84,6 @@ class SportSessionsController < ApplicationController
   end
 
 
-  def sport_session_params(type)
-    _params = Hash[params[type].map {|k,v| [k.to_sym,v]}]
-    #_params[:entry_date] = DateTime.strptime(_params[:entry_date] + ' ' + _params[:entry_time], '%Y-%m-%d %H:%M') # Where's this constant? ;)
-    _params[:user] = current_user
-    _params
-  end
-
   def destroy
     @session = Facade::SportSession.find_by id: params[:id]
     if @session.delete
@@ -95,18 +93,26 @@ class SportSessionsController < ApplicationController
     end
   end
 
+
   private
+
+  def sport_session_params(type)
+    a_hash = Hash[params[type].map {|k,v| [k.to_sym,v]}]
+    a_hash[:user] = current_user
+    a_hash
+  end
+
 
   def set_friends
     @friends = current_user.friends rescue []
   end
 
+
   def set_user
-    @user = Facade::User.query do
+    Facade::User.query do
       user = User.find_by id: params[:user_id]
       user ||= current_user
     end
-    @user
   end
 
 end

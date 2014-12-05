@@ -20,6 +20,7 @@ class SoccersController < SportSessionsController
     end
   end
 
+
   def new
     @soccer = Facade::SportSession::Soccer.create(user: current_user)
   end
@@ -28,6 +29,7 @@ class SoccersController < SportSessionsController
   def edit
     @soccer = Facade::SportSession::Soccer.find_by id: params[:id]
   end
+
 
   def show
     @soccer = Facade::SportSession::Soccer.find_by id: params[:id]
@@ -64,6 +66,8 @@ class SoccersController < SportSessionsController
       redirect_to sport_sessions_index_path, notice: 'Sport session cannot be removed.'
     end
   end
+
+  private
 
   # Prepare parameters for create/update method
   #

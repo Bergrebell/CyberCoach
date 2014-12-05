@@ -1,6 +1,7 @@
 class BoxingsController < SportSessionsController
 
   before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :set_user, only: [:show]
 
   # List all running sessions
   def index
@@ -19,6 +20,7 @@ class BoxingsController < SportSessionsController
     end
   end
 
+
   def new
     @boxing = Facade::SportSession::Boxing.create(user: current_user)
   end
@@ -26,15 +28,11 @@ class BoxingsController < SportSessionsController
 
   def edit
     @boxing = Facade::SportSession::Boxing.find_by id: params[:id]
-    raise 'Error' if @boxing.is_a? RestAdapter::Models::Entry
   end
 
+
   def show
-    @user = Facade::User.query do
-      user = User.find_by id: params[:user_id]
-      user ||= current_user
-    end
-    @boxing = Facade::SportSession.find_by id: params[:id]
+    @boxing = Facade::SportSession::Boxing.find_by id: params[:id]
   end
 
 
@@ -69,14 +67,11 @@ class BoxingsController < SportSessionsController
     end
   end
 
+
   private
 
   def boxing_params
     sport_session_params('boxing')
-  end
-
-  def set_friends
-    @friends = current_user.friends rescue []
   end
 
 end

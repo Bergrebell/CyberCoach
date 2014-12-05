@@ -1,5 +1,6 @@
 class RunningsController < SportSessionsController
 
+  before_action :set_user, only: [:show]
 
   # List all running sessions
   def index
@@ -17,6 +18,7 @@ class RunningsController < SportSessionsController
       @invitations = current_user.sport_sessions_unconfirmed('Running')
     end
   end
+
 
   def new
     @running = Facade::SportSession::Running.create(user: current_user)
@@ -98,12 +100,9 @@ class RunningsController < SportSessionsController
 
   end
 
+
   def show
     @track = begin
-      @user = Facade::User.query do
-        user = User.find_by id: params[:user_id]
-        user ||= current_user
-      end
       track = Track.find_by!(user_id: @user.id, sport_session_id: params[:id])
       track.read_track_data
     rescue
@@ -165,6 +164,5 @@ class RunningsController < SportSessionsController
   def results_params
     params.require(:sport_session_result).permit(:time, :length, :file)
   end
-
 
 end
