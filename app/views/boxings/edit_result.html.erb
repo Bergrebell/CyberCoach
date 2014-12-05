@@ -23,7 +23,25 @@
           <div class="uk-form-row">
             <label class="uk-form-label">Knockout opponent</label>
             <div class="uk-form-controls">
-              <%= f.text_field :knockout_opponent, placeholder: '', value: @result.knockout_opponent, class: 'uk-width-1-1' %>
+              <div class="uk-grid">
+
+                <div class="uk-width-medium-1-4">
+                  <%= f.label :knockout_opponent, "No",  value: false %>
+                </div>
+                <div class="uk-width-medium-3-4">
+                  <%= f.radio_button :knockout_opponent, false, checked: !@result.knockout_opponent %>
+                </div>
+
+                <div class="uk-width-medium-1-4">
+                  <%= f.label :knockout_opponent, "Yes",  value: true %>
+                </div>
+
+                <div class="uk-width-medium-3-4">
+                  <%= f.radio_button :knockout_opponent, true, checked: @result.knockout_opponent %>
+                </div>
+
+              </div>
+
             </div>
           </div>
 

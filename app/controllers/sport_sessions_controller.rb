@@ -104,7 +104,7 @@ class SportSessionsController < ApplicationController
 
 
   def results_params
-    params.require(:sport_session_result).permit(:time, :length, :file)
+    params.require(:sport_session_result).permit(:time, :length, :file, :knockout_opponent, :number_of_rounds)
   end
 
 
