@@ -89,7 +89,7 @@ module DefinedAchievements
 ## Special achievements
 
   achievement do
-    title 'Fixed Object'
+    title 'A plant!'
     description 'You must be a stone or a plant!'
     points 42 # the answer to everything!
     validator 'AttributeValidator'
