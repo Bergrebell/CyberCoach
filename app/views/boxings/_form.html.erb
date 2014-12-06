@@ -1,17 +1,5 @@
 <%= form_for @boxing, :html => {:class => 'uk-form uk-form-stacked'} do |f| %>
 
-    <% if @boxing.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@boxing.errors.count, "error") %> prohibited this session from being saved:</h2>
-
-          <ul>
-            <% @boxing.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
-    <% end %>
-
 
     <div class="uk-grid" data-uk-grid-margin>
 
@@ -121,7 +109,17 @@
 
 
       <div class="uk-width-medium-1-3">
-
+        <% if @boxing.errors.any? %>
+            <div class="uk-alert uk-alert-danger" data-uk-alert id="error_explanation">
+              <a href="" class="uk-alert-close uk-close"></a>
+              <h4><%= pluralize(@boxing.errors.count, "error") %> prohibited this session from being saved:</h4>
+              <ul>
+                <% @boxing.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+        <% end %>
         <!-- Friends -->
         <div class="uk-panel uk-panel-box">
           <h3 class="uk-title"><i class="uk-icon-users"></i> Invite friends</h3>

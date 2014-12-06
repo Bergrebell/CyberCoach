@@ -104,7 +104,17 @@
 
 
       <div class="uk-width-medium-1-3">
-
+        <% if @soccer.errors.any? %>
+            <div class="uk-alert uk-alert-danger" data-uk-alert id="error_explanation">
+              <a href="" class="uk-alert-close uk-close"></a>
+              <h4><%= pluralize(@soccer.errors.count, "error") %> prohibited this session from being saved:</h4>
+              <ul>
+                <% @soccer.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+        <% end %>
         <!-- Friends -->
         <div class="uk-panel uk-panel-box">
           <h3 class="uk-title"><i class="uk-icon-users"></i> Invite friends</h3>
