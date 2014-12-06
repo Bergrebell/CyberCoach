@@ -287,7 +287,7 @@
           <% @cycling.achievements_obtained(current_user).each do |achievement| %>
               <li class="uk-margin-small-bottom">
                 <div class="uk-thumbnail uk-border-circle uk-margin-right">
-                  <img class="uk-border-circle" width="50" height=50" src="<%= image_path("achievement_icons/#{achievement.id}.svg") %>">
+                  <%= achievement_tag achievement.icon, height: '60', width: '60', class: 'uk-border-circle' %>
                 </div>
                 <%= achievement.title %>
               </li>
