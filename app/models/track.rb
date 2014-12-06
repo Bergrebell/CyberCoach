@@ -77,6 +77,14 @@ class Track < ActiveRecord::Base
       "#{(@value * 3.6).round(2)} km/h" rescue @value.class.name
     end
 
+    def to_km_per_hour
+      (@value * 3.6).round(2)
+    end
+
+    def for_validator
+      to_km_per_hour
+    end
+
   end
 
 
@@ -88,6 +96,14 @@ class Track < ActiveRecord::Base
     def to_s
       minutes_per_km = @value.to_f*(60/3.6) # seconds / meters * 1/3.6 * 60 => minutes / kilometers
       "#{(minutes_per_km).round(2)} minutes per km"
+    end
+
+    def to_minutes_per_km
+      (@value *60.to_f/3.6).round(2)
+    end
+
+    def for_validator
+      to_minutes_per_km
     end
 
   end
@@ -108,6 +124,10 @@ class Track < ActiveRecord::Base
 
     def to_kilometers
       (@value.to_f/1000).round(2)
+    end
+
+    def for_validator
+      to_meters
     end
 
     alias_method :m, :to_meters
@@ -131,6 +151,10 @@ class Track < ActiveRecord::Base
 
     def to_kilometers
       (@value.to_f/1000).round(2)
+    end
+
+    def for_validator
+      to_meters
     end
 
     alias_method :m, :to_meters
@@ -160,6 +184,10 @@ class Track < ActiveRecord::Base
       (@value.to_f/60*60).round(2)
     end
 
+    def for_validator
+      to_minutes
+    end
+
     alias_method :m, :to_minutes
     alias_method :s, :to_seconds
     alias_method :h, :to_hours
@@ -173,24 +201,56 @@ class Track < ActiveRecord::Base
   #
   class TrackDataContainer
 
-    attr_accessor :speeds, :paces, :heights, :points, :center_of_gravity
+    attr_accessor :speeds, :paces, :heights, :points, :center_of_gravity, :statistics_keys
 
     def initialize(a_hash={points: [], speeds: [], paces: [], heights: [], statistics: [], center_of_gravity: [0, 0]})
-      @speeds = a_hash[:speeds].map { |(km, v)| [km, v *3.6] } # map to meters per seconds
-      @paces = a_hash[:paces].map { |(km, v)| [km, v * 60/3.6] } # map to seconds per meters
+      @speeds = a_hash[:speeds].map { |(km, v)| [km, v *3.6] } # map to km/h
+      @paces = a_hash[:paces].map { |(km, v)| [km, v * 60/3.6] } # map to km/m
       @heights = a_hash[:heights]
-      @statistics = a_hash[:statistics].select { |measure| measure[:value] }.map { |measure| Measure.create(measure) }
+      
+      @statistics = a_hash[:statistics].map { |measure| Measure.create(measure) } #.select { |measure| measure[:value] }.
       @points = a_hash[:points]
       @center_of_gravity = a_hash[:center_of_gravity]
     end
 
 
-    def statistics(key=nil)
-      if key
-        @statistics.detect { |measure| measure.key == key }
-      else
+    def statistics
         @statistics
-      end
+    end
+
+    def [](key)
+      @statistics.detect { |measure| measure.key == key }
+    end
+
+  end
+
+
+  class ParticipantResultProxy
+
+    attr_accessor :track_data_container, :track
+
+    def initialize(a_hash)
+      @track_data_container = a_hash[:track_data_container]
+      @participant_result = a_hash[:participant_result]
+      @track = a_hash[:track]
+    end
+
+    def attributes
+      first_attributes = @participant_result.attributes
+      second_attributes = Hash[@track_data_container.statistics.map {|measure| [measure.key.to_s, measure.for_validator]}]
+      first_attributes.merge(second_attributes)
+    end
+
+    def sport_session
+      @participant_result.sport_session
+    end
+
+    def sport_session_participant
+      @participant_result.sport_session_participant
+    end
+
+    def method_missing(meth,*args,&block)
+      @participant_result.send meth, *args, &block
     end
 
   end
@@ -203,9 +263,9 @@ class Track < ActiveRecord::Base
     track_data_container = track.store_gpx_file(uploaded_file)
 
     # set result values
-    result.time = track_data_container.statistics(:total_time).nil? ? results_params[:time] : track_data_container.statistics(:total_time).to_minutes
-    result.length = track_data_container.statistics(:total_distance).nil? ? results_params[:length] : track_data_container.statistics(:total_distance).to_meters
-    track
+    result.time = track_data_container[:total_time].nil? ? nil : track_data_container[:total_time].to_minutes
+    result.length = track_data_container[:total_distance].nil? ? nil : track_data_container[:total_distance].to_meters
+    ParticipantResultProxy.new track: track, track_data_container: track_data_container, participant_result: result
   end
 
 

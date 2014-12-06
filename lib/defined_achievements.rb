@@ -6,6 +6,28 @@ module DefinedAchievements
   ## Normal achievements
 
   achievement do
+    title 'Flash Runner'
+    description 'Average speed between 9km/h and 10 km/h '
+    points 100
+    validator 'AttributeValidator'
+    sport 'Running'
+    icon 'one_star'
+    rules [{operator: '<=', attribute: 'average_speed', value: 10},
+           {operator: '>', attribute: 'average_speed', value: 9}]
+  end
+
+
+  achievement do
+    title 'Steinbock' # sveta :-)
+    description '2000 meters over the sea!'
+    points 100
+    validator 'AttributeValidator'
+    sport 'Running'
+    icon 'capricorn6'
+    rules [{operator: '>=', attribute: 'max_height', value: 2000}]
+  end
+
+  achievement do
     title 'Basic Runner'
     description 'Ran more than 1 kilometer'
     points 100
