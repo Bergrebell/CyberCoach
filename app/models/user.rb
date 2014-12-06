@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
   # @return [List]
   #
   def latest_achievements
-    achievements.order('user_achievements.created_at').limit(5)
+    achievements.order('user_achievements.created_at DESC').limit(5)
   end
 
 
