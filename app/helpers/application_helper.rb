@@ -7,4 +7,8 @@ module ApplicationHelper
     image_tag img_url
   end
 
+  def achievement_tag(icon_path,options={})
+    image_tag "achievement_icons/#{icon_path}.svg", options
+  end
+
 end

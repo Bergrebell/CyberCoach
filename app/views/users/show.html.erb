@@ -102,7 +102,7 @@
             <div class="uk-width-small-1-5 uk-text-center">
               <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
                 <div class="uk-overlay">
-                  <%= image_tag("achievement_icons/#{achievement.id}.svg", size: '50x50') %>
+                  <%= achievement_tag achievement.icon, height: '60', width: '60', class: 'uk-border-circle' %>
                 </div>
               </div>
               <h4 class="uk-margin-small-top"><%= achievement.title %></h4>
