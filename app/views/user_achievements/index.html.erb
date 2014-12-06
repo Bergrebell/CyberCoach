@@ -9,7 +9,9 @@
         <div class="uk-width-small-1-10 uk-text-center<% if not @user_achievements.include?(achievement) %> achievement-missing<% end %>" data-uk-tooltip title="<%= achievement.description %>">
           <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
             <div class="uk-overlay">
-              <img class="uk-border-circle" width="50" height=50" src="<%= image_path("achievement_icons/#{achievement.id}.svg") %>">
+
+                <%= image_tag "achievement_icons/#{achievement.icon}.svg", height: '100', width: '100', class: 'uk-thumbnail uk-border-circle' %>
+
             </div>
           </div>
           <h4 class="uk-margin-small-top"><%= achievement.title %></h4>

@@ -11,6 +11,7 @@ module DefinedAchievements
     points 100
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/basic_runner'
     rules [{operator: '>', attribute: 'length', value: 1000}]
   end
 
@@ -20,6 +21,7 @@ module DefinedAchievements
     points 500
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/aspiring_runner'
     rules [{operator: '>', attribute: 'length', value: 5000}]
   end
 
@@ -29,6 +31,7 @@ module DefinedAchievements
     points 1000
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/intermediate_runner'
     rules [{operator: '>', attribute: 'length', value: 10000}]
   end
 
@@ -38,6 +41,7 @@ module DefinedAchievements
     points 1500
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/advanced_runner'
     rules [{operator: '>', attribute: 'length', value: 15000}]
   end
 
@@ -47,6 +51,7 @@ module DefinedAchievements
     points 2000
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/half_marathon_runner'
     rules [{operator: '>', attribute: 'length', value: 20000}]
   end
 
@@ -56,6 +61,7 @@ module DefinedAchievements
     points 3000
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/ambitious_runner'
     rules [{operator: '>', attribute: 'length', value: 30000}]
   end
 
@@ -65,6 +71,7 @@ module DefinedAchievements
     points 4000
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/marathon_runner'
     rules [{operator: '>', attribute: 'length', value: 40000}]
   end
 
@@ -74,6 +81,7 @@ module DefinedAchievements
     points 10000
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/swiss_soldier_runner'
     rules [{operator: '>', attribute: 'length', value: 100000}]
   end
 
@@ -86,6 +94,7 @@ module DefinedAchievements
     points 42 # the answer to everything!
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/plant'
     rules [
               {operator: '<=', attribute: 'length', value: 1},
               {operator: '>', attribute: 'length', value: 0},
@@ -99,6 +108,7 @@ module DefinedAchievements
     points 42 # the answer to everything!
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/inmate'
     rules [
               {operator: '<=', attribute: 'length', value: 25},
               {operator: '>', attribute: 'length', value: 10},
@@ -112,6 +122,7 @@ module DefinedAchievements
     points 42 # the answer to everything!
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/snail_walker'
     rules [
               {operator: '<=', attribute: 'length', value: 1000},
               {operator: '>', attribute: 'length', value: 100},
@@ -125,6 +136,7 @@ module DefinedAchievements
     points 1000
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/cute_zombie_walker'
     rules [
               {operator: '<=', attribute: 'length', value: 2000},
               {operator: '>', attribute: 'length', value: 1000},
@@ -138,6 +150,7 @@ module DefinedAchievements
     points 200
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/dangerous_zombie_walker'
     rules [
               {operator: '<=', attribute: 'length', value: 3000},
               {operator: '>', attribute: 'length', value: 2000},
@@ -151,6 +164,7 @@ module DefinedAchievements
     points 300
     validator 'AttributeValidator'
     sport 'Running'
+    icon 'running/really_dangerous_zombie_walker'
     rules [
               {operator: '<=', attribute: 'length', value: 4000},
               {operator: '>', attribute: 'length', value: 3000},
