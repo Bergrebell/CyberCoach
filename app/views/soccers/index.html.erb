@@ -5,7 +5,7 @@
   Create Soccer Session
 </a>
 
-<%= render partial: 'sport_sessions/sport_sessions_filter'%>
+<%= render partial: 'sport_sessions/sport_sessions_filter', :locals => {:path => soccers_path}%>
 
 <ul class="uk-tab uk-margin-large-top" data-uk-tab="{connect: '#tabs-content'}">
   <li class="uk-active"><a href="#">Upcoming Events</a></li>
