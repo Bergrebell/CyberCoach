@@ -68,25 +68,26 @@
     </div>
 
     <!-- Achievements -->
+    <% if @achievements.count > 0 %>
+        <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
+          <h3 class="uk-title"><i class="uk-icon-star"></i> Latest achievements</h3>
 
-    <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
-      <h3 class="uk-title"><i class="uk-icon-star"></i> Latest achievements</h3>
+          <div class="uk-grid">
+            <% @achievements.each do |achievement| %>
 
-      <div class="uk-grid">
-        <% @achievements.each do |achievement| %>
-
-            <div class="uk-width-small-1-5 uk-text-center">
-              <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-                <div class="uk-overlay">
-                  <%= achievement_tag achievement.icon, height: '60', width: '60', class: 'uk-border-circle' %>
+                <div class="uk-width-small-1-5 uk-text-center">
+                  <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
+                    <div class="uk-overlay">
+                      <%= achievement_tag achievement.icon, height: '60', width: '60', class: 'uk-border-circle' %>
+                    </div>
+                  </div>
+                  <h4 class="uk-margin-small-top"><%= achievement.title %></h4>
                 </div>
-              </div>
-              <h4 class="uk-margin-small-top"><%= achievement.title %></h4>
-            </div>
 
-        <% end %>
-      </div>
-    </div>
+            <% end %>
+          </div>
+        </div>
+    <% end %>
 
     <!-- Google map -->
 
@@ -103,56 +104,60 @@
     <div class="uk-grid" data-uk-grid-margin>
 
       <!-- Upcoming activities -->
-      <div class="uk-width-medium-1-2">
-        <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary uk-margin-top">
-          <i class="uk-icon-calendar-o"></i> <strong>Upcoming activities</strong>
+      <% if @upcoming_sport_sessions.count > 0 %>
+          <div class="uk-width-medium-1-2">
+            <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary uk-margin-top">
+              <i class="uk-icon-calendar-o"></i> <strong>Upcoming activities</strong>
 
-          <dl class="uk-description-list-line">
-            <% @upcoming_sport_sessions.map do |sport_session| %>
+              <dl class="uk-description-list-line">
+                <% @upcoming_sport_sessions.map do |sport_session| %>
 
-                <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
-                <dd>
-                  <ul class="uk-list">
-                    <% if sport_session.location.present? %>
-                        <li><i class="uk-icon-home"></i> <%= sport_session.location %> </li>
-                    <% end %>
-                    <% if sport_session.date.present? %>
-                        <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li>
-                    <% end %>
-                  </ul>
-                </dd>
+                    <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
+                    <dd>
+                      <ul class="uk-list">
+                        <% if sport_session.location.present? %>
+                            <li><i class="uk-icon-home"></i> <%= sport_session.location %> </li>
+                        <% end %>
+                        <% if sport_session.date.present? %>
+                            <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li>
+                        <% end %>
+                      </ul>
+                    </dd>
 
-            <% end %>
-          </dl>
+                <% end %>
+              </dl>
 
-        </div>
-      </div>
+            </div>
+          </div>
+      <% end %>
 
       <!-- Past activities -->
-      <div class="uk-width-medium-1-2">
-        <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary uk-margin-top">
-          <i class="uk-icon-calendar-o"></i> <strong>Past activities</strong>
+      <% if @past_sport_sessions.count > 0 %>
+          <div class="uk-width-medium-1-2">
+            <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary uk-margin-top">
+              <i class="uk-icon-calendar-o"></i> <strong>Past activities</strong>
 
-          <dl class="uk-description-list-line">
-            <% @past_sport_sessions.map do |sport_session| %>
+              <dl class="uk-description-list-line">
+                <% @past_sport_sessions.map do |sport_session| %>
 
-                <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
-                <dd>
-                  <ul class="uk-list">
-                    <% if sport_session.location.present? %>
-                        <li><i class="uk-icon-home"></i> <%= sport_session.location %> </li>
-                    <% end %>
-                    <% if sport_session.date.present? %>
-                        <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li>
-                    <% end %>
-                  </ul>
-                </dd>
+                    <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
+                    <dd>
+                      <ul class="uk-list">
+                        <% if sport_session.location.present? %>
+                            <li><i class="uk-icon-home"></i> <%= sport_session.location %> </li>
+                        <% end %>
+                        <% if sport_session.date.present? %>
+                            <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li>
+                        <% end %>
+                      </ul>
+                    </dd>
 
-            <% end %>
-          </dl>
+                <% end %>
+              </dl>
 
-        </div>
-      </div>
+            </div>
+          </div>
+      <% end %>
 
     </div>
 
