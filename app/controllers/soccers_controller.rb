@@ -42,7 +42,6 @@ class SoccersController < SportSessionsController
     if @soccer.save
       redirect_to soccers_url, notice: 'Soccer session successfully created'
     else
-      flash[:notice] = 'Unable to create Soccer session'
       render :new
     end
   end

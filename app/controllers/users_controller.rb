@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    redirect_to friends_browse_url
+    redirect_to friends_index_url
   end
 
   # GET /users/1
@@ -30,11 +30,10 @@ class UsersController < ApplicationController
 
   # GET /users/1/edit
   def edit
-    if params[:id] == current_user.username
+    if params[:id].to_i == current_user.id.to_i
       @user = current_user
     else
-      flash[:notice] = 'Hey buddy! You cannot change an account of someone else!'
-      redirect_to welcome_index_path
+      redirect_to welcome_index_path, :alert => 'Permission denied'
     end
   end
 
@@ -49,7 +48,7 @@ class UsersController < ApplicationController
       session[:password] = @user.password
       redirect_to welcome_index_path, notice: 'User was successfully created.'
     else
-      flash[:notice] = 'Could not register. Cyber coach server is bitchy today!'
+      # flash[:alert] = 'Could not register. Cyber coach server is bitchy today!'
       render :new
     end
   end

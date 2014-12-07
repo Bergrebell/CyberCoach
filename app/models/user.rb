@@ -8,9 +8,10 @@ class User < ActiveRecord::Base
   has_many :user_achievements
   has_many :achievements, through: :user_achievements
 
-  validates :password, presence: true, confirmation: true, length: {within: 4..10}
+  validates :password, presence: true, confirmation: true, length: {within: 4..10}, on: :create
+  validates :password, presence: true, confirmation: true, length: {within: 4..10}, if: "not password.nil?", on: :update
   validates :real_name, presence: true
-  validates :username, presence: true, length: {within: 4..50}
+  validates :username, presence: true, length: {within: 4..50}, uniqueness: true
   validates :email, email_format: {message: "Doesn't look like an email address!"}
 
 

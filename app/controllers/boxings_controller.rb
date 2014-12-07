@@ -80,7 +80,6 @@ class BoxingsController < SportSessionsController
 
       redirect_to boxings_url
     else
-      flash[:notice] =  'Unable to save results'
       render :edit_result
     end
 
@@ -93,7 +92,6 @@ class BoxingsController < SportSessionsController
     if @boxing.save
       redirect_to boxings_url, notice: 'Boxing session successfully created'
     else
-      flash[:notice] = 'Unable to create Boxing session'
       render :new
     end
   end

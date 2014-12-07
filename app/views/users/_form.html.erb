@@ -1,68 +1,62 @@
-<body class="uk-height-1-1">
+<%= form_for @user, :html => {:class => "uk-form"} do |f| %>
 
 
-    <div class="uk-height-1-1">
-        <div class="uk-container-center">
-            <div class="uk-grid">
-            <div class="uk-width-2-5">&nbsp;</div>
-            <%= form_for @user, :html => {:class => "uk-panel-box uk-form uk-width-1-5", :style => "width:250px;padding:10px;"} do |f| %>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.text_field :username, class: "uk-width-1-1 uk-form-large", placeholder: "Username" %>
-                </div>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.text_field :real_name, class: "uk-width-1-1 uk-form-large", placeholder: "Real name" %>
-                </div>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.text_field :email, class: "uk-width-1-1 uk-form-large", placeholder: "Email" %>
-                </div>
-
-              <!-- Location -->
-              <div class="uk-form-row">
-                <br>
-                  <%= f.text_field :location, class: 'entry_location_input uk-width-1-1' %>
-              </div>
-
-              <div class="geo_details">
-                <%= f.hidden_field :latitude, class: 'lat', :'data-geo' => 'lat' %>
-                <%= f.hidden_field :longitude, class: 'lng', :'data-geo' => 'lng' %>
-              </div>
-
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.password_field :password, class: "uk-width-1-1 uk-form-large", placeholder: "Password" %>
-                </div>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.password_field :password_confirmation, class: "uk-width-1-1 uk-form-large", placeholder: "Password confirmation" %>
-                </div>
-
-                 <div class="uk-form-row">
-                    <%= f.button 'Submit', class: "uk-width-1-1 uk-button uk-button-primary uk-button-large" %>
-                 </div>
-                <% end %>
-
-              <% if @user.errors.any? %>
-                  <div class="uk-alert uk-alert-danger uk-width-1-5" data-uk-alert id="error_explanation" style="width: 250px;padding:10px;margin:0;margin-left:5px;">
-                    <a href="" class="uk-alert-close uk-close"></a>
-                    <h4><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h4>
-                    <ul>
-                      <% @user.errors.full_messages.each do |message| %>
-                          <li><%= message %></li>
-                      <% end %>
-                    </ul>
-                  </div>
-              <% end %>
-
-            </div>
+    <% if @user.errors.any? %>
+        <div class="uk-alert uk-alert-danger" data-uk-alert>
+          <a href="" class="uk-alert-close uk-close"></a>
+          <ul>
+            <% @user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+            <% end %>
+          </ul>
         </div>
-    </div>
-</body>
+
+    <% end %>
+
+    <div class="uk-panel uk-panel-box uk-container-center" style="width: 250px;">
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :username, class: "uk-width-1-1 uk-form-large", placeholder: "Username" %>
+        </div>
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :real_name, class: "uk-width-1-1 uk-form-large", placeholder: "Real name" %>
+        </div>
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :email, class: "uk-width-1-1 uk-form-large", placeholder: "Email" %>
+        </div>
+
+        <!-- Location -->
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :location, class: 'entry_location_input uk-width-1-1' %>
+        </div>
+
+        <div class="geo_details">
+          <%= f.hidden_field :latitude, class: 'lat', :'data-geo' => 'lat' %>
+          <%= f.hidden_field :longitude, class: 'lng', :'data-geo' => 'lng' %>
+        </div>
+
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.password_field :password, class: "uk-width-1-1 uk-form-large", placeholder: "Password" %>
+        </div>
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.password_field :password_confirmation, class: "uk-width-1-1 uk-form-large", placeholder: "Password confirmation" %>
+        </div>
+
+        <div class="uk-form-row">
+          <%= f.button 'Submit', class: "uk-width-1-1 uk-button uk-button-primary uk-button-large" %>
+        </div>
+
+</div>
+
+<% end %>
 

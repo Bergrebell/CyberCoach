@@ -23,7 +23,6 @@ class RunningsController < SportSessionsController
 
   def new
     @running = Facade::SportSession::Running.create(user: current_user)
-    @friends = current_user.friends
   end
 
 
@@ -32,7 +31,6 @@ class RunningsController < SportSessionsController
     if @running.user_id != current_user.id
       redirect_to runnings_url, alert: 'Permission denied'
     end
-    @friends = current_user.friends
   end
 
 
@@ -91,7 +89,6 @@ class RunningsController < SportSessionsController
 
       redirect_to runnings_url
     else
-      flash[:notice] =  'Unable to save results'
       render :edit_result
     end
 
@@ -117,8 +114,6 @@ class RunningsController < SportSessionsController
     if @running.save
       redirect_to runnings_url, notice: 'Running session successfully created'
     else
-      flash[:alert] = 'Unable to create Running session'
-      @friends = current_user.friends
       render :new
     end
   end

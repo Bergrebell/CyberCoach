@@ -2,10 +2,12 @@
     <!-- load google maps only once -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <%= render :partial => 'sport_sessions/google_map', :locals => {:session => @cycling} %>
-    <%= render :partial => 'sport_sessions/track_map', :locals => {:points => @track.points, :center_of_gravity => @track.center_of_gravity } %>
-    <%= render :partial => 'sport_sessions/height_profile', :locals => {:heights => @track.heights} %>
-    <%= render :partial => 'sport_sessions/pace_profile', :locals => {:paces => @track.paces} %>
-    <%= render :partial => 'sport_sessions/speed_profile', :locals => {:speeds => @track.speeds} %>
+    <% if @cycling.is_past %>
+        <%= render :partial => 'sport_sessions/track_map', :locals => {:points => @track.points, :center_of_gravity => @track.center_of_gravity} %>
+        <%= render :partial => 'sport_sessions/height_profile', :locals => {:heights => @track.heights} %>
+        <%= render :partial => 'sport_sessions/pace_profile', :locals => {:paces => @track.paces} %>
+        <%= render :partial => 'sport_sessions/speed_profile', :locals => {:speeds => @track.speeds} %>
+    <% end %>
 <% end %>
 
 <% content_for :javascript do %>
@@ -90,11 +92,7 @@
 <div class="uk-grid" data-uk-grid-margin>
   <div class="uk-width-medium-3-4">
     <h1><%= @cycling.title %></h1>
-
     <p class="uk-text-large"><%= @cycling.comment %></p>
-    <% if @cycling.is_participant(@user) %>
-        <h2> Results for <%= @user.username %> </h2>
-    <% end %>
   </div>
 
   <div class="uk-width-medium-1-4">
@@ -132,46 +130,46 @@
 
 <div class="uk-grid" data-uk-grid-margin>
 
-  <div class="uk-width-medium-2-3">
+  <% if @cycling.is_past %>
 
-    <div class="uk-panel">
-      <!-- Tab menu -->
-      <ul class="uk-tab">
+      <div class="uk-width-medium-2-3">
 
-        <!-- Link for result tab -->
-        <li id="tab_results"><a href="#results" id="tab_results">Results</a></li>
+        <!-- Tab menu -->
+        <ul class="uk-tab">
 
-        <!-- Link for track tab -->
-        <% if @track.points.present? %>
-            <li id="tab_track"><a href="#track" id="tab_track">Track</a></li>
-        <% end %>
+          <!-- Link for result tab -->
+          <li id="tab_results"><a href="#results" id="tab_results">Overview</a></li>
 
-        <!-- Link for statistics tab -->
-        <% if @track.statistics.present? %>
-            <li id="tab_statistics"><a href="#statistics" id="tab_statistics">Statistics</a></li>
-        <% end %>
+          <!-- Link for track tab -->
+          <% if @track.points.present? %>
+              <li id="tab_track"><a href="#track" id="tab_track">Track</a></li>
+          <% end %>
 
-        <!-- Link for pace tab -->
-        <% if @track.paces.present? %>
-            <li id="tab_pace"><a href="#pace" id="tab_details">Pace profile</a></li>
-        <% end %>
+          <!-- Link for statistics tab -->
+          <% if @track.statistics.present? %>
+              <li id="tab_statistics"><a href="#statistics" id="tab_statistics">Statistics</a></li>
+          <% end %>
 
-        <!-- Link for speed tab -->
-        <% if @track.speeds.present? %>
-            <li id="tab_speed"><a href="#speed" id="tab_speed">Speed profile</a></li>
-        <% end %>
+          <!-- Link for pace tab -->
+          <% if @track.paces.present? %>
+              <li id="tab_pace"><a href="#pace" id="tab_details">Pace profile</a></li>
+          <% end %>
 
-        <!-- Link for height tab -->
-        <% if @track.heights.present? %>
-            <li id="tab_height"><a href="#height" id="tab_height">Height profile</a></li>
-        <% end %>
+          <!-- Link for speed tab -->
+          <% if @track.speeds.present? %>
+              <li id="tab_speed"><a href="#speed" id="tab_speed">Speed profile</a></li>
+          <% end %>
 
-      </ul>
-    </div>
+          <!-- Link for height tab -->
+          <% if @track.heights.present? %>
+              <li id="tab_height"><a href="#height" id="tab_height">Height profile</a></li>
+          <% end %>
 
-  </div>
-  <div class="uk-width-medium-1-3"></div>
-  <!-- TODO: remove this div tag? necessary? -->
+        </ul>
+
+      </div>
+
+  <% end %>
 
   <div class="uk-width-medium-2-3">
 
@@ -182,7 +180,7 @@
         <% if @cycling.is_past %>
 
             <div class="uk-panel uk-panel-box uk-panel-box-secondary">
-              <h3 class="uk-panel-title">Results</h3>
+              <h3 class="uk-panel-title">Results of participants</h3>
 
               <table class="uk-table uk-table-striped">
                 <thead>
@@ -232,7 +230,7 @@
       <!-- Statistics tab page -->
       <div class="uk-width-medium-1-1" id="tab_statistics_page">
         <!-- Statistics -->
-        <%= render partial: 'sport_sessions/statistics', locals: {statistics: @track.statistics } %>
+        <%= render partial: 'sport_sessions/statistics', locals: {statistics: @track.statistics} %>
       </div>
 
       <!-- Pace tab page -->
@@ -282,17 +280,7 @@
     <% end %>
 
     <% if @cycling.achievements_obtained(current_user).count > 0 %>
-        <div class="uk-panel uk-panel-box">
-          <h3 class="uk-panel-title"><i class="uk-icon-star"></i> Achievements</h3>
-          <% @cycling.achievements_obtained(current_user).each do |achievement| %>
-              <li class="uk-margin-small-bottom">
-                <div class="uk-thumbnail uk-border-circle uk-margin-right">
-                  <%= achievement_tag achievement.icon, height: '60', width: '60', class: 'uk-border-circle' %>
-                </div>
-                <%= achievement.title %>
-              </li>
-          <% end %>
-        </div>
+        <%= render :partial => 'sport_sessions/user_achievements', :locals => {:sport_session => @cycling} %>
     <% end %>
 
     <%= render :partial => 'sport_sessions/social_buttons', :locals => {:sport_session => @cycling} %>

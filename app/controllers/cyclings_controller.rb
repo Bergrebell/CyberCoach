@@ -109,7 +109,6 @@ class CyclingsController < SportSessionsController
     if @cycling.save
       redirect_to cyclings_url, notice: 'Cycling session successfully created'
     else
-      flash[:notice] = 'Unable to create Cycling session'
       render :new
     end
   end

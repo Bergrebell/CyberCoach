@@ -22,7 +22,7 @@ body {
 
 #main-container {
     background-color: #ffffff;
-    padding-bottom: 30px;
+    /*padding-bottom: 30px;*/
 }
 
 tr.highlight {
@@ -56,4 +56,10 @@ tr.highlight {
 .achievement-missing,
 .achievement-missing h4 {
     color: #CCCCCC;
+}
+
+.uk-form .field_with_errors input{
+    border: 1px solid rgba(216, 80, 48, 0.3) !important;
+    background-color: #fff1f0 !important;
+    color: #d85030 !important;
 }
