@@ -9,72 +9,8 @@
       <!-- Main components -->
       <div class="uk-width-medium-2-3">
 
-        <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-panel-header">
-
-          <h3 class="uk-title">Common</h3>
-
-          <!-- Title -->
-          <div class="uk-form-row">
-            <label class="uk-form-label" for="entry_location">Title</label>
-
-            <div class="uk-form-controls">
-              <%= f.text_field :title, class: 'uk-width-1-1' %>
-            </div>
-          </div>
-
-          <!-- Description -->
-          <div class="uk-form-row uk-margin-bottom">
-            <label class="uk-form-label" for="comment">Description</label>
-
-            <div class="uk-form-controls">
-              <%= f.text_area :comment, class: 'uk-width-1-1' %>
-            </div>
-          </div>
-
-          <!-- Entry date -->
-          <div class="uk-form-row uk-display-inline-block uk-margin-right">
-            <label class="uk-form-label" for="entry_date">Date</label>
-
-            <div class="uk-form-controls">
-              <!--<i class="uk-icon-calendar"></i>-->
-              <%= f.text_field :entry_date, data: {:uk_datepicker => '{weekstart:0, format:"YYYY-MM-DD"}'} %>
-            </div>
-          </div>
-
-          <!-- Entry time -->
-          <div class="uk-form-row uk-display-inline-block">
-            <label class="uk-form-label" for="entry_date">Time</label>
-
-            <div class="uk-form-controls">
-              <!--<i class="uk-icon-calendar"></i>-->
-              <%= f.text_field :entry_time, data: {:uk_timepicker => '{format:"24h"}'} %>
-            </div>
-          </div>
-
-          <!-- Location -->
-          <div class="uk-form-row">
-            <label class="uk-form-label" for="entry_location">Location</label>
-
-            <div class="uk-form-controls">
-              <%= f.text_field :entry_location, class: 'entry_location_input uk-width-1-1' %>
-            </div>
-          </div>
-
-          <!-- Geo details such as longitude and latitude -->
-          <div class="uk-form-row geo_details">
-            <div class="uk-form-row uk-display-inline-block uk-margin-right">
-              <label class="uk-form-label" for="latitude">Latitude</label>
-              <%= f.text_field :latitude, class: 'lat', :'data-geo' => 'lat' %>
-            </div>
-
-            <div class="uk-form-row uk-display-inline-block">
-              <label class="uk-form-label" for="longitude">Longitude</label>
-              <%= f.text_field :longitude, class: 'lng', :'data-geo' => 'lng' %>
-            </div>
-          </div>
-
-        </div>
-
+        <!-- Common fields -->
+        <%= render :partial => 'sport_sessions/new_form_common', :locals => {:f => f} %>
 
         <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-panel-header">
 
