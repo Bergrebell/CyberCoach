@@ -30,11 +30,10 @@ class UsersController < ApplicationController
 
   # GET /users/1/edit
   def edit
-    if params[:id] == current_user.username
+    if params[:id].to_i == current_user.id.to_i
       @user = current_user
     else
-      flash[:notice] = 'Hey buddy! You cannot change an account of someone else!'
-      redirect_to welcome_index_path
+      redirect_to welcome_index_path, :alert => 'Permission denied'
     end
   end
 
