@@ -6,7 +6,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    redirect_to friends_browse_url
+    redirect_to friends_index_url
   end
 
   # GET /users/1
