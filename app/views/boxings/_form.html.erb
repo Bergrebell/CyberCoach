@@ -1,15 +1,7 @@
 <%= form_for @boxing, :html => {:class => 'uk-form uk-form-stacked'} do |f| %>
 
     <% if @boxing.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@boxing.errors.count, "error") %> prohibited this session from being saved:</h2>
-
-          <ul>
-            <% @boxing.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
+        <%= render :partial => 'sport_sessions/error_messages', :locals => {:session => @boxing} %>
     <% end %>
 
 

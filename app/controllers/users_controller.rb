@@ -49,7 +49,7 @@ class UsersController < ApplicationController
       session[:password] = @user.password
       redirect_to welcome_index_path, notice: 'User was successfully created.'
     else
-      flash[:notice] = 'Could not register. Cyber coach server is bitchy today!'
+      # flash[:alert] = 'Could not register. Cyber coach server is bitchy today!'
       render :new
     end
   end

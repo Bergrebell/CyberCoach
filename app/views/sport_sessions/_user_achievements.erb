@@ -1,0 +1,11 @@
+<div class="uk-panel uk-panel-box">
+  <h3 class="uk-panel-title"><i class="uk-icon-star"></i> Achievements</h3>
+  <% sport_session.achievements_obtained(current_user).each do |achievement| %>
+      <li class="uk-margin-small-bottom">
+        <div class="uk-thumbnail uk-border-circle uk-margin-right">
+          <%= achievement_tag achievement.icon, height: '60', width: '60', class: 'uk-border-circle' %>
+        </div>
+        <%= achievement.title %>
+      </li>
+  <% end %>
+</div>

@@ -6,16 +6,11 @@
 </div>
 
 <% if @result.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@result.errors.count, "error") %> prohibited these results from being saved:</h2>
 
-      <ul>
-        <% @result.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
+    <%= render :partial => 'sport_sessions/error_messages', :locals => {:session => @result} %>
+
 <% end %>
+
 
 <div class="uk-grid" data-uk-grid-margin>
   <div class="uk-width-medium-2-3">
