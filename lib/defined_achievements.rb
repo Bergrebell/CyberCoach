@@ -194,4 +194,17 @@ module DefinedAchievements
           ]
   end
 
+  # Boxing
+
+  achievement do
+    title 'First knockout' # sveta :-)
+    description 'Knockout your opponent!'
+    points 100
+    validator 'AttributeValidator'
+    sport 'Boxing'
+    icon 'boxing/gloves5'
+    rules [{operator: '=', attribute: 'knockout_opponent', value: 1}]
+  end
+
+
 end

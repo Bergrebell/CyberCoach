@@ -40,10 +40,6 @@ class RunningsController < SportSessionsController
   def edit_result
     @running = Facade::SportSession::Running.find_by id: params[:id]
 
-    if not @running.is_participant(current_user)
-      redirect_to runnings_url, alert: 'Permission denied'
-    end
-
     if @running.date > Date.today
       redirect_to runnings_url, alert: 'Storing results only possible if event is passed'
     end

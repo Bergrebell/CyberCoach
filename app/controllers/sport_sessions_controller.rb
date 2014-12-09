@@ -1,5 +1,7 @@
 class SportSessionsController < ApplicationController
 
+  #before_action :check_permission, :except => 'index'
+
   def index
     @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
     # If sessions must be filtered, use the passed params for filtering
@@ -104,7 +106,7 @@ class SportSessionsController < ApplicationController
 
 
   def results_params
-    params.require(:sport_session_result).permit(:time, :length, :file, :knockout_opponent, :number_of_rounds)
+    params.require(:sport_session_result).permit(:time, :length, :file, :knockout_opponent, :number_of_rounds, :points)
   end
 
 
@@ -120,5 +122,14 @@ class SportSessionsController < ApplicationController
     end
     @user
   end
+
+  # def check_permission
+  #
+  #   @session = SportSession.find params[:id]
+  #
+  #   if not @session.is_participant(current_user)
+  #     redirect_to sport_session_url, alert: 'Permission denied'
+  #   end
+  # end
 
 end

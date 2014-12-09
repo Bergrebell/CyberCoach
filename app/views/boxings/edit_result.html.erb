@@ -21,7 +21,7 @@
       <%= form_for :sport_session_result, url: boxing_path(@boxing) + '/result/save', action: :post, html: {class: 'uk-form uk-form-stacked'} do |f| %>
 
           <div class="uk-form-row">
-            <label class="uk-form-label">Time</label>
+            <%= f.label :time, 'Overall Time (minutes)', :class => 'uk-form-label' %>
 
             <div class="uk-form-controls">
               <%= f.text_field :time, placeholder: 'minutes', value: @result.time, class: 'uk-width-1-1' %>
@@ -29,7 +29,7 @@
           </div>
 
           <div class="uk-form-row">
-            <label class="uk-form-label">Knockout opponent</label>
+            <label class="uk-form-label">Knockout opponent *</label>
 
             <div class="uk-form-controls">
               <div class="uk-grid">
@@ -55,10 +55,18 @@
           </div>
 
           <div class="uk-form-row">
-            <label class="uk-form-label">Number of rounds</label>
+            <label class="uk-form-label">Number of rounds fought *</label>
 
             <div class="uk-form-controls">
               <%= f.text_field :number_of_rounds, placeholder: 'rounds', value: @result.number_of_rounds, class: 'uk-width-1-1' %>
+            </div>
+          </div>
+
+          <div class="uk-form-row">
+            <label class="uk-form-label">Points received</label>
+
+            <div class="uk-form-controls">
+              <%= f.text_field :points, placeholder: 'points', value: @result.points, class: 'uk-width-1-1' %>
             </div>
           </div>
 
