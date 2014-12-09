@@ -7,5 +7,4 @@ class Boxing < SportSession
 
   end
 
-
 end
