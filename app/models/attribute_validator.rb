@@ -33,32 +33,36 @@ class AttributeValidator < Validator
       rules = JSON.parse(rules)
     end
 
-    # Check each rule (AND condition, each check must pass)
-    rules.each do |rule|
+    begin
+      # Check each rule (AND condition, each check must pass)
+      rules.each do |rule|
 
-      attribute = rule['attribute'].to_s
-      operator = rule['operator'].to_s
+        attribute = rule['attribute'].to_s
+        operator = rule['operator'].to_s
 
-      if not @@operators.include?(operator)
-        raise "Operator #{operator} not supported by AttributeValidator"
+        if not @@operators.include?(operator)
+          raise "Operator #{operator} not supported by AttributeValidator"
+        end
+
+        print 'Inspect attributes...'
+        print @attributes.to_yaml
+
+        if not @attributes.has_key?(attribute)
+          raise "Attribute #{attribute} not defined"
+        end
+
+        value = @attributes[attribute].to_f
+        value_compare = rule['value'].to_f
+        if not compare(value, operator, value_compare)
+          return false
+        end
       end
 
-      print 'Inspect attributes...'
-      print @attributes.to_yaml
-
-      if not @attributes.has_key?(attribute)
-        raise "Attribute #{attribute} not defined"
-      end
-
-      value = @attributes[attribute].to_f
-      value_compare = rule['value'].to_f
-      if not compare(value, operator, value_compare)
-        return false
-      end
-
+      true
+    rescue => e
+      puts e
+      false
     end
-
-    true
 
   end
 

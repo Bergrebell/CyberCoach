@@ -1,31 +1,39 @@
 <h1>Soccer Sessions</h1>
 
-<table class="uk-table uk-table-striped uk-table-hover">
-  <thead>
-  <tr>
-    <th>Date</th>
-    <th>Location</th>
-    <th>Participants</th>
-    <th>Action</th>
-  </tr>
-  </thead>
+<a href="<%= new_soccer_path %>" class="uk-button uk-button-primary uk-align-right">
+  <i class="uk-icon uk-icon-plus"></i>
+  Create Soccer Session
+</a>
 
-  <tbody>
-  <% @soccers.each do |s| %>
-      <tr>
-        <td><%= s.entry_date %></td>
-        <td><%= s.entry_location %></td>
-        <td>
-          <ul><% s.sport_session_participants.each do |p|%>
-                <li><%=p.user.username%></li>
-            <% end %>
-          </ul>
-        </td>
-        <td>
-          <%= link_to 'view', sport_session_path(s), class: "uk-button uk-button-small"%>
-          <%= link_to 'delete', soccer_path(s), method: :delete, class: "uk-button uk-button-small"  %>
-        </td>
-      </tr>
-  <% end %>
-  </tbody>
-</table>
+<%= render partial: 'sport_sessions/sport_sessions_filter', :locals => {:path => soccers_path}%>
+
+<ul class="uk-tab uk-margin-large-top" data-uk-tab="{connect: '#tabs-content'}">
+  <li class="uk-active"><a href="#">Upcoming Events</a></li>
+  <li><a href="#">Past Events</a></li>
+  <li><a href="#">Invitations<% if @invitations.count > 0 %> <span class="uk-text-muted">(<%= @invitations.count %>)</span><% end %></a></li>
+</ul>
+
+<ul id="tabs-content" class="uk-switcher uk-margin">
+
+  <!-- Upcoming events -->
+  <li>
+
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @soccers_upcoming } %>
+
+  </li>
+
+  <!-- Past events -->
+  <li>
+
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @soccers_past } %>
+
+  </li>
+
+  <!-- Invitations -->
+  <li>
+
+    <%= render partial: 'sport_sessions/sport_sessions_table', :locals => { :sessions => @invitations } %>
+
+  </li>
+
+</ul>

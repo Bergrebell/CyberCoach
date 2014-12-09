@@ -10,83 +10,81 @@
 <body class="uk-height-1-1 <%= controller_name %> <%= action_name %>">
 
 <div id="main-container" class="uk-container uk-container-center uk-height-viewport">
-  <nav class="uk-navbar uk-margin uk-margin-large-bottom uk-margin-top">
-    <a href="<%= welcome_index_path %>" class="uk-navbar-brand">CyberCoach</a>
 
-    <ul class="uk-navbar-nav">
+  <% if current_user.present? %>
 
-      <% if current_user.present? %>
+      <nav class="uk-navbar uk-margin uk-margin-large-bottom uk-margin-top">
+        <a href="<%= welcome_index_path %>" class="uk-navbar-brand">CyberCoach</a>
 
-          <!-- sport session menu -->
-          <li data-uk-dropdown class="uk-parent<%= params[:controller] == 'sport_sessions' ? ' uk-active' : '' %>">
-            <a href="<%= sport_sessions_index_url %>"><i class="uk-icon-soccer-ball-o"></i> Sport Sessions
-              <i class="uk-icon-angle-down"></i></a>
+        <ul class="uk-navbar-nav">
 
-            <div class="uk-dropdown uk-dropdown-navbar">
-              <ul class="uk-nav uk-nav-navbar">
-                <li><a href="<%= runnings_url %>">Running</a></li>
-                <li><a href="<%= boxings_url %>">Boxing</a></li>
-                <li><a href="<%= cyclings_url %>">Cycling</a></li>
-                <li><a href="<%= soccers_url %>">Soccer</a></li>
-              </ul>
-            </div>
-          </li>
+          <% if current_user.present? %>
 
-          <!-- friends menu -->
-          <li data-uk-dropdown class="uk-parent<%= params[:controller] == 'friends' ?  ' uk-active' : '' %>">
-            <a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends
-              <i class="uk-icon-angle-down"></i></a>
+              <!-- sport session menu -->
+              <li data-uk-dropdown class="uk-parent<%= params[:controller] == 'sport_sessions' ? ' uk-active' : '' %>">
+                <a href="<%= sport_sessions_index_url %>"><i class="uk-icon-soccer-ball-o"></i> Sport Sessions
+                  <i class="uk-icon-angle-down"></i></a>
 
-            <div class="uk-dropdown uk-dropdown-navbar">
-              <ul class="uk-nav uk-nav-navbar">
-                <li><%= link_to 'Friends', friends_index_url %></li>
-                <li><%= link_to 'Browse Users', friends_browse_url %></li>
-                <li><a href="<%= friends_index_url %>">Find Friends</a></li>
-              </ul>
-            </div>
-          </li>
+                <div class="uk-dropdown uk-dropdown-navbar">
+                  <ul class="uk-nav uk-nav-navbar">
+                    <li><a href="<%= runnings_url %>">Running</a></li>
+                    <li><a href="<%= boxings_url %>">Boxing</a></li>
+                    <li><a href="<%= cyclings_url %>">Cycling</a></li>
+                    <li><a href="<%= soccers_url %>">Soccer</a></li>
+                  </ul>
+                </div>
+              </li>
 
-          <!-- achievement menu -->
-          <li<%= params[:controller] == 'user_achievements' ? ' class=uk-active' : '' %>>
-            <a href="<%= user_achievements_index_url %>"><i class="uk-icon-star"></i> Achievements</a>
-          </li>
+              <!-- friends menu -->
+              <li<%= params[:controller] == 'friends' ? ' class=uk-active' : '' %>>
+                <a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends</a>
+              </li>
+
+              <!-- achievement menu -->
+              <li<%= params[:controller] == 'user_achievements' ? ' class=uk-active' : '' %>>
+                <a href="<%= user_achievements_index_url %>"><i class="uk-icon-star"></i> Achievements</a>
+              </li>
 
 
-      <% end %>
-    </ul>
+          <% end %>
+        </ul>
 
-    <div class="uk-navbar-flip">
-      <ul class="uk-navbar-nav">
-        <% if current_user.present? %>
-            <li data-uk-dropdown class="uk-parent">
-              <a href=""><i class="uk-icon-user"></i> <strong><%= current_user.username %></strong>
-                <i class="uk-icon-angle-down"></i></a>
+        <div class="uk-navbar-flip">
+          <ul class="uk-navbar-nav">
+            <% if current_user.present? %>
+                <li data-uk-dropdown class="uk-parent">
+                  <a href=""><i class="uk-icon-user"></i> <strong><%= current_user.username %></strong>
+                    <i class="uk-icon-angle-down"></i></a>
 
-              <div class="uk-dropdown uk-dropdown-navbar">
-                <ul class="uk-nav uk-nav-navbar">
-                  <li><%= link_to 'Profile', current_user %></li>
-                  <li><%= link_to "Logout", session_logout_url %></li>
-                </ul>
-              </div>
-            </li>
-        <% end %>
-      </ul>
-    </div>
+                  <div class="uk-dropdown uk-dropdown-navbar">
+                    <ul class="uk-nav uk-nav-navbar">
+                      <li><%= link_to 'Profile', current_user %></li>
+                      <li><%= link_to "Logout", session_logout_url %></li>
+                    </ul>
+                  </div>
+                </li>
+            <% end %>
+          </ul>
+        </div>
 
+      </nav>
 
-  </nav>
-  <% # Display flash messages across the application   %>
+  <% end %>
+
+  <% # Display flash messages across the application    %>
   <% if flash[:notice] %>
       <% if flash[:notice].is_a? Array %>
           <% flash[:notice].each do |notice| %>
               <div class="uk-alert" data-uk-alert>
                 <a href="" class="uk-alert-close uk-close"></a>
+
                 <p><%= notice %></p>
               </div>
           <% end %>
       <% else %>
           <div class="uk-alert" data-uk-alert>
             <a href="" class="uk-alert-close uk-close"></a>
+
             <p><%= flash[:notice] %></p>
           </div>
       <% end %>

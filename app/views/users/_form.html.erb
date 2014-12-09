@@ -1,64 +1,62 @@
-<body class="uk-height-1-1">
-    <div class="uk-vertical-align uk-text-center uk-height-1-1">
-        <div class="uk-vertical-align-middle" style="width: 250px;">
+<%= form_for @user, :html => {:class => "uk-form"} do |f| %>
 
 
-            <%= form_for @user, :html => {:class => "uk-panel uk-panel-box uk-form"} do |f| %>
-                <% if @user.errors.any? %>
-                    <div id="error_explanation">
-                      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
-                      <ul>
-                        <% @user.errors.full_messages.each do |message| %>
-                            <li><%= message %></li>
-                        <% end %>
-                      </ul>
-                    </div>
-                <% end %>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.text_field :username, class: "uk-width-1-1 uk-form-large", placeholder: "Username" %>
-                </div>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.text_field :real_name, class: "uk-width-1-1 uk-form-large", placeholder: "Real name" %>
-                </div>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.text_field :email, class: "uk-width-1-1 uk-form-large", placeholder: "Email" %>
-                </div>
-
-              <!-- Location -->
-              <div class="uk-form-row">
-                <br>
-                  <%= f.text_field :location, class: 'entry_location_input uk-width-1-1' %>
-              </div>
-
-              <div class="geo_details">
-                <%= f.hidden_field :latitude, class: 'lat', :'data-geo' => 'lat' %>
-                <%= f.hidden_field :longitude, class: 'lng', :'data-geo' => 'lng' %>
-              </div>
-
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.password_field :password, class: "uk-width-1-1 uk-form-large", placeholder: "Password" %>
-                </div>
-
-                <div class="uk-form-row">
-                  <br>
-                  <%= f.password_field :password_confirmation, class: "uk-width-1-1 uk-form-large", placeholder: "Password confirmation" %>
-                </div>
-
-                 <div class="uk-form-row">
-                    <%= f.button 'Submit', class: "uk-width-1-1 uk-button uk-button-primary uk-button-large" %>
-                 </div>
-                <% end %>
-
+    <% if @user.errors.any? %>
+        <div class="uk-alert uk-alert-danger" data-uk-alert>
+          <a href="" class="uk-alert-close uk-close"></a>
+          <ul>
+            <% @user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+            <% end %>
+          </ul>
         </div>
-    </div>
-</body>
+
+    <% end %>
+
+    <div class="uk-panel uk-panel-box uk-container-center" style="width: 250px;">
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :username, class: "uk-width-1-1 uk-form-large", placeholder: "Username" %>
+        </div>
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :real_name, class: "uk-width-1-1 uk-form-large", placeholder: "Real name" %>
+        </div>
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :email, class: "uk-width-1-1 uk-form-large", placeholder: "Email" %>
+        </div>
+
+        <!-- Location -->
+        <div class="uk-form-row">
+          <br>
+          <%= f.text_field :location, class: 'entry_location_input uk-width-1-1' %>
+        </div>
+
+        <div class="geo_details">
+          <%= f.hidden_field :latitude, class: 'lat', :'data-geo' => 'lat' %>
+          <%= f.hidden_field :longitude, class: 'lng', :'data-geo' => 'lng' %>
+        </div>
+
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.password_field :password, class: "uk-width-1-1 uk-form-large", placeholder: "Password" %>
+        </div>
+
+        <div class="uk-form-row">
+          <br>
+          <%= f.password_field :password_confirmation, class: "uk-width-1-1 uk-form-large", placeholder: "Password confirmation" %>
+        </div>
+
+        <div class="uk-form-row">
+          <%= f.button 'Submit', class: "uk-width-1-1 uk-button uk-button-primary uk-button-large" %>
+        </div>
+
+</div>
+
+<% end %>
 

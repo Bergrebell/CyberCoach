@@ -1,5 +1,7 @@
 class RunningsController < SportSessionsController
 
+  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :set_user, only: [:show]
 
   # List all running sessions
   def index
@@ -14,13 +16,13 @@ class RunningsController < SportSessionsController
       runnings = current_user.sport_sessions_confirmed('Running')
       @runnings_upcoming = runnings.select { |s| s.is_upcoming }
       @runnings_past = runnings.select { |s| s.is_past }
-      @invitations = runnings_user.sport_sessions_unconfirmed('Running')
+      @invitations = current_user.sport_sessions_unconfirmed('Running')
     end
   end
 
+
   def new
     @running = Facade::SportSession::Running.create(user: current_user)
-    @friends = current_user.friends
   end
 
 
@@ -29,7 +31,6 @@ class RunningsController < SportSessionsController
     if @running.user_id != current_user.id
       redirect_to runnings_url, alert: 'Permission denied'
     end
-    @friends = current_user.friends
   end
 
 
@@ -64,22 +65,17 @@ class RunningsController < SportSessionsController
     @result = @running.result(current_user)
 
     # read gpx file if present
+    track = nil
     if results_params[:file].present?
-      participant_id, user_id, sport_session_id = @result.sport_session_participant.id, @result.sport_session_participant.user_id, @result.sport_session_participant.sport_session_id
-      track = Track.where(sport_session_participant_id: participant_id, user_id: user_id, sport_session_id: sport_session_id).first_or_initialize
-      track_data_container = track.store_gpx_file(results_params[:file])
-      # set result values
-      @result.time = track_data_container.statistics(:total_time).nil? ? results_params[:time] : track_data_container.statistics(:total_time).to_minutes
-      @result.length = track_data_container.statistics(:total_distance).nil? ? results_params[:length] : track_data_container.statistics(:total_distance).to_meters
+      @result = Track.create_track_and_update_result(@result, results_params[:file])
+      track = @result.track
     else
       @result.time = results_params[:time]
       @result.length = results_params[:length]
     end
 
-
     if @result.save
       track.save if track.present?
-
       # Check for new Achievements!
       achievement_checker = AchievementsChecker.new @result
       achievements = achievement_checker.check true
@@ -93,17 +89,14 @@ class RunningsController < SportSessionsController
 
       redirect_to runnings_url
     else
-      redirect_to runnings_url, alert: 'Unable to save results'
+      render :edit_result
     end
 
   end
 
+
   def show
     @track = begin
-      @user = Facade::User.query do
-        user = User.find_by id: params[:user_id]
-        user ||= current_user
-      end
       track = Track.find_by!(user_id: @user.id, sport_session_id: params[:id])
       track.read_track_data
     rescue
@@ -121,8 +114,6 @@ class RunningsController < SportSessionsController
     if @running.save
       redirect_to runnings_url, notice: 'Running session successfully created'
     else
-      flash[:alert] = 'Unable to create Running session'
-      @friends = current_user.friends
       render :new
     end
   end
@@ -159,11 +150,6 @@ class RunningsController < SportSessionsController
   #
   def running_params
     sport_session_params('running') # Delegates to method on superclass (SportSessionController)
-  end
-
-
-  def results_params
-    params.require(:sport_session_result).permit(:time, :length, :file)
   end
 
 

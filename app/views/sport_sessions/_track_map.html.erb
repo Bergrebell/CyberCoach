@@ -10,8 +10,24 @@
                 var lng = points[i][1];
                 cords.push(new google.maps.LatLng(lat, lng));
             }
-            var gravity_point = <%= center_of_gravity %>;
-            track_map_center = new google.maps.LatLng(gravity_point[0], gravity_point[1])
+            var center_of_gravity = <%= center_of_gravity %>;
+            var start_point = <%= points.first %>;
+            var end_point = <%= points.last %>;
+
+
+            var start_marker = new google.maps.Marker({
+                position: new google.maps.LatLng(start_point[0], start_point[1]),
+                title:"Start",
+                icon: '/images/google_maps/red_MarkerA.png'
+            });
+
+            var end_marker = new google.maps.Marker({
+                position: new google.maps.LatLng(end_point[0], end_point[1]),
+                title:"Destination",
+                icon: '/images/google_maps/yellow_MarkerB.png'
+            });
+
+            track_map_center = new google.maps.LatLng(center_of_gravity[0], center_of_gravity[1]);
             var trackPath = new google.maps.Polyline({
                 path: cords,
                 geodesic: true,
@@ -22,7 +38,7 @@
 
             var mapOptions = {
                 mapTypeId: google.maps.MapTypeId.SATELLITE,
-                zoom: 13,
+                zoom: 12,
                 center: track_map_center,
                 zoomControl: true,
                 scaleControl: true,
@@ -31,6 +47,8 @@
             track_map = new google.maps.Map(document.getElementById('track-map-canvas'),
                     mapOptions);
             trackPath.setMap(track_map);
+            start_marker.setMap(track_map);
+            end_marker.setMap(track_map);
         };
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>
