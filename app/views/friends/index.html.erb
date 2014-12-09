@@ -33,7 +33,7 @@
             <tr>
               <td><%= link_to user.username, user_path(user) %></td>
               <td>TODO</td>
-              <td><a class="uk-button uk-button-small">View sessions</a></td>
+              <td><a class="uk-button uk-button-small" href="<%= sport_sessions_path %>?participant=<%= user.id %>">View sessions</a></td>
             </tr>
         <% end %>
       </table>

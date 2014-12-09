@@ -51,7 +51,13 @@ class AttributeValidator < Validator
           raise "Attribute #{attribute} not defined"
         end
 
-        value = @attributes[attribute].to_f
+        value = @attributes[attribute]
+        if value.is_a?(TrueClass) or value.is_a?(FalseClass)
+          value = (value.is_a?(TrueClass)) ? 1 : 0
+        else
+          value = value.to_f;
+        end
+
         value_compare = rule['value'].to_f
         if not compare(value, operator, value_compare)
           return false
