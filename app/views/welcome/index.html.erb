@@ -1,48 +1,87 @@
 <% if not current_user %>
     <%= render 'session/login' %>
+<% else %>
+
+<div class="uk-grid" data-uk-grid-margin="">
+    <div class="uk-width-medium-2-3">
+      <h2>Timeline</h2>
+      <!-- Upcoming activities -->
+      <% if @upcoming_sport_sessions.count > 0 %>
+            <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary uk-margin-top">
+              <dl class="uk-description-list-line">
+                <% @upcoming_sport_sessions.map do |sport_session| %>
+
+                    <dt> <%= link_to sport_session.type + (sport_session.title.present? ? " - #{sport_session.title}" : ''), sport_session_path(sport_session) %> </dt>
+                    <dd>
+                      <ul class="uk-list">
+                        <% if sport_session.location.present? %>
+                            <li><i class="uk-icon-home"></i> <%= sport_session.location %> </li>
+                        <% end %>
+                        <% if sport_session.date.present? %>
+                            <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li>
+                        <% end %>
+                      </ul>
+                    </dd>
+
+                <% end %>
+              </dl>
+          </div>
+      <% end %>
+    </div>
+
+    <div class="uk-width-medium-1-3">
+      <% if current_user %>
+          <!-- User Details -->
+          <div class="uk-width-medium-1-4">
+            <%= gravatar_tag @user.email, class: "uk-border-circle" %>
+          </div>
+
+            <h3 class="uk-title"><i class="uk-icon-user"></i> Details</h3>
+            <table class="uk-table uk-text-nowrap">
+              <tbody>
+              <tr>
+                <td><strong>Username</strong></td>
+                <td><%= @user.username %></td>
+              </tr>
+              <tr>
+                <td><strong>Real name</strong></td>
+                <td><%= @user.real_name %></td>
+              </tr>
+              <tr>
+                <td><strong>Email</strong></td>
+                <td><%= @user.email %></td>
+              </tr>
+              <tr>
+                <td><strong>Location</strong></td>
+                <td><%= @user.location %></td>
+              </tr>
+              </tbody>
+            </table>
+
+          <!-- Friends -->
+          <!-- Friends panel -->
+              <h3 class="uk-panel-title"><i class="uk-icon-share-alt"></i> Friends </h3>
+              <ul class="uk-list uk-list-line">
+
+                <% if @friends.present? %>
+                    <% @friends.each do |friend| %>
+                        <li><%= link_to friend.username, user_path(friend) %><span class="uk-text-muted uk-text-small"> </span>
+                        </li>
+                    <% end %>
+                <% else %>
+                    <li><%= "#{@user.username} is a lone wolf!" %> </li>
+                <% end %>
+              </ul>
+
+      <% end %>
+    </div>
+
+</div>
+
+
 <% end %>
 
-<% if current_user %>
-    <p>
-      Welcome <%= current_user.username %>!
-    </p>
-    <h2>Kick ass user panel! Version 3.0</h2>
-    <ul>
-      <li>
-        <%= link_to 'Logout', session_logout_path %>
-      </li>
-      <li>
-        <%= link_to 'Friends', friends_index_path %>
-      </li>
-
-      <li>
-        <%= link_to 'Browse users', users_path %>
-      </li>
-
-      <li>
-        <%= link_to 'Edit Account', edit_user_path(current_user.username) %>
-      </li>
-
-    </ul>
-<% end %>
-
-<% if current_user %>
-
-    <h2>Some user data</h2>
-    <p>
-      username: <%= current_user.username %> <br>
-      email: <%= current_user.email %> <br>
-      real name: <%= current_user.real_name %> <br>
-      public visible: <%= current_user.public_visible.to_s %> <br>
-    </p>
 
 
-    <h2>partnerships</h2>
-    <% current_user.partnerships.each do |p| %>
-        <p>
-          <%= p.partner_of(current_user).username %>
-        </p>
-    <% end %>
 
 
-<% end %>
