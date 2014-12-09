@@ -16,15 +16,6 @@
 
           <h3 class="uk-title">Boxing Details</h3>
 
-          <!-- Duration -->
-          <div class="uk-form-row uk-display-inline-block uk-margin-right">
-            <label class="uk-form-label" for="entry_duration">Fight Duration</label>
-
-            <div class="uk-form-controls">
-              <%= f.text_field :entry_duration, class: 'uk-width-1-1' %>
-            </div>
-          </div>
-
           <!-- Round duration -->
           <div class="uk-form-row uk-display-inline-block uk-margin-right">
             <label class="uk-form-label" for="entry_duration">Round Duration</label>
@@ -36,7 +27,7 @@
 
           <!-- Number of rounds -->
           <div class="uk-form-row uk-display-inline-block">
-            <%= f.label :number_of_rounds, class: 'uk-form-label' %>
+            <%= f.label :number_of_rounds, 'Number of rounds', class: 'uk-form-label' %>
             <div class="uk-form-controls">
               <%= f.text_field :number_of_rounds, class: 'uk-width-1-1' %>
             </div>
