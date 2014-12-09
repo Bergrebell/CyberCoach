@@ -20,6 +20,7 @@
                         <% if sport_session.date.present? %>
                             <li><i class="uk-icon-clock-o"></i> <%= sport_session.date %> </li>
                         <% end %>
+                            <li>Initiator: <%= link_to sport_session.user.username, user_path(sport_session.user) %></li>
                       </ul>
                     </dd>
 
