@@ -1,0 +1,60 @@
+<%= form_for @soccer, :html => {:class => 'uk-form uk-form-stacked'} do |f| %>
+
+    <% if @soccer.errors.any? %>
+        <%= render :partial => 'sport_sessions/error_messages', :locals => {:session => @soccer} %>
+    <% end %>
+
+
+    <div class="uk-grid" data-uk-grid-margin>
+
+      <!-- Main components -->
+      <div class="uk-width-medium-2-3">
+
+        <!-- Common fields -->
+        <%= render :partial => 'sport_sessions/new_form_common', :locals => {:f => f} %>
+
+
+        <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-panel-header">
+
+          <h3 class="uk-title">Soccer Details</h3>
+
+          <!-- Duration -->
+          <div class="uk-form-row uk-display-inline-block uk-margin-right">
+            <label class="uk-form-label" for="entry_duration">Duration</label>
+
+            <div class="uk-form-controls">
+              <%= f.text_field :entry_duration, class: 'uk-width-1-1' %>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="uk-width-medium-1-3">
+        <!-- Friends -->
+        <div class="uk-panel uk-panel-box">
+          <h3 class="uk-title"><i class="uk-icon-users"></i> Invite friends</h3>
+          <% @friends.each do |friend| %>
+              <div class="uk-margin-small">
+                <% if friend.is_participant_of @soccer.id %>
+                    <label><input type="checkbox" name="soccer[users_invited][]" value="<%= friend.id %>" checked> <%= friend.username %>
+                    </label>
+                <% else %>
+                    <label><input type="checkbox" name="soccer[users_invited][]" value="<%= friend.id %>"> <%= friend.username %>
+                    </label>
+                <% end %>
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </div> <!-- grid -->
+
+    <div class="uk-form-row uk-margin uk-margin-large-bottom">
+      <div class="uk-form-controls">
+        <%= button_tag 'Save', class: 'uk-button uk-button-primary' %>
+      </div>
+    </div>
+
+<% end %>

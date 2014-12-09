@@ -1,0 +1,35 @@
+  <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
+    <h3 class="uk-title">Details</h3>
+    <table class="uk-table uk-text-nowrap">
+      <tbody>
+      <tr>
+        <td><strong>Date/Time</strong></td>
+        <td><%= sport_session.date %></td>
+      </tr>
+      <tr>
+        <td><strong>Location</strong></td>
+        <td><%= sport_session.location %></td>
+      </tr>
+      <tr>
+        <td><strong>Initiator</strong></td>
+        <td><%= link_to sport_session.user.username, user_path(sport_session.user) %></td>
+      </tr>
+      <tr>
+        <td><strong>Duration</strong></td>
+        <td><%= sport_session.entry_duration %></td>
+      </tr>
+      <tr>
+        <td><strong>Course length</strong></td>
+        <td><%= sport_session.course_length %></td>
+      </tr>
+      <tr>
+        <td><strong>Course type</strong></td>
+        <td><%= sport_session.course_type %></td>
+      </tr>
+      <tr>
+        <td><strong>Number of rounds</strong></td>
+        <td><%= sport_session.number_of_rounds %></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>

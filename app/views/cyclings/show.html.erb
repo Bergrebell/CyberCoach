@@ -1,0 +1,289 @@
+<% content_for :head do %>
+    <!-- load google maps only once -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <%= render :partial => 'sport_sessions/google_map', :locals => {:session => @cycling} %>
+    <% if @cycling.is_past %>
+        <%= render :partial => 'sport_sessions/track_map', :locals => {:points => @track.points, :center_of_gravity => @track.center_of_gravity} %>
+        <%= render :partial => 'sport_sessions/height_profile', :locals => {:heights => @track.heights} %>
+        <%= render :partial => 'sport_sessions/pace_profile', :locals => {:paces => @track.paces} %>
+        <%= render :partial => 'sport_sessions/speed_profile', :locals => {:speeds => @track.speeds} %>
+    <% end %>
+<% end %>
+
+<% content_for :javascript do %>
+    <%= render :partial => 'sport_sessions/facebook_javascript' %>
+<% end %>
+
+<script>
+    // load tabs dynamically and show and hide them if the corresponding tab is selected
+    // tries to mimic something like a controller action
+    $(function () {
+        // list of available tab ids
+        var tabs = ['#tab_results', '#tab_track', '#tab_statistics', '#tab_pace', '#tab_speed', '#tab_height'];
+
+        // hides all tabs
+        var hideTabs = function () {
+            tabs.forEach(function (tab_id) {
+                $(tab_id + '_page').hide();
+                $(tab_id).removeClass('uk-active');
+            });
+        };
+
+        // tab controller functions
+
+        // results tab controller
+        $('#tab_results').click(function () {
+            hideTabs();
+            $('#tab_results').addClass('uk-active');
+            $('#tab_results_page').fadeIn(500);
+            google.maps.event.trigger(map, 'resize');
+            map.setCenter(map_center);
+        });
+
+        // track tab controller
+        $('#tab_track').click(function () {
+            hideTabs();
+            $('#tab_track').addClass('uk-active');
+            $('#tab_track_page').fadeIn(500);
+            google.maps.event.trigger(track_map, 'resize');
+            track_map.setCenter(track_map_center);
+
+        });
+
+        // details tab controller
+        $('#tab_statistics').click(function () {
+            hideTabs();
+            $('#tab_statistics').addClass('uk-active');
+            $('#tab_statistics_page').fadeIn(500);
+        });
+
+        // speed tab controller
+        $('#tab_speed').click(function () {
+            hideTabs();
+            $('#tab_speed').addClass('uk-active');
+            $('#tab_speed_page').fadeIn(500);
+            plot_speed_profile();
+        });
+
+        // pace tab controller
+        $('#tab_pace').click(function () {
+            hideTabs();
+            $('#tab_pace').addClass('uk-active');
+            $('#tab_pace_page').fadeIn(500);
+            plot_pace_profile();
+        });
+
+        // pace tab controller
+        $('#tab_height').click(function () {
+            hideTabs();
+            $('#tab_height').addClass('uk-active');
+            $('#tab_height_page').fadeIn(500);
+            plot_height_profile();
+        });
+
+        // init
+        hideTabs(); // first hide all tabs
+
+        $('#tab_results_page').show();
+        $('#tab_results').addClass('uk-active');
+    });
+</script>
+
+<div class="uk-grid" data-uk-grid-margin>
+  <div class="uk-width-medium-3-4">
+    <h1><%= @cycling.title %></h1>
+    <p class="uk-text-large"><%= @cycling.comment %></p>
+  </div>
+
+  <div class="uk-width-medium-1-4">
+
+    <% if @cycling.is_participant(current_user) %>
+        <div class="uk-button-group uk-align-right">
+          <button class="uk-button">Actions</button>
+          <div data-uk-dropdown="{mode:'click'}">
+            <a href="#" class="uk-button"><i class="uk-icon uk-icon-caret-down"></i></a>
+
+            <div class="uk-dropdown uk-dropdown-small">
+              <ul class="uk-nav uk-nav-dropdown">
+                <% if @cycling.is_upcoming and @cycling.user_id == current_user.id %>
+                    <li><a href="<%= edit_cycling_path @cycling %>">Edit</a></li>
+                <% end %>
+                <% if @cycling.is_past %>
+                    <li><a href="<%= edit_cycling_path(@cycling.id) + '/result' %>">Edit Results</a></li>
+                <% end %>
+                <% if @cycling.is_upcoming and @cycling.is_unconfirmed_participant(current_user) %>
+                    <li><a href="/sport_sessions/<%= @cycling.id %>/confirm/<%= current_user.id %>">Confirm</a></li>
+                    <li><a href="/sport_sessions/<%= @cycling.id %>/decline/<%= current_user.id %>">Decline</a></li>
+                <% end %>
+                <% if @cycling.is_upcoming and @cycling.is_confirmed_participant(current_user) and not @cycling.user_id == current_user.id %>
+                    <li><a href="/sport_sessions/<%= @cycling.id %>/unsubscribe/<%= current_user.id %>">Unsubscribe</a>
+                    </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+    <% end %>
+  </div>
+
+</div>
+
+<div class="uk-grid" data-uk-grid-margin>
+
+  <% if @cycling.is_past %>
+
+      <div class="uk-width-medium-2-3">
+
+        <!-- Tab menu -->
+        <ul class="uk-tab">
+
+          <!-- Link for result tab -->
+          <li id="tab_results"><a href="#results" id="tab_results">Overview</a></li>
+
+          <!-- Link for track tab -->
+          <% if @track.points.present? %>
+              <li id="tab_track"><a href="#track" id="tab_track">Track</a></li>
+          <% end %>
+
+          <!-- Link for statistics tab -->
+          <% if @track.statistics.present? %>
+              <li id="tab_statistics"><a href="#statistics" id="tab_statistics">Statistics</a></li>
+          <% end %>
+
+          <!-- Link for pace tab -->
+          <% if @track.paces.present? %>
+              <li id="tab_pace"><a href="#pace" id="tab_details">Pace profile</a></li>
+          <% end %>
+
+          <!-- Link for speed tab -->
+          <% if @track.speeds.present? %>
+              <li id="tab_speed"><a href="#speed" id="tab_speed">Speed profile</a></li>
+          <% end %>
+
+          <!-- Link for height tab -->
+          <% if @track.heights.present? %>
+              <li id="tab_height"><a href="#height" id="tab_height">Height profile</a></li>
+          <% end %>
+
+        </ul>
+
+      </div>
+
+  <% end %>
+
+  <div class="uk-width-medium-2-3">
+
+    <div class="uk-grid">
+
+      <!-- Result tab page -->
+      <div class="uk-width-medium-1-1" id="tab_results_page">
+        <% if @cycling.is_past %>
+
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              <h3 class="uk-panel-title">Results of participants</h3>
+
+              <table class="uk-table uk-table-striped">
+                <thead>
+                <tr>
+                  <th>Participant</th>
+                  <th>Time</th>
+                  <th>Length</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% @cycling.get_all_results.each do |result| %>
+                    <tr class="
+                  <% if result.user.id == current_user.id %>highlight
+                  <% end %>">
+                      <td><%= link_to result.user.username, sport_session_path(@cycling, user_id: result.user) %></td>
+                      <td><%= result.time %></td>
+                      <td><%= result.length %></td>
+                    </tr>
+                <% end %>
+                </tbody>
+              </table>
+
+            </div>
+
+        <% end %>
+
+        <!-- Details table -->
+        <%= render :partial => 'table_attributes', :locals => {:sport_session => @cycling} %>
+
+        <!-- Location map -->
+        <% if @cycling.latitude and @cycling.longitude %>
+            <div id="map-canvas" class="google-map uk-margin"></div>
+        <% end %>
+
+      </div>
+
+      <!-- Track tab page -->
+      <div class="uk-width-medium-1-1" id="tab_track_page">
+        <!-- Track map -->
+        <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+          <h3 class="uk-panel-title">Track map</h3>
+
+          <div id="track-map-canvas" class="track-map uk-margin"></div>
+        </div>
+      </div>
+
+      <!-- Statistics tab page -->
+      <div class="uk-width-medium-1-1" id="tab_statistics_page">
+        <!-- Statistics -->
+        <%= render partial: 'sport_sessions/statistics', locals: {statistics: @track.statistics} %>
+      </div>
+
+      <!-- Pace tab page -->
+      <div class="uk-width-medium-1-1" id="tab_pace_page">
+        <% if @track.paces.present? %>
+            <!-- Pace plot -->
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              <h3 class="uk-panel-title">Pace profile</h3>
+
+              <div id="pace_plot" style="height:250px;"></div>
+            </div>
+        <% end %>
+      </div>
+
+      <!-- Speed tab page -->
+      <div class="uk-width-medium-1-1" id="tab_speed_page">
+        <% if @track.speeds.present? %>
+            <!-- Speed plot -->
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              <h3 class="uk-panel-title">Speed profile</h3>
+
+              <div id="speed_plot" style="height:250px;"></div>
+            </div>
+        <% end %>
+      </div>
+
+      <!-- Height tab page -->
+      <div class="uk-width-medium-1-1" id="tab_height_page">
+        <% if @track.heights.present? %>
+            <!-- Height profile plot -->
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              <h3 class="uk-panel-title">Height profile</h3>
+
+              <div id="profile_plot" style="height:250px;"></div>
+            </div>
+        <% end %>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="uk-width-medium-1-3">
+
+    <% if @cycling.is_upcoming %>
+        <%= render :partial => 'sport_sessions/users_joining', :locals => {:sport_session => @cycling} %>
+    <% end %>
+
+    <% if @cycling.achievements_obtained(current_user).count > 0 %>
+        <%= render :partial => 'sport_sessions/user_achievements', :locals => {:sport_session => @cycling} %>
+    <% end %>
+
+    <%= render :partial => 'sport_sessions/social_buttons', :locals => {:sport_session => @cycling} %>
+
+  </div>
+</div>
