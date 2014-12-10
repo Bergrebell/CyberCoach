@@ -12,7 +12,7 @@
         <% @friends.each do |user| %>
             <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
               New Friend:
-              <div>
+              <div class="uk-margin-left">
             <%= link_to User.where(id: user.id).first.username, user_path(User.where(id: user.id).first.id) %>
               </div>
               <div class="uk-float-right">
