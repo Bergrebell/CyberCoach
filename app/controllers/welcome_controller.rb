@@ -4,7 +4,7 @@ class WelcomeController < ApplicationController
   def index
     if
     @user = current_user
-    @friends = @user.friends
+    @friends = Friendship.where("user_id = 1 OR friend_id = 1")
     @achievements = @user.latest_achievements
     @upcoming_sport_sessions = @user.upcoming_sport_sessions
     @past_sport_sessions = @user.past_sport_sessions
