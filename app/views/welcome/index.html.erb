@@ -10,16 +10,33 @@
       <h2>Timeline</h2>
       <!-- Friends -->
         <% @friends.each do |user| %>
-            <div>
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
               New Friend:
               <div>
             <%= link_to User.where(id: user.id).first.username, user_path(User.where(id: user.id).first.id) %>
               </div>
-              <div>
+              <div class="uk-float-right">
             <%= user.created_at %>
               </div>
             </div>
         <% end %>
+
+      <!-- Sport Sessions -->
+        <% @sports.each do |session| %>
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+              Sport Session:
+                <div>
+                    <%= session.type %>
+                    <%= session.title %>
+                    <%= session.location %>
+                </div>
+                <div class="uk-float-right">
+                    <%= session.created_at %>
+                </div>
+            </div>
+        <% end %>
+
+
         </div>
     </div>
 
