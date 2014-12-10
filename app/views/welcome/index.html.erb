@@ -1,48 +1,105 @@
 <% if not current_user %>
     <%= render 'session/login' %>
+<% else %>
+
+
+<!-- Timeline -->
+<div class="uk-grid" data-uk-grid-margin="">
+    <div class="uk-width-medium-2-3">
+      <div class="uk-panel uk-panel-box">
+      <h2>Timeline</h2>
+      <!-- Friends -->
+        <% @friends.each do |user| %>
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
+              New Friend:
+              <div class="uk-margin-left">
+            <%= link_to User.where(id: user.id).first.username, user_path(User.where(id: user.id).first.id) %>
+              </div>
+              <div class="uk-float-right">
+            <%= user.created_at %>
+              </div>
+            </div>
+        <% end %>
+
+      <!-- Sport Sessions -->
+        <% @sports.each do |session| %>
+            <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
+              Sport Session:
+                <div class="uk-margin-left">
+                  <ul class="uk-list">
+                    <li><i class="uk-icon-cubes"></i> <%= session.type %></li>
+                    <li><i class="uk-icon-database"></i> <%= session.title %></li>
+                    <li><i class="uk-icon-home"></i> <%= session.location %></li>
+                  </ul>
+                </div>
+                <div class="uk-float-right">
+                    <%= session.created_at %>
+                </div>
+            </div>
+        <% end %>
+
+
+        <!-- Achievements -->
+
+
+        </div>
+    </div>
+
+
+
+
+<!-- User Details -->
+    <div class="uk-width-medium-1-3">
+      <div class="uk-panel uk-panel-box">
+      <% if current_user %>
+          <!-- User Details -->
+            <%= gravatar_tag @user.email, class: "uk-border-circle" %>
+
+            <h3 class="uk-title"><i class="uk-icon-user"></i> Details</h3>
+            <table class="uk-table uk-text-nowrap">
+              <tbody>
+              <tr>
+                <td><strong>Username</strong></td>
+                <td><%= @user.username %></td>
+              </tr>
+              <tr>
+                <td><strong>Real name</strong></td>
+                <td><%= @user.real_name %></td>
+              </tr>
+              <tr>
+                <td><strong>Email</strong></td>
+                <td><%= @user.email %></td>
+              </tr>
+              <tr>
+                <td><strong>Location</strong></td>
+                <td><%= @user.location %></td>
+              </tr>
+              </tbody>
+            </table>
+
+          <!-- Friends panel -->
+              <h3 class="uk-panel-title"><i class="uk-icon-share-alt"></i> Friends </h3>
+              <ul class="uk-list uk-list-line">
+
+                <% if @friends.present? %>
+                    <% @friends.each do |friend| %>
+                        <li><%= link_to friend.username, user_path(friend) %><span class="uk-text-muted uk-text-small"> </span>
+                        </li>
+                    <% end %>
+                <% else %>
+                    <li><%= "#{@user.username} is a lone wolf!" %> </li>
+                <% end %>
+              </ul>
+
+      <% end %>
+    </div>
+
+</div>
+</div>
+
 <% end %>
 
-<% if current_user %>
-    <p>
-      Welcome <%= current_user.username %>!
-    </p>
-    <h2>Kick ass user panel! Version 3.0</h2>
-    <ul>
-      <li>
-        <%= link_to 'Logout', session_logout_path %>
-      </li>
-      <li>
-        <%= link_to 'Friends', friends_index_path %>
-      </li>
-
-      <li>
-        <%= link_to 'Browse users', users_path %>
-      </li>
-
-      <li>
-        <%= link_to 'Edit Account', edit_user_path(current_user.username) %>
-      </li>
-
-    </ul>
-<% end %>
-
-<% if current_user %>
-
-    <h2>Some user data</h2>
-    <p>
-      username: <%= current_user.username %> <br>
-      email: <%= current_user.email %> <br>
-      real name: <%= current_user.real_name %> <br>
-      public visible: <%= current_user.public_visible.to_s %> <br>
-    </p>
 
 
-    <h2>partnerships</h2>
-    <% current_user.partnerships.each do |p| %>
-        <p>
-          <%= p.partner_of(current_user).username %>
-        </p>
-    <% end %>
 
 
-<% end %>

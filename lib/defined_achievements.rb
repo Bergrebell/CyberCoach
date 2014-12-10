@@ -206,5 +206,82 @@ module DefinedAchievements
     rules [{operator: '=', attribute: 'knockout_opponent', value: 1}]
   end
 
+  achievement do
+    title 'Karate Kid'
+    description 'Knockout your opponent in the first round!'
+    points 1000
+    validator 'AttributeValidator'
+    sport 'Boxing'
+    icon 'boxing/karate'
+    rules [
+              {operator: '=', attribute: 'knockout_opponent', value: 1},
+              {operator: '=', attribute: 'number_of_rounds', value: 1}
+          ]
+  end
+
+  achievement do
+    title 'Fast Fists'
+    description 'Knockout your opponent in the first two rounds!'
+    points 500
+    validator 'AttributeValidator'
+    sport 'Boxing'
+    icon 'boxing/man49'
+    rules [
+              {operator: '=', attribute: 'knockout_opponent', value: 1},
+              {operator: '<=', attribute: 'number_of_rounds', value: 2}
+          ]
+  end
+
+  achievement do
+    title 'Sleeping Beauty'
+    description 'Get knocked out in the first round!'
+    points 10
+    validator 'AttributeValidator'
+    sport 'Boxing'
+    icon 'boxing/abs1'
+    rules [
+              {operator: '=', attribute: 'knockout_opponent', value: 0}, #guess that's okay since the fight lasts for only one round ;)
+              {operator: '=', attribute: 'number_of_rounds', value: 1}
+          ]
+  end
+
+  achievement do
+    title 'Still standing'
+    description 'Fight for full twelve rounds'
+    points 250
+    validator 'AttributeValidator'
+    sport 'Boxing'
+    icon 'boxing/tree101'
+    rules [
+              {operator: '=', attribute: 'knockout_opponent', value: 0},
+              {operator: '>=', attribute: 'number_of_rounds', value: 12}
+          ]
+  end
+
+  achievement do
+    title 'Great shape'
+    description 'Fight for at least 15 minutes'
+    points 350
+    validator 'AttributeValidator'
+    sport 'Boxing'
+    icon 'boxing/sportive'
+    rules [
+              {operator: '>=', attribute: 'time', value: 15}
+          ]
+  end
+
+  achievement do
+    title 'Punching Bag'
+    description 'Get less than 100 points in a fight that takes longer than five rounds'
+    points 50
+    validator 'AttributeValidator'
+    sport 'Boxing'
+    icon 'boxing/silhouette41'
+    rules [
+              {operator: '>=', attribute: 'number_of_rounds', value: 5},
+              {operator: '<=', attribute: 'points', value: 100}
+          ]
+  end
+
 
 end
