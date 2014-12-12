@@ -3,6 +3,9 @@ module Facade
   # Facade classes
 
   class SportSession
+
+    DATETIME_FORMAT = '%Y-%m-%d' # example: 2014-01-01
+
     include Facade::Wrapper
 
     # Delegate all calls to the rails SportSession model and encapsulate the result.
