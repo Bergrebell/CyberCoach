@@ -35,15 +35,28 @@ class User < ActiveRecord::Base
         user.email = self.email
         user.password = self.password
       end
-      self.delete unless coach_user
+
+      if coach_user
+        subscribe_user_to_sports(coach_user)
+      else
+        self.delete
+      end
     rescue
       # do nothing
     end
   end
 
 
+  def subscribe_user_to_sports(coach_user)
+    proxy = Coach4rb::Proxy::Access.new self.username, self.password, Coach
+    res = [:running, :cycling, :boxing, :soccer].map do |sport|
+      Thread.new { proxy.subscribe(coach_user, sport) }
+    end
+  end
+
+
   def update_coach_user
-    proxy = Coach4rb::Proxy::Access.new self.username, self.password,Coach
+    proxy = Coach4rb::Proxy::Access.new self.username, self.password, Coach
     coach_user = proxy.update_user(get_coach_user) do |user|
       user.email = self.email
       user.real_name = self.real_name

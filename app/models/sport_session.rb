@@ -8,11 +8,12 @@ class SportSession < ActiveRecord::Base
   validates :entry_time, presence: true
   validates :entry_date, presence: true
 
+  before_validation :check_if_subscription_is_available
   after_create :create_coach_entry
 
   after_find :load_coach_entry
 
-  after_save :update_coach_entry
+  after_update :update_coach_entry
 
 
   # Virtual attributes
@@ -124,6 +125,15 @@ class SportSession < ActiveRecord::Base
 
   # Callbacks
 
+  def check_if_subscription_is_available
+    begin
+      Coach.subscription(self.user.username,self.type)
+    rescue
+      errors.add(:base, 'Cannot create entry %s! Subscription is missing!' % self.type)
+      false
+    end
+  end
+
   def load_coach_entry
     entry = ObjectStore::Store.get([:coach_entry,self.id])
     if entry.nil?
@@ -161,9 +171,9 @@ class SportSession < ActiveRecord::Base
     end
 
     if coach_entry
-      self.date = merge_date(entry_date, entry_time)
-      self.cybercoach_uri = coach_entry.uri
-      self.save(validate: false)
+      date = merge_date(entry_date, entry_time)
+      self.update_column(:cybercoach_uri, coach_entry.uri)
+      self.update_column(:date, date)
 
       self.invite(users_invited)
 
@@ -175,6 +185,7 @@ class SportSession < ActiveRecord::Base
       ).first_or_create
     else
       self.delete
+      false
     end
   end
 
