@@ -87,13 +87,21 @@ module Facade
 
     # for rails compatibility: called by rails form helpers to choose the right http method
     def new_record?
-      cc_model.date_created.nil?
+      if cc_model.nil?
+        true
+      else
+        cc_model.created.nil?
+      end
     end
 
 
     # for rails compatibility: called by rails form helpers to choose the right http method
     def persisted?
-      !cc_model.date_created.nil?
+      if cc_model.nil?
+        false
+      else
+        !cc_model.created.nil?
+      end
     end
 
 
