@@ -25,6 +25,19 @@
     <%= render :partial => 'users/place_autocomplete', locals: {latitude: @user.latitude, longitude: @user.longitude} %>
 <% end %>
 
+<% if @user.errors.any? %>
+    <div class="uk-alert uk-alert-danger" data-uk-alert>
+      <a href="" class="uk-alert-close uk-close"></a>
+
+      <ul>
+        <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+
+<% end %>
+
 <div class="uk-grid" data-uk-grid-margin>
 
 
@@ -35,18 +48,7 @@
       <%= form_for @user, :html => {:class => 'uk-form uk-form-stacked'} do |f| %>
 
 
-          <% if @user.errors.any? %>
-              <div class="uk-alert uk-alert-danger" data-uk-alert>
-                <a href="" class="uk-alert-close uk-close"></a>
 
-                <ul>
-                  <% @user.errors.full_messages.each do |message| %>
-                      <li><%= message %></li>
-                  <% end %>
-                </ul>
-              </div>
-
-          <% end %>
 
 
 
