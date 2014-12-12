@@ -74,8 +74,8 @@ class SportSession < ActiveRecord::Base
   end
 
 
-  def entry_time
-    if date.present?
+  def entry_time(format=true)
+    if date.present? && format
       date.strftime('%H:%M')
     else
       @entry_time
@@ -88,8 +88,8 @@ class SportSession < ActiveRecord::Base
   end
 
 
-  def entry_date
-    if date.present?
+  def entry_date(format=true)
+    if date.present? && format
       date.strftime('%Y-%m-%d')
     else
       @entry_date
@@ -123,11 +123,31 @@ class SportSession < ActiveRecord::Base
   # Callbacks
 
   def load_coach_entry
-    @coach_entry = Coach.entry_by_uri(self.cybercoach_uri)
+    entry = ObjectStore::Store.get([:coach_entry,self.id])
+    if entry.nil?
+      entry = Coach.entry_by_uri(self.cybercoach_uri)
+      ObjectStore::Store.set([:coach_entry,self.id],entry)
+      set_properties(entry)
+    end
+    set_properties(entry)
+  end
+
+
+  def set_properties(coach_entry)
     entry_properties.each do |prop|
-      if @coach_entry.respond_to?(prop)
-        value = @coach_entry.send prop
+      if coach_entry.respond_to?(prop)
+        value = coach_entry.send prop
         self.send "#{prop}=".to_sym, value
+      end
+    end
+  end
+
+
+  def set_entry_values(entry)
+    entry_properties.each do |prop|
+      if self.send(prop).present?
+        value = self.send(prop)
+        entry.send "#{prop}=".to_sym, value
       end
     end
   end
@@ -135,12 +155,7 @@ class SportSession < ActiveRecord::Base
 
   def create_coach_entry
     coach_entry = proxy.create_entry(coach_user, entry_type) do |entry|
-      entry_properties.each do |prop|
-        if self.send(prop).present?
-          value = self.send(prop)
-          entry.send "#{prop}=".to_sym, value
-        end
-      end
+      set_entry_values(entry)
     end
 
     if coach_entry
@@ -165,7 +180,7 @@ class SportSession < ActiveRecord::Base
   def merge_date(date, time)
     dt_date = DateTime.strptime(date, '%Y-%m-%d')
     dt_time = DateTime.strptime(time, '%H:%M')
-    DateTime.new dt_date.year, dt_date.month, dt_date.day, dt_time.hour, dt_date.minute
+    DateTime.new dt_date.year, dt_date.month, dt_date.day, dt_time.hour, dt_time.minute
   end
 
 
