@@ -22,38 +22,48 @@ class User < ActiveRecord::Base
   after_update :update_coach_user
 
 
-  def coach_user
-    @coach_user
+  def get_coach_user
+    Coach.user self.username
   end
 
 
   def create_coach_user
-    coach_user = Coach.create_user do |user|
-      user.real_name = self.real_name
-      user.username = self.username
-      user.email = self.email
-      user.password = self.password
+    begin
+      coach_user = Coach.create_user do |user|
+        user.real_name = self.real_name
+        user.username = self.username
+        user.email = self.email
+        user.password = self.password
+      end
+      self.delete unless coach_user
+    rescue
+      # do nothing
     end
-    self.delete unless coach_user
   end
 
 
   def update_coach_user
     proxy = Coach4rb::Proxy::Access.new self.username, self.password,Coach
-    proxy.update_user(coach_user) do |user|
+    coach_user = proxy.update_user(get_coach_user) do |user|
       user.email = self.email
       user.real_name = self.real_name
     end
+    ObjectStore::Store.set([:coach_user,self.id],coach_user)
   end
 
 
   def load_coach_user
-    @coach_user = Coach.user self.username
-    if @coach_user
-      self.real_name = @coach_user.real_name
-      self.email = @coach_user.email
-      self.public_visible = @coach_user.public_visible
+    coach_user = ObjectStore::Store.get([:coach_user,self.id])
+    if coach_user.nil?
+      coach_user = Coach.user self.username
+      ObjectStore::Store.set([:coach_user,self.id],coach_user)
+      self.email = coach_user.email
+      self.real_name = coach_user.real_name
+      self.public_visible = coach_user.public_visible
     end
+    self.email = coach_user.email unless self.email
+    self.real_name = coach_user.real_name unless self.real_name
+    self.public_visible = coach_user.public_visible unless self.public_visible
   end
 
 
