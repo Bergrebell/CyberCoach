@@ -2,38 +2,15 @@
 
 <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
   <h3 class="uk-title">Running</h3>
-
-  <div class="uk-grid" data-uk-grid-margin>
-
-  <% @achievements.where(:sport => 'Running').order(:points).each do |achievement| %>
-        <div class="uk-width-small-1-10 uk-text-center<% if not @user_achievements.include?(achievement) %> achievement-missing<% end %>" data-uk-tooltip title="<%= achievement.description %>">
-          <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-            <div class="uk-overlay">
-                <%= achievement_tag achievement.icon, height: '50', width: '50', class: 'uk-thumbnail uk-border-circle' %>
-            </div>
-          </div>
-          <h4 class="uk-margin-small-top"><%= achievement.title %></h4>
-        </div>
-  <% end %>
-    </div>
-  </div>
+    <%= render :partial => 'achievements', :locals => {:achievements => @achievements.where(:sport => 'Running').order(:points)} %>
+</div>
 
 <div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary uk-margin">
   <h3 class="uk-title">Boxing</h3>
+  <%= render :partial => 'achievements', :locals => {:achievements => @achievements.where(:sport => 'Boxing').order(:points)} %>
+</div>
 
-  <div class="uk-grid" data-uk-grid-margin>
-
-    <% @achievements.where(:sport => 'Boxing').order(:points).each do |achievement| %>
-        <div class="uk-width-small-1-10 uk-text-center<% if not @user_achievements.include?(achievement) %> achievement-missing<% end %>" data-uk-tooltip title="<%= achievement.description %>">
-          <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
-            <div class="uk-overlay">
-
-              <%= achievement_tag achievement.icon, height: '50', width: '50', class: 'uk-thumbnail uk-border-circle' %>
-
-            </div>
-          </div>
-          <h4 class="uk-margin-small-top"><%= achievement.title %></h4>
-        </div>
-    <% end %>
-  </div>
+<div class="uk-panel uk-panel-box uk-panel-header uk-panel-box-secondary">
+  <h3 class="uk-title">Cycling</h3>
+  <%= render :partial => 'achievements', :locals => {:achievements => @achievements.where(:sport => 'Cycling').order(:points)} %>
 </div>

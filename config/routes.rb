@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   get 'friends/index'
   get 'friends/browse'
-  post 'friends/confirm'
+  post 'friends/confirm_decline'
   post 'friends/create'
 
   get 'welcome/index'

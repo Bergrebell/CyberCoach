@@ -1,0 +1,17 @@
+<div class="uk-grid" data-uk-grid-margin>
+  <% achievements.each_with_index do |achievement, index| %>
+      <% if index % 10 == 0 %>
+          </div><div class="uk-grid" data-uk-grid-margin>
+      <% end %>
+      <div class="uk-width-medium-1-10 uk-text-center
+          <% if not @user_achievements.include?(achievement) %> achievement-missing
+          <% end %>" data-uk-tooltip title="<%= achievement.description %>">
+        <div class="uk-thumbnail uk-overlay-toggle uk-border-circle uk-margin-bottom-remove">
+          <div class="uk-overlay">
+            <%= achievement_tag achievement.icon, height: '50', width: '50', class: 'uk-thumbnail uk-border-circle' %>
+          </div>
+        </div>
+        <h4 class="uk-margin-small-top"><%= achievement.title %></h4>
+      </div>
+  <% end %>
+  </div>
