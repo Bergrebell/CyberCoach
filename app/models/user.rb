@@ -160,11 +160,14 @@ class User < ActiveRecord::Base
     # friend_ids ||= []
     # User.where.not( id: friend_ids).where.not( id: self.id) # get all user that are not are not in the list of friend ids
 
-    sent_ids = self.sent_friend_requests.map { |friend| friend.id}
-    received_ids = self.received_friend_requests.map { |friend| friend.id}
-    friend_ids = self.friends.map { |friend| friend.id }
+    sent_ids = self.sent_friend_requests.map { |friend| friend.id} || []
+    received_ids = self.received_friend_requests.map { |friend| friend.id} || []
+    friend_ids = self.friends.map { |friend| friend.id } || []
 
-    ids = friend_ids.concat(received_ids).concat(sent_ids)
+    ids = friend_ids + received_ids +  sent_ids
+    ids +=[-1] if ids.size == 0 # edge case: if ids is empty this corresponds to null!
+    # dirty hack: assume that no user will ever have an negative id.
+
     User.where('id NOT IN (?) AND id != ?', ids, self.id)
 
   end
