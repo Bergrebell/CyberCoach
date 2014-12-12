@@ -15,8 +15,7 @@ module Facade
 
 
     def self.wrap(rails_object)
-      coach_object = Coach.entry_by_uri(rails_object.cybercoach_uri)
-      SportSessionProxy.new rails_object, coach_object
+      rails_object
     end
 
 

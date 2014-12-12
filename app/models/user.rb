@@ -16,6 +16,48 @@ class User < ActiveRecord::Base
   validates :username, presence: true, length: {within: 4..50}, uniqueness: true
   validates :email, email_format: {message: "Doesn't look like an email address!"}
 
+
+  after_create :create_coach_user
+  after_find :load_coach_user
+  after_update :update_coach_user
+
+
+  def coach_user
+    @coach_user
+  end
+
+
+  def create_coach_user
+    coach_user = Coach.create_user do |user|
+      user.real_name = self.real_name
+      user.username = self.username
+      user.email = self.email
+      user.password = self.password
+    end
+    self.delete unless coach_user
+  end
+
+
+  def update_coach_user
+    proxy = Coach4rb::Proxy::Access.new self.username, self.password,Coach
+    proxy.update_user(coach_user) do |user|
+      user.email = self.email
+      user.real_name = self.real_name
+    end
+  end
+
+
+  def load_coach_user
+    @coach_user = Coach.user self.username
+    if @coach_user
+      self.real_name = @coach_user.real_name
+      self.email = @coach_user.email
+      self.public_visible = @coach_user.public_visible
+    end
+  end
+
+
+
   def password_present?
     !password.nil?
   end

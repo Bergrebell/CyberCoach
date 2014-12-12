@@ -10,7 +10,18 @@ class SportSession < ActiveRecord::Base
 
   after_create :create_coach_entry
 
+  after_find :load_coach_entry
+
+
   # Virtual attributes
+
+  def users_invited=(param)
+    @users_invited = param
+  end
+
+  def users_invited
+    @users_invited || []
+  end
 
   def comment
     @comment
@@ -52,6 +63,15 @@ class SportSession < ActiveRecord::Base
     @entry_duration = param
   end
 
+  #alias_method :entryduration=, :entry_duration=
+
+  def round_duration=(param)
+    @round_duration = param
+  end
+
+  def round_duration
+    @round_duration
+  end
 
 
   def entry_time
@@ -67,9 +87,6 @@ class SportSession < ActiveRecord::Base
     @entry_time = param
   end
 
-  def entry_date=(param)
-    @entry_date = param
-  end
 
   def entry_date
     if date.present?
@@ -80,7 +97,10 @@ class SportSession < ActiveRecord::Base
   end
 
 
-  # Callbacks
+  def entry_date=(param)
+    @entry_date = param
+  end
+
 
 
   def proxy
@@ -95,28 +115,58 @@ class SportSession < ActiveRecord::Base
     self.class.name.downcase.to_sym
   end
 
+  def entry_properties
+    [:comment, :entry_date, :entry_duration, :round_duration, :number_of_rounds, :course_length, :course_type]
+  end
+
+
+  # Callbacks
+
+  def load_coach_entry
+    @coach_entry = Coach.entry_by_uri(self.cybercoach_uri)
+    entry_properties.each do |prop|
+      if @coach_entry.respond_to?(prop)
+        value = @coach_entry.send prop
+        self.send "#{prop}=".to_sym, value
+      end
+    end
+  end
+
+
   def create_coach_entry
     coach_entry = proxy.create_entry(coach_user, entry_type) do |entry|
-      entry.comment = comment
+      entry_properties.each do |prop|
+        if self.send(prop).present?
+          value = self.send(prop)
+          entry.send "#{prop}=".to_sym, value
+        end
+      end
     end
 
     if coach_entry
       self.date = merge_date(entry_date, entry_time)
       self.cybercoach_uri = coach_entry.uri
       self.save(validate: false)
+
+      self.invite(users_invited)
+
+      # The user creating the entry also needs a SportSessionParticipant object
+      SportSessionParticipant.where(
+          :user_id => self.user_id,
+          :sport_session_id => self.id,
+          :confirmed => true
+      ).first_or_create
     else
       self.delete
-      raise 'error'
     end
   end
+
 
   def merge_date(date, time)
     dt_date = DateTime.strptime(date, '%Y-%m-%d')
     dt_time = DateTime.strptime(time, '%H:%M')
     DateTime.new dt_date.year, dt_date.month, dt_date.day, dt_time.hour, dt_date.minute
   end
-
-
 
 
   def is_past
