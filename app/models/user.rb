@@ -8,11 +8,17 @@ class User < ActiveRecord::Base
   has_many :user_achievements
   has_many :achievements, through: :user_achievements
 
-  validates :password, presence: true, confirmation: true, length: {within: 4..10}, on: :create
-  validates :password, presence: true, confirmation: true, length: {within: 4..10}, if: "not password.nil?", on: :update
+  validates :password, length: {within: 4..10}
+  validates_presence_of :password_confirmation, :if => :password_present?, on: :create
+  validates_confirmation_of :password, :if => :password_present?, on: :create
+
   validates :real_name, presence: true
   validates :username, presence: true, length: {within: 4..50}, uniqueness: true
   validates :email, email_format: {message: "Doesn't look like an email address!"}
+
+  def password_present?
+    !password.nil?
+  end
 
 
   # Returns a list of past sport sessions.
@@ -157,5 +163,7 @@ class User < ActiveRecord::Base
   def sport_sessions_filtered(params, confirmed, type='')
     SportSession.all_sport_sessions_filtered_from_user(self.id, params, confirmed, type)
   end
+
+
 
 end
