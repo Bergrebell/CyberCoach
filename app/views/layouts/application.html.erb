@@ -58,6 +58,8 @@
                   <div class="uk-dropdown uk-dropdown-navbar">
                     <ul class="uk-nav uk-nav-navbar">
                       <li><%= link_to 'Profile', current_user %></li>
+                      <li><%= link_to 'Edit account', edit_user_path(current_user) %></li>
+                      <li><%= link_to 'Change password', current_user %></li>
                       <li><%= link_to "Logout", session_logout_url %></li>
                     </ul>
                   </div>
