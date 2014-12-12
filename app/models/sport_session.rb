@@ -8,11 +8,51 @@ class SportSession < ActiveRecord::Base
   validates :entry_time, presence: true
   validates :entry_date, presence: true
 
-  # Virtual attribute, this one is merged into the date
-  #
-  def entry_time=(param)
-    @entry_time = param
+  after_create :create_coach_entry
+
+  # Virtual attributes
+
+  def comment
+    @comment
   end
+
+  def comment=(param)
+    @comment = param
+  end
+
+  def number_of_rounds=(param)
+    @number_of_rounds = param
+  end
+
+  def number_of_rounds
+    @number_of_rounds
+  end
+
+  def course_length=(param)
+    @course_length = param
+  end
+
+  def course_length
+    @course_length
+  end
+
+  def course_type=(param)
+    @course_type = param
+  end
+
+  def course_type
+    @course_type
+  end
+
+  def entry_duration
+    @entry_duration
+  end
+
+  def entry_duration=(param)
+    @entry_duration = param
+  end
+
+
 
   def entry_time
     if date.present?
@@ -20,6 +60,11 @@ class SportSession < ActiveRecord::Base
     else
       @entry_time
     end
+  end
+
+
+  def entry_time=(param)
+    @entry_time = param
   end
 
   def entry_date=(param)
@@ -33,6 +78,46 @@ class SportSession < ActiveRecord::Base
       @entry_date
     end
   end
+
+
+  # Callbacks
+
+
+  def proxy
+    proxy = Coach4rb::Proxy::Access.new user.username, user.password, Coach
+  end
+
+  def coach_user
+    coach_user = Coach.user user.username
+  end
+
+  def entry_type
+    self.class.name.downcase.to_sym
+  end
+
+  def create_coach_entry
+    coach_entry = proxy.create_entry(coach_user, entry_type) do |entry|
+      entry.comment = comment
+    end
+
+    if coach_entry
+      self.date = merge_date(entry_date, entry_time)
+      self.cybercoach_uri = coach_entry.uri
+      self.save(validate: false)
+    else
+      self.delete
+      raise 'error'
+    end
+  end
+
+  def merge_date(date, time)
+    dt_date = DateTime.strptime(date, '%Y-%m-%d')
+    dt_time = DateTime.strptime(time, '%H:%M')
+    DateTime.new dt_date.year, dt_date.month, dt_date.day, dt_time.hour, dt_date.minute
+  end
+
+
+
 
   def is_past
     self.date < Date.today

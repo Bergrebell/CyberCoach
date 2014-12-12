@@ -75,3 +75,4 @@ gem 'geocomplete_rails'
 gem 'nokogiri'
 gem "flot-rails"
 gem 'gpx_ruby'
+gem 'coach4rb'

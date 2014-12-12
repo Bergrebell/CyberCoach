@@ -1,8 +1,9 @@
 module Facade
 
+  # Facade class
+
   class User
     include Facade::Wrapper
-
 
     def self.wrap(a_rails_user)
       a_coach_user = Coach.user a_rails_user.username
@@ -27,103 +28,108 @@ module Facade
       end
     end
 
-  end
+
+    # User proxy class
+
+    class UserProxy
+      include Facade::RailsModel
+
+      attr_reader :rails_object, :coach_user
+
+      def initialize(rails_user, coach_user=OpenStruct.new)
+        @rails_object = rails_user
+        @coach_user = coach_user
+      end
+
+      def self.method_missing(meth, *args, &block)
+        ::User.send meth, *args, &block
+      end
 
 
-  class UserProxy
-    include Facade::RailsModel
+      def method_missing(meth, *args, &block)
+        @rails_object.send meth, *args, &block
+      end
 
-    attr_reader :rails_object, :coach_object
+      def id
+        @rails_object.id
+      end
 
-    def initialize(rails_user, coach_user=OpenStruct.new)
-      @rails_object = rails_user
-      @coach_object = coach_user
-    end
-
-    def self.method_missing(meth, *args, &block)
-      ::User.send meth, *args, &block
-    end
+      def real_name
+        @coach_user.real_name
+      end
 
 
-    def method_missing(meth, *args, &block)
-      @rails_object.send meth, *args, &block
-    end
+      def email
+        @coach_user.email
+      end
 
 
-    def real_name
-      @coach_object.real_name
-    end
+      def public_visible
+        @coach_user.public_visible
+      end
 
 
-    def email
-      @coach_object.email
-    end
+      def username
+        @rails_object.username
+      end
 
 
-    def public_visible
-      @coach_object.public_visible
-    end
+      def password
+        @rails_object.password
+      end
 
 
-    def username
-      @rails_object.username
-    end
-
-
-    def password
-      @rails_object.password
-    end
-
-
-    # Persists the created user.
-    # Returns true if persisting the user succeeds otherwise false.
-    #
-    # ==== Example
-    # user.save
-    #
-    def save
-      if @rails_object.valid?
-        coach_user = Coach.create_user do |user|
-          user.real_name = @rails_object.real_name
-          user.username = @rails_object.username
-          user.email = @rails_object.email
-          user.password = @rails_object.password
+      # Persists the created user.
+      # Returns true if persisting the user succeeds otherwise false.
+      #
+      # ==== Example
+      # user.save
+      #
+      def save
+        if @rails_object.valid?
+          coach_user = Coach.create_user do |user|
+            user.real_name = @rails_object.real_name
+            user.username = @rails_object.username
+            user.email = @rails_object.email
+            user.password = @rails_object.password
+          end
+          raise 'Error' unless coach_user
+          coach_user ? @rails_object.save : false
+        else
+          false
         end
-        raise 'Error' unless coach_user
-        coach_user ? @rails_object.save : false
-      else
-        false
       end
-    end
 
 
-    def update(params={})
-      begin
-        proxy = Coach4rb::Proxy::Access.new(@rails_object.username, @rails_object.password, Coach)
-        updated_user = proxy.update_user(@coach_object) do |user|
-          user.real_name = params[:real_name]
-          user.email = params[:email]
-          @rails_object.assign_attributes(params)
-          raise 'Error' unless @rails_object.save
+      def update(params={})
+        begin
+          proxy = Coach4rb::Proxy::Access.new(@rails_object.username, @rails_object.password, Coach)
+          updated_user = proxy.update_user(@coach_user) do |user|
+            user.real_name = params[:real_name]
+            user.email = params[:email]
+            @rails_object.assign_attributes(params)
+            raise 'Error' unless @rails_object.save
+          end
+          raise 'Error' unless updated_user
+
+          @rails_object = ::User.find_by id: @rails_object.id
+          @coach_user = updated_user
+          true
+        rescue
+          false
         end
-        raise 'Error' unless updated_user
-
-        @rails_object = ::User.find_by id: @rails_object.id
-        @coach_object = updated_user
-        true
-      rescue
-        false
       end
+
+
+      def friends
+        Facade::User.query do
+          @rails_object.friends
+        end
+      end
+
     end
 
-
-    def friends
-      Facade::User.query do
-        @rails_object.friends
-      end
-    end
 
   end
-
 
 end
