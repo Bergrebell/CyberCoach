@@ -73,59 +73,7 @@ module Facade
   end
 
 
-  # Sport session proxies
 
-  class SportSessionProxy
-    include Facade::RailsModel
-
-    attr_reader :rails_object, :data_container
-
-    def initialize(rails_object, coach_object=OpenStruct.new)
-      @rails_object = rails_object
-      @data_container = coach_object
-    end
-
-    def method_missing(meth, *args, &block)
-      @rails_object.send meth, *args, &block
-    end
-
-  end
-
-
-  class RunningSportSessionProxy < SportSessionProxy
-
-    def self.method_missing(meth, *args, &block)
-      ::Running.send meth, *args, &block
-    end
-
-  end
-
-
-  class CyclingSportSessionProxy < SportSessionProxy
-
-    def self.method_missing(meth, *args, &block)
-      ::Cycling.send meth, *args, &block
-    end
-
-  end
-
-
-  class BoxingSportSessionProxy < SportSessionProxy
-
-    def self.method_missing(meth, *args, &block)
-      ::Boxing.send meth, *args, &block
-    end
-
-  end
-
-
-  class SoccerSportSessionProxy < SportSessionProxy
-
-    def self.method_missing(meth, *args, &block)
-      ::Soccer.send meth, *args, &block
-    end
-
-  end
 
 end
 

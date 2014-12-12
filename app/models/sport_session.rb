@@ -12,6 +12,8 @@ class SportSession < ActiveRecord::Base
 
   after_find :load_coach_entry
 
+  after_save :update_coach_entry
+
 
   # Virtual attributes
 
@@ -174,6 +176,18 @@ class SportSession < ActiveRecord::Base
     else
       self.delete
     end
+  end
+
+
+  def update_coach_entry
+    proxy.update_entry(self.cybercoach_uri) do |entry|
+      set_entry_values(entry)
+    end
+
+    date = merge_date(entry_date(false),entry_time(false))
+    self.update_column(:date,date)
+    self.invite(users_invited)
+    ObjectStore::Store.remove([:coach_entry,self.id])
   end
 
 
