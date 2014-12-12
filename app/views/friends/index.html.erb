@@ -10,11 +10,11 @@
           <h3 class="uk-title">New Friend Requests</h3>
           <% @requests_received.each do |user| %>
 
-              <%= form_for Friendship.new, url: friends_confirm_url, method: :post do |f| %>
+              <%= form_for Friendship.new, url: friends_confirm_decline_url, method: :post do |f| %>
                   <%= f.hidden_field :friend_id, value: user.id %>
                   <%= f.hidden_field :username, value: user.username %>
                   <td> <%= user.username %> </td>
-                  <td> <%= f.button 'Confirm', class: 'uk-button' %> </td>
+                  <td> <%= f.button 'Confirm', name: 'confirm', class: 'uk-button' %> <%= f.button 'Decline', name: 'decline', class: 'uk-button' %></td>
               <% end %>
 
           <% end %>

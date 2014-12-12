@@ -85,9 +85,17 @@ class User < ActiveRecord::Base
   #
   def friends_proposals
     # get all friend ids
-    friend_ids = Friendship.select(:friend_id).where user_id: self.id
-    friend_ids ||= []
-    User.where.not( id: friend_ids).where.not( id: self.id) # get all user that are not are not in the list of friend ids
+    # friend_ids = Friendship.select(:friend_id).where user_id: self.id
+    # friend_ids ||= []
+    # User.where.not( id: friend_ids).where.not( id: self.id) # get all user that are not are not in the list of friend ids
+
+    sent_ids = self.sent_friend_requests.map { |friend| friend.id}
+    received_ids = self.received_friend_requests.map { |friend| friend.id}
+    friend_ids = self.friends.map { |friend| friend.id }
+
+    ids = friend_ids.concat(received_ids).concat(sent_ids)
+    User.where('id NOT IN (?) AND id != ?', ids, self.id)
+
   end
 
   # Returns true if the current user if befriended with the other user
