@@ -16,13 +16,14 @@
  *= require jquery-ui/datepicker
  */
 
-body {
+html, body {
     background-color: #F4F4F4;
+    height: 100%;
 }
 
 #main-container {
     background-color: #ffffff;
-    /*padding-bottom: 30px;*/
+    min-height: 100%;
 }
 
 tr.highlight {
