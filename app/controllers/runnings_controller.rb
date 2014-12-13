@@ -1,23 +1,12 @@
 class RunningsController < SportSessionsController
 
-  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_user, only: [:show]
 
   # List all running sessions
   def index
     @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
-    # If sessions must be filtered, use the passed params for filtering
-    # display all running sessions otherwise, upcoming, past or unconfirmed, respectively.
-    if params.count > 0
-      @runnings_upcoming = current_user.sport_sessions_filtered(params, true, 'Running').select { |s| s.is_upcoming }
-      @runnings_past = current_user.sport_sessions_filtered(params, true, 'Running').select { |s| s.is_past }
-      @invitations = current_user.sport_sessions_filtered(params, false, 'Running')
-    else
-      runnings = current_user.sport_sessions_confirmed('Running')
-      @runnings_upcoming = runnings.select { |s| s.is_upcoming }
-      @runnings_past = runnings.select { |s| s.is_past }
-      @invitations = current_user.sport_sessions_unconfirmed('Running')
-    end
+    @runnings_upcoming = current_user.sport_sessions_filtered(params, true, 'Running').select { |s| s.is_upcoming }
+    @runnings_past = current_user.sport_sessions_filtered(params, true, 'Running').select { |s| s.is_past }
+    @invitations = current_user.sport_sessions_filtered(params, false, 'Running')
   end
 
 
@@ -28,9 +17,6 @@ class RunningsController < SportSessionsController
 
   def edit
     @running = Facade::SportSession::Running.find_by id: params[:id]
-    if @running.user_id != current_user.id
-      redirect_to runnings_url, alert: 'Permission denied'
-    end
   end
 
 
@@ -118,14 +104,9 @@ class RunningsController < SportSessionsController
   def update
     @running = Facade::SportSession::Running.find_by id: params[:id]
 
-    if not @running.user_id == current_user.id
-      redirect_to runnings_url, alert: 'Permission denied'
-    end
-
     if @running.update(running_params)
       redirect_to runnings_url, notice: 'Running session successfully updated'
     else
-      @friends = current_user.friends
       render :edit
     end
   end

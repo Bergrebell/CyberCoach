@@ -13,17 +13,17 @@
             <div class="uk-grid">
 
               <div class="uk-width-1-2">
-                <input type="datetime" value="<%= params[:date_from] if params.has_key?(:date_from) %>" placeholder="from" name="date_from" data-uk-datepicker="{weekstart:0, format:'YYYY-MM-DD'}" id="entry_date" class="uk-width-1-1">
+                <input type="datetime" value="<%= params[:date_from] if params.has_key?(:date_from) %>" placeholder="from" name="date_from" data-uk-datepicker="{weekstart:0, format:'YYYY-MM-DD'}" id="entry_date_from" class="uk-width-1-1">
               </div>
               <div class="uk-width-1-2">
-                <input type="datetime" value="<%= params[:date_to] if params.has_key?(:date_to) %>" placeholder="to" name="date_to" data-uk-datepicker="{weekstart:0, format:'YYYY-MM-DD'}" id="entry_date" class="uk-width-1-1">
+                <input type="datetime" value="<%= params[:date_to] if params.has_key?(:date_to) %>" placeholder="to" name="date_to" data-uk-datepicker="{weekstart:0, format:'YYYY-MM-DD'}" id="entry_date_to" class="uk-width-1-1">
               </div>
             </div>
           </div>
 
           <div class="uk-width-1-3">
             <label class="uk-form-label" for="entry_location">Location</label>
-            <input type="text" name="entry_location" id="entry_duration" value="<%= params[:entry_location] if params.has_key?(:entry_location) %>" class="uk-form-select uk-width-1-1">
+            <input type="text" name="entry_location" id="entry_location" value="<%= params[:entry_location] if params.has_key?(:entry_location) %>" class="uk-form-select uk-width-1-1">
           </div>
 
           <div class="uk-width-1-3">
@@ -53,3 +53,4 @@
     </div>
   </div>
 </div>
+<script src="/assets/filter_validation.js"></script>

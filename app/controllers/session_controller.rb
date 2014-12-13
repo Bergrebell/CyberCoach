@@ -4,7 +4,7 @@ class SessionController < ApplicationController
 
   def login
     if params[:username].present? and params[:password].present?
-      user = Facade::User.authenticate(params.dup)
+      user = Facade::User.authenticate(params[:username], params[:password])
       if user
         session[:username] = user.username
         session[:password] = user.password

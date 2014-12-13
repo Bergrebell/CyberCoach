@@ -28,11 +28,8 @@ class ApplicationController < ActionController::Base
   def current_user
     if session[:username].present?
       user = ObjectStore::Store.get(session[:username])
-      if user.nil?
-        user = Facade::User.authenticate(username: session[:username], password: session[:password])
-        ObjectStore::Store.set(session[:username],user)
-        user
-      end
+      user = Facade::User.authenticate(session[:username],session[:password]) unless user
+      ObjectStore::Store.set(session[:username],user)
       user
     else
       nil

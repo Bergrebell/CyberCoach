@@ -8,31 +8,206 @@ class SportSession < ActiveRecord::Base
   validates :entry_time, presence: true
   validates :entry_date, presence: true
 
-  # Virtual attribute, this one is merged into the date
-  #
-  def entry_time=(param)
-    @entry_time = param
+  before_validation :check_if_subscription_is_available
+  after_create :create_coach_entry
+
+  after_find :load_coach_entry
+
+  after_update :update_coach_entry
+
+
+  # Virtual attributes
+
+  def users_invited=(param)
+    @users_invited = param
   end
 
-  def entry_time
-    if date.present?
+  def users_invited
+    @users_invited || []
+  end
+
+  def comment
+    @comment
+  end
+
+  def comment=(param)
+    @comment = param
+  end
+
+  def number_of_rounds=(param)
+    @number_of_rounds = param
+  end
+
+  def number_of_rounds
+    @number_of_rounds
+  end
+
+  def course_length=(param)
+    @course_length = param
+  end
+
+  def course_length
+    @course_length
+  end
+
+  def course_type=(param)
+    @course_type = param
+  end
+
+  def course_type
+    @course_type
+  end
+
+  def entry_duration
+    @entry_duration
+  end
+
+  def entry_duration=(param)
+    @entry_duration = param
+  end
+
+  #alias_method :entryduration=, :entry_duration=
+
+  def round_duration=(param)
+    @round_duration = param
+  end
+
+  def round_duration
+    @round_duration
+  end
+
+
+  def entry_time(format=true)
+    if date.present? && format
       date.strftime('%H:%M')
     else
       @entry_time
     end
   end
 
-  def entry_date=(param)
-    @entry_date = param
+
+  def entry_time=(param)
+    @entry_time = param
   end
 
-  def entry_date
-    if date.present?
+
+  def entry_date(format=true)
+    if date.present? && format
       date.strftime('%Y-%m-%d')
     else
       @entry_date
     end
   end
+
+
+  def entry_date=(param)
+    @entry_date = param
+  end
+
+
+
+  def proxy
+    proxy = Coach4rb::Proxy::Access.new user.username, user.password, Coach
+  end
+
+  def coach_user
+    coach_user = Coach.user user.username
+  end
+
+  def entry_type
+    self.class.name.downcase.to_sym
+  end
+
+  def entry_properties
+    [:comment, :entry_date, :entry_duration, :round_duration, :number_of_rounds, :course_length, :course_type]
+  end
+
+
+  # Callbacks
+
+  def check_if_subscription_is_available
+    begin
+      Coach.subscription(self.user.username,self.type)
+    rescue
+      errors.add(:base, 'Cannot create entry %s! Subscription is missing!' % self.type)
+      false
+    end
+  end
+
+  def load_coach_entry
+    entry = ObjectStore::Store.get([:coach_entry,self.id])
+    if entry.nil?
+      entry = Coach.entry_by_uri(self.cybercoach_uri)
+      ObjectStore::Store.set([:coach_entry,self.id],entry)
+      set_properties(entry)
+    end
+    set_properties(entry)
+  end
+
+
+  def set_properties(coach_entry)
+    entry_properties.each do |prop|
+      if coach_entry.respond_to?(prop)
+        value = coach_entry.send prop
+        self.send "#{prop}=".to_sym, value
+      end
+    end
+  end
+
+
+  def set_entry_values(entry)
+    entry_properties.each do |prop|
+      if self.send(prop).present?
+        value = self.send(prop)
+        entry.send "#{prop}=".to_sym, value
+      end
+    end
+  end
+
+
+  def create_coach_entry
+    coach_entry = proxy.create_entry(coach_user, entry_type) do |entry|
+      set_entry_values(entry)
+    end
+
+    if coach_entry
+      date = merge_date(entry_date, entry_time)
+      self.update_column(:cybercoach_uri, coach_entry.uri)
+      self.update_column(:date, date)
+
+      self.invite(users_invited)
+
+      # The user creating the entry also needs a SportSessionParticipant object
+      SportSessionParticipant.where(
+          :user_id => self.user_id,
+          :sport_session_id => self.id,
+          :confirmed => true
+      ).first_or_create
+    else
+      self.delete
+      false
+    end
+  end
+
+
+  def update_coach_entry
+    proxy.update_entry(self.cybercoach_uri) do |entry|
+      set_entry_values(entry)
+    end
+
+    date = merge_date(entry_date(false),entry_time(false))
+    self.update_column(:date,date)
+    self.invite(users_invited)
+    ObjectStore::Store.remove([:coach_entry,self.id])
+  end
+
+
+  def merge_date(date, time)
+    dt_date = DateTime.strptime(date, '%Y-%m-%d')
+    dt_time = DateTime.strptime(time, '%H:%M')
+    DateTime.new dt_date.year, dt_date.month, dt_date.day, dt_time.hour, dt_time.minute
+  end
+
 
   def is_past
     self.date < Date.today
@@ -165,12 +340,41 @@ class SportSession < ActiveRecord::Base
     end
 
     if params[:participant].present?
-      participant = {user_id: params[:participant]}
-      filtered_sessions = filtered_sessions.joins(:sport_session_participants).where(sport_session_participants: participant)
+      filtered_sessions = filtered_sessions.where(id: self.all_sport_sessions_confirmed_from_user(params[:participant], type).select(:id))
     end
 
     filtered_sessions
 
+  end
+
+
+  # Checks if the given user can view the session
+  # @param user Rails-User object
+  #
+  def is_viewable(user)
+    self.is_participant(user)
+  end
+
+  # Checks if the given user can edit the session
+  # @param user Rails-User object
+  #
+  def is_editable(user)
+    self.is_upcoming and self.user_id == user.id
+  end
+
+  # Checks if the given user can unsubscribe from the session
+  # @param user Rails-User object
+  #
+  def is_unsubscribeable(user)
+    self.is_upcoming and self.is_confirmed_participant(user) and not self.user_id == user.id
+  end
+
+
+  # Checks if the given user is allowed to confirm/decline from this session
+  # @param user Rails-User object
+  #
+  def is_confirmable(user)
+    self.is_upcoming and self.is_unconfirmed_participant(user)
   end
 
 end

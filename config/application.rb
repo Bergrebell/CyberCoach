@@ -22,3 +22,11 @@ module CyberCoach
     config.autoload_paths += %W(#{config.root}/lib)
   end
 end
+
+Coach = Coach4rb.configure(
+    scheme: 'http',
+    host: 'diufvm31.unifr.ch',
+    port: 8090,
+    path: '/CyberCoachServer/resources',
+    debug: true
+)
