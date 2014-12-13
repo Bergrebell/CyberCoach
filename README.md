@@ -1,4 +1,4 @@
-CyberCoachProject for the ASE Course 2014/15 - SportsMate
+SportsMate - ASE Course 2014/15
 --------------------------------------------
 
 ![alt tag](https://raw.github.com/Bergrebell/CyberCoach/dev/sportsmate.png)
