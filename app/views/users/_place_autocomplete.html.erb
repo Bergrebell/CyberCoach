@@ -47,6 +47,16 @@
                 geo_data();
                 google.maps.event.trigger(map, 'resize');
             });
+
+            $('.edit-grid').mousemove(function () {
+                geo_data();
+                google.maps.event.trigger(map, 'resize');
+            });
+
+            $('.edit-grid').keyup(function () {
+                geo_data();
+                google.maps.event.trigger(map, 'resize');
+            });
         });
 
 
