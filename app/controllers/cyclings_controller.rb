@@ -1,23 +1,11 @@
 class CyclingsController < SportSessionsController
 
-  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_user, only: [:show]
-
   # List all running sessions
   def index
     @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
-    # If sessions must be filtered, use the passed params for filtering
-    # display all running sessions otherwise, upcoming, past or unconfirmed, respectively.
-    if params.count > 0
-      @cyclings_upcoming = current_user.sport_sessions_filtered(params, true, 'Cycling').select { |s| s.is_upcoming }
-      @cyclings_past = current_user.sport_sessions_filtered(params, true, 'Cycling').select { |s| s.is_past }
-      @invitations = current_user.sport_sessions_filtered(params, false, 'Cycling')
-    else
-      cyclings = current_user.sport_sessions_confirmed('Cycling')
-      @cyclings_upcoming = cyclings.select { |s| s.is_upcoming }
-      @cyclings_past = cyclings.select { |s| s.is_past }
-      @invitations = current_user.sport_sessions_unconfirmed('Cycling')
-    end
+    @cyclings_upcoming = current_user.sport_sessions_filtered(params, true, 'Cycling').select { |s| s.is_upcoming }
+    @cyclings_past = current_user.sport_sessions_filtered(params, true, 'Cycling').select { |s| s.is_past }
+    @invitations = current_user.sport_sessions_filtered(params, false, 'Cycling')
   end
 
   def new

@@ -1,23 +1,11 @@
 class BoxingsController < SportSessionsController
 
-  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_user, only: [:show]
-
   # List all running sessions
   def index
     @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
-    # If sessions must be filtered, use the passed params for filtering
-    # display all running sessions otherwise, upcoming, past or unconfirmed, respectively.
-    if params.count > 0
-      @boxings_upcoming = current_user.sport_sessions_filtered(params, true, 'Boxing').select { |s| s.is_upcoming }
-      @boxings_past = current_user.sport_sessions_filtered(params, true, 'Boxing').select { |s| s.is_past }
-      @invitations = current_user.sport_sessions_filtered(params, false, 'Boxing')
-    else
-      boxings = current_user.sport_sessions_confirmed('Boxing')
-      @boxings_upcoming = boxings.select { |s| s.is_upcoming }
-      @boxings_past = boxings.select { |s| s.is_past }
-      @invitations = current_user.sport_sessions_unconfirmed('Boxing')
-    end
+    @boxings_upcoming = current_user.sport_sessions_filtered(params, true, 'Boxing').select { |s| s.is_upcoming }
+    @boxings_past = current_user.sport_sessions_filtered(params, true, 'Boxing').select { |s| s.is_past }
+    @invitations = current_user.sport_sessions_filtered(params, false, 'Boxing')
   end
 
 

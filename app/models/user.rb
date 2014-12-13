@@ -274,7 +274,11 @@ class User < ActiveRecord::Base
   end
 
   def sport_sessions_filtered(params, confirmed, type='')
-    SportSession.all_sport_sessions_filtered_from_user(self.id, params, confirmed, type)
+    if params.count == 0
+      sport_sessions_confirmed(type)
+    else
+      SportSession.all_sport_sessions_filtered_from_user(self.id, params, confirmed, type)
+    end
   end
 
 

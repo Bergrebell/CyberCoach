@@ -45,7 +45,7 @@
               <% if s.type == 'Running' %>
 
                   <%= link_to 'View', running_path(s), class: "uk-button uk-button-small" %>
-                  <% if s.user_id == current_user.id and s.is_upcoming %>
+                  <% if s.is_editable(current_user) %>
                       <%= link_to 'Edit', edit_running_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
                   <% if s.is_past %>
@@ -55,7 +55,7 @@
               <% elsif s.type == 'Boxing' %>
 
                   <%= link_to 'View', boxing_path(s), class: "uk-button uk-button-small" %>
-                  <% if s.user_id == current_user.id and s.is_upcoming %>
+                  <% if s.is_editable(current_user) %>
                       <%= link_to 'Edit', edit_boxing_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
                   <% if s.is_past %>
@@ -65,7 +65,7 @@
               <% elsif s.type == 'Cycling' %>
 
                   <%= link_to 'View', cycling_path(s), class: "uk-button uk-button-small" %>
-                  <% if s.user_id == current_user.id and s.is_upcoming %>
+                  <% if s.is_editable(current_user) %>
                       <%= link_to 'Edit', edit_cycling_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
                   <% if s.is_past %>
@@ -76,7 +76,7 @@
 
                   <%= link_to 'View', soccer_path(s), class: "uk-button uk-button-small" %>
 
-                  <% if s.user_id == current_user.id and s.is_upcoming %>
+                  <% if s.is_editable(current_user) %>
                       <%= link_to 'Edit', edit_soccer_path(s.id), class: "uk-button uk-button-small" %>
                   <% end %>
                   <% if s.is_past %>
@@ -85,11 +85,11 @@
 
               <% end %>
 
-              <% if  s.is_upcoming and s.user_id != current_user.id and s.is_confirmed_participant(current_user) %>
+              <% if  s.is_unsubscribeable(current_user) %>
                   <a href="/sport_sessions/<%= s.id %>/unsubscribe/<%= current_user.id %>" class="uk-button uk-button-small">Unsubscribe</a>
               <% end %>
 
-              <% if  s.is_upcoming and s.user_id != current_user.id and s.is_unconfirmed_participant(current_user) %>
+              <% if  s.is_confirmable(current_user) %>
                   <a href="/sport_sessions/<%= s.id %>/confirm/<%= current_user.id %>" class="uk-button uk-button-small">Confirm</a>
                   <a href="/sport_sessions/<%= s.id %>/decline/<%= current_user.id %>" class="uk-button uk-button-small">Decline</a>
               <% end %>
