@@ -1,6 +1,6 @@
 class SportSessionsController < ApplicationController
 
-  before_action :check_view_permission, :except => [:index, :confirm, :decline]
+  before_action :check_view_permission, :except => [:index, :confirm, :decline, :new, :create]
   before_action :check_edit_permission, :only => [:edit, :destroy, :update]
   before_action :check_confirm_decline_permissions, :only => [:confirm, :decline]
   before_action :check_unsubscribe_permission, :only => [:unsubscribe]
