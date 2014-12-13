@@ -58,7 +58,11 @@ class UsersController < ApplicationController
   def update
     @user = current_user
     if @user.update(user_params)
-      redirect_to welcome_index_path, notice: 'User was successfully updated.'
+      if @user.new_password.present? # if we reach this if here and its true then the user has updated his password
+        redirect_to session_logout_path, notice: 'User was successfully updated.'
+      else
+        redirect_to welcome_index_path, notice: 'User was successfully updated.'
+      end
     else
       render :edit
     end

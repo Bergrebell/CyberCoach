@@ -67,7 +67,7 @@ class User < ActiveRecord::Base
   def update_coach_user
     proxy = Coach4rb::Proxy::Access.new self.username, self.password, Coach
     raise 'Update Error' unless proxy.valid?
-    
+
     coach_user = proxy.update_user(get_coach_user) do |user|
       user.email = self.email if self.email.present?
       user.real_name = self.real_name if self.real_name.present?
