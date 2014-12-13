@@ -1,5 +1,5 @@
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
 <% if latitude and longitude %>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
     <script>
         var map;
         var marker;
@@ -27,9 +27,10 @@
 
 
         var geo_data = function () {
-            changeMarkerPosition(marker);
+           if(marker) {
+               changeMarkerPosition(marker);
+           }
             google.maps.event.trigger(map, 'resize');
-
         };
 
         function changeMarkerPosition(marker) {
@@ -42,32 +43,7 @@
 
         $(document).ready(function(){
 
-
-
-            $('.entry_location_input').mouseenter(function () {
-                geo_data();
-                google.maps.event.trigger(map, 'resize');
-
-            });
-
-            $('.entry_location_input').mousemove(function () {
-                geo_data();
-                google.maps.event.trigger(map, 'resize');
-
-            });
-
-
-            $('.form').mouseleave(function () {
-                geo_data();
-                google.maps.event.trigger(map, 'resize');
-            });
-
-            $('.form').mousemove(function () {
-                geo_data();
-                google.maps.event.trigger(map, 'resize');
-            });
-
-            $('.click').mousemove(function () {
+            $('.edit-grid').click(function () {
                 geo_data();
                 google.maps.event.trigger(map, 'resize');
             });
