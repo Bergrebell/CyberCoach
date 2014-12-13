@@ -5,6 +5,16 @@ class Timeline
       @object = object
     end
 
+    def object
+      @object
+    end
+
+    def time
+      created = object.created_at
+      dt = created.to_datetime
+      dt.strftime"%Y %m %d, %H:%M"
+    end
+
     def self.items
     end
 
@@ -21,17 +31,50 @@ class Timeline
     def partial
       "welcome/friend"
     end
+
+    def user
+      object
+    end
   end
 
   class SportSessionItem < Item
     def partial
       "welcome/sport_session"
     end
+
+    def type
+      object.type
+    end
+
+    def title
+      object.title
+    end
+
+    def location
+      object.location
+    end
+
   end
 
   class AchievementItem < Item
     def partial
       "welcome/achievement"
+    end
+
+    def sport
+      object.sport
+    end
+
+    def description
+      object.description
+    end
+
+    def icon
+      object.icon
+    end
+
+    def title
+      object.title
     end
   end
 

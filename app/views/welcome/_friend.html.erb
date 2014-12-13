@@ -5,10 +5,10 @@
   <div class="uk-float-left uk-margin-left">
     <h4>New Friend:</h4>
     <div>
-      <%= link_to User.where(id: user.id).first.username, user_path(User.where(id: user.id).first.id) %>
+      <%= link_to item.user.username, user_path(item.user) %>
     </div>
   </div>
   <div class="uk-float-right">
-    <%= item.created_at %>
+    <%= item.time %>
   </div>
 </div>

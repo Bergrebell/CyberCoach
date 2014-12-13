@@ -1,17 +1,17 @@
 <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
   <div  class="uk-float-left uk-margin-top">
-    <img src="/images/timeline_icons/achievement.png" width="60" height="60" />
+    <%= achievement_tag item.icon, height: '60', width: '60', class: 'uk-thumbnail uk-border-circle' %>
   </div>
   <div class="uk-float-left uk-margin-left">
-    <h4>New Achievement earned:</h4>
+    <h4>New Achievement in category <%= item.sport %> earned:</h4>
     <div class="uk-margin-left">
       <ul class="uk-list">
-        <li><i class="uk-icon-soccer-ball-o"></i> <%= item.sport %></li>
+        <li><i class="uk-icon-soccer-ball-o"></i> <%= item.title %></li>
         <li><i class="uk-icon-star"></i> <%= item.description %></li>
       </ul>
     </div>
   </div>
   <div class="uk-float-right">
-    <%= item.created_at %>
+    <%= item.time %>
   </div>
 </div>
