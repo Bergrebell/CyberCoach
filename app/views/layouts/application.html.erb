@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>CyberCoach</title>
+  <title>SportsMate</title>
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => false %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => false %>
   <%= csrf_meta_tags %>
@@ -14,7 +14,7 @@
   <% if current_user.present? %>
 
       <nav class="uk-navbar uk-margin uk-margin-large-bottom uk-margin-top">
-        <a href="<%= welcome_index_path %>" class="uk-navbar-brand">CyberCoach</a>
+        <a href="<%= welcome_index_path %>" class="uk-navbar-brand">SportsMate</a>
 
         <ul class="uk-navbar-nav">
 
@@ -58,7 +58,7 @@
                   <div class="uk-dropdown uk-dropdown-navbar">
                     <ul class="uk-nav uk-nav-navbar">
                       <li><%= link_to 'Profile', current_user %></li>
-                      <li><%= link_to 'Edit account', edit_user_path(current_user) %></li>
+                      <li><%= link_to 'Edit Profile', edit_user_path(current_user) %></li>
                       <li><%= link_to "Logout", session_logout_url %></li>
                     </ul>
                   </div>
