@@ -1,6 +1,14 @@
 class SportSessionsController < ApplicationController
 
-  #before_action :check_permission, :except => 'index'
+  before_action :check_view_permission, :except => [:index, :confirm, :decline]
+  before_action :check_edit_permission, :only => [:edit, :destroy, :update]
+  before_action :check_confirm_decline_permissions, :only => [:confirm, :decline]
+  before_action :check_unsubscribe_permission, :only => [:unsubscribe]
+
+
+  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :set_user, only: [:show]
+
 
   def index
     @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions
@@ -35,10 +43,6 @@ class SportSessionsController < ApplicationController
   # Confirm attendance to sport session
   #
   def confirm
-    if params[:user_id] != current_user.id
-      false
-    end
-
     participant = SportSessionParticipant.where(:user_id => params[:user_id], :sport_session_id => params[:sport_session_id]).first!
     participant.confirmed = true
     if participant.save
@@ -54,10 +58,6 @@ class SportSessionsController < ApplicationController
   # Decline attendance to sport session
   #
   def decline
-    if params[:user_id] != current_user.id
-      false
-    end
-
     participant = SportSessionParticipant.where(:user_id => params[:user_id], :sport_session_id => params[:sport_session_id]).first!
     if participant.destroy
       redirect_to sport_sessions_url, :notice => "Invitation declined"
@@ -72,10 +72,6 @@ class SportSessionsController < ApplicationController
   # Unsubscribe from an event by deleting the SportSessionParticipant object
   #
   def unsubscribe
-    if params[:user_id] != current_user.id
-      false
-    end
-
     participant = SportSessionParticipant.where(:user_id => params[:user_id], :sport_session_id => params[:sport_session_id]).first!
     if participant.destroy
       redirect_to sport_sessions_url, :notice => "Successfully unsubscribed from the session"
@@ -123,13 +119,49 @@ class SportSessionsController < ApplicationController
     @user
   end
 
-  # def check_permission
+  # Basic permission check if the current logged in user is allowed to view the session
   #
-  #   @session = SportSession.find params[:id]
+  def check_view_permission
+    @session = SportSession.find get_sport_session_id
+    if not @session.is_viewable(current_user)
+      redirect_to sport_sessions_index_path, alert: 'Permission denied'
+    end
+  end
+
+
+  # Check edit permission
   #
-  #   if not @session.is_participant(current_user)
-  #     redirect_to sport_session_url, alert: 'Permission denied'
-  #   end
-  # end
+  def check_edit_permission
+    @session = SportSession.find get_sport_session_id
+    if not @session.is_editable(current_user)
+      redirect_to sport_sessions_index_path, alert: 'Permission denied'
+    end
+  end
+
+  # Check confirm/decline permission
+  #
+  def check_confirm_decline_permissions
+    @session = SportSession.find get_sport_session_id
+    if not @session.is_confirmable(current_user) and params[:user_id] != current_user.id
+      redirect_to sport_sessions_index_path, alert: 'Permission denied'
+    end
+  end
+
+  def check_unsubscribe_permission
+    @session = SportSession.find get_sport_session_id
+    if not @session.is_unsubscribeable(current_user) and params[:user_id] != current_user.id
+      redirect_to sport_sessions_index_path, alert: 'Permission denied'
+    end
+  end
+
+  def get_sport_session_id
+    if params[:id].present?
+      params[:id]
+    elsif params[:sport_session_id].present?
+      params[:sport_session_id]
+    else
+      raise 'No SportSession ID found!'
+    end
+  end
 
 end

@@ -1,8 +1,5 @@
 class CyclingsController < SportSessionsController
 
-  before_action :set_friends, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_user, only: [:show]
-
   # List all running sessions
   def index
     @all_confirmed_participants = current_user.confirmed_participants_of_all_sessions

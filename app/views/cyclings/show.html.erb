@@ -97,7 +97,7 @@
 
   <div class="uk-width-medium-1-4">
 
-    <% if @cycling.is_participant(current_user) %>
+    <% if @cycling.is_viewable(current_user) %>
         <div class="uk-button-group uk-align-right">
           <button class="uk-button">Actions</button>
           <div data-uk-dropdown="{mode:'click'}">
@@ -105,17 +105,17 @@
 
             <div class="uk-dropdown uk-dropdown-small">
               <ul class="uk-nav uk-nav-dropdown">
-                <% if @cycling.is_upcoming and @cycling.user_id == current_user.id %>
+                <% if @cycling.is_editable(current_user) %>
                     <li><a href="<%= edit_cycling_path @cycling %>">Edit</a></li>
                 <% end %>
                 <% if @cycling.is_past %>
                     <li><a href="<%= edit_cycling_path(@cycling.id) + '/result' %>">Edit Results</a></li>
                 <% end %>
-                <% if @cycling.is_upcoming and @cycling.is_unconfirmed_participant(current_user) %>
+                <% if @cycling.is_confirmable(current_user) %>
                     <li><a href="/sport_sessions/<%= @cycling.id %>/confirm/<%= current_user.id %>">Confirm</a></li>
                     <li><a href="/sport_sessions/<%= @cycling.id %>/decline/<%= current_user.id %>">Decline</a></li>
                 <% end %>
-                <% if @cycling.is_upcoming and @cycling.is_confirmed_participant(current_user) and not @cycling.user_id == current_user.id %>
+                <% if @cycling.is_unsubscribeable(current_user) %>
                     <li><a href="/sport_sessions/<%= @cycling.id %>/unsubscribe/<%= current_user.id %>">Unsubscribe</a>
                     </li>
                 <% end %>

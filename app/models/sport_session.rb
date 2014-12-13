@@ -347,4 +347,34 @@ class SportSession < ActiveRecord::Base
 
   end
 
+
+  # Checks if the given user can view the session
+  # @param user Rails-User object
+  #
+  def is_viewable(user)
+    self.is_participant(user)
+  end
+
+  # Checks if the given user can edit the session
+  # @param user Rails-User object
+  #
+  def is_editable(user)
+    self.is_upcoming and self.user_id == user.id
+  end
+
+  # Checks if the given user can unsubscribe from the session
+  # @param user Rails-User object
+  #
+  def is_unsubscribeable(user)
+    self.is_upcoming and self.is_confirmed_participant(user) and not self.user_id == user.id
+  end
+
+
+  # Checks if the given user is allowed to confirm/decline from this session
+  # @param user Rails-User object
+  #
+  def is_confirmable(user)
+    self.is_upcoming and self.is_unconfirmed_participant(user)
+  end
+
 end
