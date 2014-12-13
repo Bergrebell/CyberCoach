@@ -165,8 +165,7 @@ class SportSession < ActiveRecord::Base
     end
 
     if params[:participant].present?
-      participant = {user_id: params[:participant]}
-      filtered_sessions = filtered_sessions.joins(:sport_session_participants).where(sport_session_participants: participant)
+      filtered_sessions = filtered_sessions.where(id: self.all_sport_sessions_confirmed_from_user(params[:participant], type).select(:id))
     end
 
     filtered_sessions
