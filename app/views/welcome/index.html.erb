@@ -8,68 +8,10 @@
     <div class="uk-width-medium-2-3">
       <div class="uk-panel uk-panel-box">
       <h2>Timeline</h2>
-      <!-- Friends -->
-        <% @friends.each do |user| %>
-            <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
-              <div  class="uk-float-left uk-margin-top">
-                <img src="/images/timeline_icons/friend.png" width="60" height="60" />
-              </div>
-                  <div class="uk-float-left uk-margin-left">
-                  <h4>New Friend:</h4>
-                  <div>
-                        <%= link_to User.where(id: user.id).first.username, user_path(User.where(id: user.id).first.id) %>
-                  </div>
-                    </div>
-                  <div class="uk-float-right">
-                        <%= user.created_at %>
-                  </div>
-            </div>
+      <!-- Items -->
+        <% @items.each do |item| %>
+            <%= render partial: item.partial, locals: {item: item} %>
         <% end %>
-
-      <!-- Sport Sessions -->
-        <% @sports.each do |session| %>
-            <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
-              <div  class="uk-float-left uk-margin-top">
-                <img src="/images/timeline_icons/sport.png" width="60" height="60" />
-              </div>
-              <div class="uk-float-left uk-margin-left">
-              <h4>Sport Session:</h4>
-                <div class="uk-margin-left">
-                  <ul class="uk-list">
-                    <li><i class="uk-icon-cubes"></i> <%= session.type %></li>
-                    <li><i class="uk-icon-comment-o"></i> <%= session.title %></li>
-                    <li><i class="uk-icon-home"></i> <%= session.location %></li>
-                  </ul>
-                </div>
-               </div>
-                <div class="uk-float-right">
-                    <%= session.created_at %>
-                </div>
-            </div>
-        <% end %>
-
-
-        <!-- Achievements -->
-        <% @achievements.each do |ach| %>
-            <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
-                <div  class="uk-float-left uk-margin-top">
-                    <img src="/images/timeline_icons/achievement.png" width="60" height="60" />
-                </div>
-              <div class="uk-float-left uk-margin-left">
-                <h4>New Achievement earned:</h4>
-                <div class="uk-margin-left">
-                  <ul class="uk-list">
-                    <li><i class="uk-icon-soccer-ball-o"></i> <%= ach.sport %></li>
-                    <li><i class="uk-icon-star"></i> <%= ach.description %></li>
-                  </ul>
-                </div>
-              </div>
-              <div class="uk-float-right">
-                <%= ach.created_at %>
-              </div>
-            </div>
-        <% end %>
-
         </div>
     </div>
 

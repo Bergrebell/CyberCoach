@@ -1,0 +1,18 @@
+<div class="uk-panel uk-panel-box uk-panel-box-secondary uk-margin-small-bottom">
+  <div  class="uk-float-left uk-margin-top">
+    <img src="/images/timeline_icons/sport.png" width="60" height="60" />
+  </div>
+  <div class="uk-float-left uk-margin-left">
+    <h4>Sport Session:</h4>
+    <div class="uk-margin-left">
+      <ul class="uk-list">
+        <li><i class="uk-icon-cubes"></i> <%= item.type %></li>
+        <li><i class="uk-icon-comment-o"></i> <%= item.title %></li>
+        <li><i class="uk-icon-home"></i> <%= item.location %></li>
+      </ul>
+    </div>
+  </div>
+  <div class="uk-float-right">
+    <%= item.created_at %>
+  </div>
+</div>
