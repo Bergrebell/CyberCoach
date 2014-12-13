@@ -16,6 +16,25 @@ module DefinedAchievements
            {operator: '>', attribute: 'average_speed', value: 9}]
   end
 
+  achievement do
+    title 'Social Runner' # sveta :-)
+    description 'Run with another friend'
+    points 100
+    validator 'AttributeValidator'
+    sport 'Running'
+    icon 'running/social_runner'
+    rules [{operator: '>=', attribute: 'n_participants', value: 2}]
+  end
+
+  achievement do
+    title 'Massive Social Runner' # sveta :-)
+    description 'Run with at least 20 other friends'
+    points 600
+    validator 'AttributeValidator'
+    sport 'Running'
+    icon 'running/social_runner'
+    rules [{operator: '>=', attribute: 'n_participants', value: 20}]
+  end
 
   achievement do
     title 'Steinbock' # sveta :-)
