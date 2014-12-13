@@ -26,3 +26,9 @@ As a user, I should be able to
 - have challenges to solve (example: Run 5 km in 30 minutes, Run 100 km in one week etc.)
 - share his progress/challenges on facebook and/or twitter
 - see his progress plotted on a graph
+
+##Backend / Gpx file reader
+For more details see:
+
+- [coach4rb](https://github.com/lexruee/coach4rb)
+- [gpx_ruby](https://github.com/lexruee/gpx_ruby)
