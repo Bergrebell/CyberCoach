@@ -29,7 +29,7 @@ module DefinedAchievements
 
   achievement do
     title 'Basic Runner'
-    description 'Ran more than 1 kilometer'
+    description 'Run more than 1 kilometer'
     points 100
     validator 'AttributeValidator'
     sport 'Running'
@@ -39,7 +39,7 @@ module DefinedAchievements
 
   achievement do
     title 'Aspiring Runner'
-    description 'Ran more than 5 kilometers'
+    description 'Run more than 5 kilometers'
     points 500
     validator 'AttributeValidator'
     sport 'Running'
@@ -49,7 +49,7 @@ module DefinedAchievements
 
   achievement do
     title 'Intermediate Runner'
-    description 'Ran more than 10 kilometers'
+    description 'Run more than 10 kilometers'
     points 1000
     validator 'AttributeValidator'
     sport 'Running'
@@ -59,7 +59,7 @@ module DefinedAchievements
 
   achievement do
     title 'Advanced Runner'
-    description 'Ran more than 15 kilometers'
+    description 'Run more than 15 kilometers'
     points 1500
     validator 'AttributeValidator'
     sport 'Running'
@@ -69,7 +69,7 @@ module DefinedAchievements
 
   achievement do
     title 'Half Marathon Runner'
-    description 'Ran more than 20 kilometers'
+    description 'Run more than 20 kilometers'
     points 2000
     validator 'AttributeValidator'
     sport 'Running'
@@ -79,7 +79,7 @@ module DefinedAchievements
 
   achievement do
     title 'Ambitious Runner'
-    description 'Ran more than 30 kilometers'
+    description 'Run more than 30 kilometers'
     points 3000
     validator 'AttributeValidator'
     sport 'Running'
@@ -89,7 +89,7 @@ module DefinedAchievements
 
   achievement do
     title 'Marathon Runner'
-    description 'Ran more than 40 kilometers'
+    description 'Run more than 40 kilometers'
     points 4000
     validator 'AttributeValidator'
     sport 'Running'
@@ -99,7 +99,7 @@ module DefinedAchievements
 
   achievement do
     title 'Swiss Soldier Runner'
-    description 'Ran more than 100 kilometers'
+    description 'Run more than 100 kilometers'
     points 10000
     validator 'AttributeValidator'
     sport 'Running'
