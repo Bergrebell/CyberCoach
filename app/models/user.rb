@@ -8,9 +8,18 @@ class User < ActiveRecord::Base
   has_many :user_achievements
   has_many :achievements, through: :user_achievements
 
-  validates :password, length: {within: 4..10}
-  validates_presence_of :password_confirmation, :if => :password_present?, on: :create
-  validates_confirmation_of :password, :if => :password_present?, on: :create
+
+  # password rules for creating a new user
+  validates :password, length: {within: 4..10}, on: :create
+  validates_presence_of :password_confirmation, on: :create
+  validates_confirmation_of :password,  on: :create
+
+
+  # password rules for updating a user
+  validates :new_password, length: {within: 4..10}, :if => :new_password_present?, on: :update
+  validates_presence_of :password_confirmation, :if => :new_password_present?, on: :update
+  validates_confirmation_of :new_password, :if => :new_password_present?, on: :update
+
 
   validates :real_name, presence: true
   validates :username, presence: true, length: {within: 4..50}, uniqueness: true
@@ -23,7 +32,7 @@ class User < ActiveRecord::Base
 
 
   def get_coach_user
-    Coach.user self.username
+    coach_user = Coach.user(self.username)
   end
 
 
@@ -57,9 +66,17 @@ class User < ActiveRecord::Base
 
   def update_coach_user
     proxy = Coach4rb::Proxy::Access.new self.username, self.password, Coach
+    raise 'Update Error' unless proxy.valid?
+    
     coach_user = proxy.update_user(get_coach_user) do |user|
-      user.email = self.email
-      user.real_name = self.real_name
+      user.email = self.email if self.email.present?
+      user.real_name = self.real_name if self.real_name.present?
+
+      if self.new_password.present?
+        user.password = self.new_password
+        self.update_column(:password, self.new_password)
+      end
+
     end
     ObjectStore::Store.set([:coach_user,self.id],coach_user)
   end
@@ -83,6 +100,11 @@ class User < ActiveRecord::Base
 
   def password_present?
     !password.nil?
+  end
+
+
+  def new_password_present?
+    new_password.present?
   end
 
 
@@ -182,7 +204,19 @@ class User < ActiveRecord::Base
     Friendship.where(sql_stmt, first_id: self.id, second_id: other_user.id, confirmed: true).exists?
   end
 
+
+
+
   # create some virtual attributes
+
+  def new_password
+    @new_password
+  end
+
+  def new_password=(param)
+    @new_password = param
+  end
+
   def password_confirmation
     @password_confirmation
   end
@@ -190,6 +224,9 @@ class User < ActiveRecord::Base
   def password_confirmation=(param)
     @password_confirmation = param
   end
+
+  alias_method :new_password_confirmation, :password_confirmation
+  alias_method :new_password_confirmation=, :password_confirmation=
 
   def email=(param)
     @email = param
