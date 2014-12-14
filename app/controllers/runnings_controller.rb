@@ -37,7 +37,7 @@ class RunningsController < SportSessionsController
 
       @result = @running.result(current_user)
     rescue
-      redirect_to runnnings_url, alert: 'Permission denied'
+      redirect_to runnings_url, alert: 'Permission denied'
     end
   end
 
