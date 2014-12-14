@@ -27,6 +27,31 @@ As a user, I should be able to
 - share his progress/challenges on facebook and/or twitter
 - see his progress plotted on a graph
 
+##Installation
+TODO: not yest tested
+```
+git clone https://github.com/Bergrebell/CyberCoach/commits/master
+```
+
+```
+bundle install
+```
+
+```
+rake db:seed
+rake achievements:update
+```
+
+```
+rails s
+```
+
+##Deployed application on heroku
+
+```
+https://radiant-depths-9885.herokuapp.com/
+```
+
 ##Backend / Gpx file reader
 For more details see:
 

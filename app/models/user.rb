@@ -5,9 +5,9 @@ class User < ActiveRecord::Base
   has_many :sport_session_participants
 
   has_many :tracks
-  has_many :user_achievements
-  has_many :achievements, through: :user_achievements
 
+  has_many :achievements, through: :user_achievements
+  has_many :user_achievements
 
   # password rules for creating a new user
   validates :password, length: {within: 4..10}, on: :create
@@ -270,7 +270,9 @@ class User < ActiveRecord::Base
 
   def confirmed_participants_of_all_sessions
     session_ids = self.sport_sessions_confirmed.map{|s|s.id}
-    SportSessionParticipant.where("confirmed = ? AND sport_session_id IN (#{session_ids.join(', ')})", true).select(:user_id).distinct
+    #SportSessionParticipant.where("confirmed = ? AND sport_session_id IN (#{session_ids.join(', ')})", true).select(:user_id).distinct
+    #SportSessionParticipant.where(confirmed: true, sport_session_id: session_ids).select(:user_id).distinct
+    SportSessionParticipant.where("confirmed = ? AND sport_session_id IN (?)", true, session_ids).select(:user_id).distinct
   end
 
   def sport_sessions_filtered(params, confirmed, type='')
