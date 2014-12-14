@@ -213,6 +213,8 @@ module DefinedAchievements
           ]
   end
 
+
+
   # Boxing
 
   achievement do
@@ -300,6 +302,84 @@ module DefinedAchievements
               {operator: '>=', attribute: 'number_of_rounds', value: 5},
               {operator: '<=', attribute: 'points', value: 100}
           ]
+  end
+
+
+# Cycling
+
+  achievement do
+    title 'Social Cyclist'
+    description 'Ride your bicycle with another friend'
+    points 100
+    validator 'AttributeValidator'
+    sport 'Cycling'
+    icon 'cycling/users6'
+    rules [{operator: '>=', attribute: 'n_participants', value: 2}]
+  end
+
+  achievement do
+    title 'Basic Cyclist'
+    description 'Drive more than 10 kilometer'
+    points 100
+    validator 'AttributeValidator'
+    sport 'Cycling'
+    icon 'cycling/bicycle19'
+    rules [{operator: '>', attribute: 'length', value: 10000}]
+  end
+
+  achievement do
+    title 'Aspiring Cyclist'
+    description 'Drive more than 25 kilometers'
+    points 500
+    validator 'AttributeValidator'
+    sport 'Cycling'
+    icon 'cycling/cycling'
+    rules [{operator: '>', attribute: 'length', value: 25000}]
+  end
+
+  achievement do
+    title 'Tour de France participant'
+    description 'Drive more than 100 kilometers'
+    points 1000
+    validator 'AttributeValidator'
+    sport 'Cycling'
+    icon 'cycling/person94'
+    rules [{operator: '>', attribute: 'length', value: 100000}]
+  end
+
+  achievement do
+    title 'Motorcycle'
+    description 'Drive more than 30 kilometers in under an hour'
+    points 1500
+    validator 'AttributeValidator'
+    sport 'Cycling'
+    icon 'cycling/motorcycle7'
+    rules [{operator: '>', attribute: 'length', value: 30000},
+           {operator: '<', attribute: 'time', value: 60}
+          ]
+  end
+
+  achievement do
+    title 'E-bike rider'
+    description 'Average speed between 30km/h and 40 km/h'
+    points 250
+    validator 'AttributeValidator'
+    sport 'Cycling'
+    icon 'cycling/flash30'
+    rules [{operator: '<=', attribute: 'average_speed', value: 30},
+           {operator: '>', attribute: 'average_speed', value: 40}]
+  end
+
+  achievement do
+    title 'Lance Armstrong'
+    description 'Are you serious??'
+    points 2000
+    validator 'AttributeValidator'
+    sport 'Cycling'
+    icon 'cycling/antivirus'
+    rules [{operator: '<=', attribute: 'average_speed', value: 50},
+           {operator: '>', attribute: 'length', value: 2000}
+           ]
   end
 
 
