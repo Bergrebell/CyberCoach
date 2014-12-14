@@ -28,16 +28,23 @@ As a user, I should be able to
 - see his progress plotted on a graph
 
 ##Installation
-TODO: not yest tested
 ```
-git clone https://github.com/Bergrebell/CyberCoach/commits/master
+git clone https://github.com/Bergrebell/CyberCoach.git
 ```
 
+Install bundler:
+```
+gem install bundler
+```
+
+Resolve the project dependencies:
 ```
 bundle install
 ```
 
+Create and 
 ```
+rake db:migrate
 rake db:seed
 rake achievements:update
 ```
