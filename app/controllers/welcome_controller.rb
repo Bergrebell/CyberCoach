@@ -5,7 +5,7 @@ class WelcomeController < ApplicationController
     if current_user
       @user = current_user
       @items = Timeline.items(current_user)
-      @friends = @user.friends
+      @friends = current_user.friends
     end
   end
 end
