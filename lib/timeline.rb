@@ -12,7 +12,7 @@ class Timeline
     def time
       created = object.created_at
       dt = created.to_datetime
-      dt.strftime"%Y %m %d, %H:%M"
+      dt.strftime"%Y-%m-%d, %H:%M"
     end
 
     def self.items
@@ -84,6 +84,6 @@ class Timeline
     friends = a_user.friends.map {|a| FriendItem.new(a)}
     sport_sessions = a_user.sport_sessions.all.map {|a| SportSessionItem.new(a)}
     items = achievements + friends + sport_sessions
-    items.sort_by(&:created_at)
+    items.sort_by(&:created_at).reverse
   end
 end
