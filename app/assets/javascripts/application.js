@@ -20,6 +20,8 @@
 //= require jquery.flot.resize
 //= require jquery.flot.navigate.js
 //= require jquery.konami.min.js
+//= require filter_validation.js
+//= require md5.js
 
 
 // script for calendar date pick

@@ -26,3 +26,40 @@ As a user, I should be able to
 - have challenges to solve (example: Run 5 km in 30 minutes, Run 100 km in one week etc.)
 - share his progress/challenges on facebook and/or twitter
 - see his progress plotted on a graph
+
+##Installation
+TODO: not yest tested
+```
+git clone https://github.com/Bergrebell/CyberCoach/commits/master
+```
+
+```
+bundle install
+```
+
+```
+rake db:seed
+rake achievements:update
+```
+
+```
+rails s
+```
+
+##Deployed application on heroku
+
+```
+https://radiant-depths-9885.herokuapp.com/
+```
+
+##Backend / Gpx file reader
+For more details see:
+
+* Coach4rb - CyberCoach Backend
+ * [coach4rb github](https://github.com/lexruee/coach4rb)
+ * [Rubygem website](http://rubygems.org/gems/coach4rb)
+ * [Documentation](http://lexruee.github.io/coach4rb/doc/frames.html#!file.README.html)
+* GpxRuby - GPX File Reader
+ * [gpx_ruby github](https://github.com/lexruee/gpx_ruby)
+ * [Rubygem website](http://rubygems.org/gems/gpx_ruby)
+ * [Documentation](http://lexruee.github.io/gpx_ruby/doc/frames.html#!file.README.html)
