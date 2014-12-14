@@ -31,6 +31,7 @@ As a user, I should be able to
 For more details see:
 
 * Coach4rb - CyberCoach Backend
+<<<<<<< HEAD
 * *[coach4rb github](https://github.com/lexruee/coach4rb)
 * * [Rubygem website](http://rubygems.org/gems/coach4rb)
 * * [Documentation](http://lexruee.github.io/coach4rb/doc/frames.html)
@@ -38,3 +39,12 @@ For more details see:
 * * [gpx_ruby github](https://github.com/lexruee/gpx_ruby)
 * * [Rubygem website](http://rubygems.org/gems/gpx_ruby)
 * * [Documentation](http://lexruee.github.io/gpx_ruby/doc/frames.html)
+=======
+ * [coach4rb github](https://github.com/lexruee/coach4rb)
+ * [Rubygem website](http://rubygems.org/gems/coach4rb)
+ * [Documentation](http://lexruee.github.io/coach4rb/doc/)
+* GpxRuby - GPX File Reader
+ * [gpx_ruby github](https://github.com/lexruee/gpx_ruby)
+ * [Rubygem website](http://rubygems.org/gems/gpx_ruby)
+ * [Documentation](http://lexruee.github.io/gpx_ruby/doc/)
+>>>>>>> fd780aca27f53088053f1f5296deb34035e7532f
