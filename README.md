@@ -42,7 +42,7 @@ Resolve the project dependencies:
 bundle install
 ```
 
-Create and 
+Create database and insert necessary data:
 ```
 rake db:migrate
 rake db:seed
