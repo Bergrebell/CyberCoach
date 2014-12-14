@@ -33,8 +33,8 @@ For more details see:
 * Coach4rb - CyberCoach Backend
  * [coach4rb github](https://github.com/lexruee/coach4rb)
  * [Rubygem website](http://rubygems.org/gems/coach4rb)
- * [Documentation](http://lexruee.github.io/coach4rb/doc/)
+ * [Documentation](http://lexruee.github.io/coach4rb/doc/frames.html#!file.README.html)
 * GpxRuby - GPX File Reader
  * [gpx_ruby github](https://github.com/lexruee/gpx_ruby)
  * [Rubygem website](http://rubygems.org/gems/gpx_ruby)
- * [Documentation](http://lexruee.github.io/gpx_ruby/doc/)
+ * [Documentation](http://lexruee.github.io/gpx_ruby/doc/frames.html#!file.README.html)
