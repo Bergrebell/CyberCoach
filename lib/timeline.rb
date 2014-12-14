@@ -80,7 +80,7 @@ class Timeline
 
   def self.items(a_user)
     id = a_user.id
-    achievements = a_user.achievements.map {|a| AchievementItem.new(a)}
+    achievements = a_user.achievements.order('user_achievements.created_at DESC').map {|a| AchievementItem.new(a)}
     friends = a_user.friends.map {|a| FriendItem.new(a)}
     sport_sessions = a_user.sport_sessions.map {|a| SportSessionItem.new(a)}
     items = achievements + friends + sport_sessions
