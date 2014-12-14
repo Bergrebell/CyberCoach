@@ -6,7 +6,6 @@ class User < ActiveRecord::Base
 
   has_many :tracks
 
-  has_many :achievements
   has_many :achievements, through: :user_achievements
   has_many :user_achievements
 
@@ -85,7 +84,7 @@ class User < ActiveRecord::Base
 
   def load_coach_user
     coach_user = ObjectStore::Store.get([:coach_user,self.id])
-    if coach_user.nil?
+    if coach_user.nil? && true
       coach_user = Coach.user self.username
       ObjectStore::Store.set([:coach_user,self.id],coach_user)
       self.email = coach_user.email
