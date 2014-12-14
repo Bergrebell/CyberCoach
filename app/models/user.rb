@@ -228,6 +228,7 @@ class User < ActiveRecord::Base
   alias_method :new_password_confirmation, :password_confirmation
   alias_method :new_password_confirmation=, :password_confirmation=
 
+
   def email=(param)
     @email = param
   end
@@ -251,6 +252,12 @@ class User < ActiveRecord::Base
   def public_visible
     @public_visible
   end
+
+
+  def points
+    UserAchievement.joins(:achievement).where(user_id: self.id).select(:points).sum(:points)
+  end
+
 
   def is_participant_of(sport_session_id)
     if sport_session_id.nil?
