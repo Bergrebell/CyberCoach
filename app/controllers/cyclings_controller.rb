@@ -22,17 +22,21 @@ class CyclingsController < SportSessionsController
   # Edit result
   #
   def edit_result
-    @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
+    begin
+      @cycling = Facade::SportSession::Cycling.find_by id: params[:id]
 
-    if not @cycling.is_participant(current_user)
+      if not @cycling.is_participant(current_user)
+        redirect_to cyclings_url, alert: 'Permission denied'
+      end
+
+      if @cycling.date > Date.today
+        redirect_to cyclings_url, alert: 'Storing results only possible if event is passed'
+      end
+
+      @result = @cycling.result(current_user)
+    rescue
       redirect_to cyclings_url, alert: 'Permission denied'
     end
-
-    if @cycling.date > Date.today
-      redirect_to cyclings_url, alert: 'Storing results only possible if event is passed'
-    end
-
-    @result = @cycling.result(current_user)
   end
 
 

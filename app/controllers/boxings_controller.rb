@@ -28,17 +28,21 @@ class BoxingsController < SportSessionsController
   # Edit result
   #
   def edit_result
-    @boxing = Facade::SportSession::Boxing.find_by id: params[:id]
+    begin
+      @boxing = Facade::SportSession::Boxing.find_by id: params[:id]
 
-    if not @boxing.is_participant(current_user)
+      if not @boxing.is_participant(current_user)
+        redirect_to boxings_url, alert: 'Permission denied'
+      end
+
+      if @boxing.date > Date.today
+        redirect_to boxings_url, alert: 'Storing results only possible if event is passed'
+      end
+
+      @result = @boxing.result(current_user)
+    rescue
       redirect_to boxings_url, alert: 'Permission denied'
     end
-
-    if @boxing.date > Date.today
-      redirect_to boxings_url, alert: 'Storing results only possible if event is passed'
-    end
-
-    @result = @boxing.result(current_user)
   end
 
   # GET /boxings/:id/result/save
