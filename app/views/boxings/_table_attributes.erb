@@ -15,12 +15,8 @@
         <td><%= link_to sport_session.user.username, user_path(sport_session.user) %></td>
       </tr>
       <tr>
-        <td><strong>Duration</strong></td>
-        <td><%= sport_session.entry_duration %></td>
-      </tr>
-      <tr>
         <td><strong>Round duration</strong></td>
-        <td><%= sport_session.round_duration %></td>
+        <td><%= sport_session.round_duration %> minutes</td>
       </tr>
         <td><strong>Number of rounds</strong></td>
         <td><%= sport_session.number_of_rounds %></td>

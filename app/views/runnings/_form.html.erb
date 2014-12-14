@@ -29,19 +29,19 @@
 
           <!-- Duration -->
           <div class="uk-form-row uk-display-inline-block uk-margin-right">
-            <label class="uk-form-label" for="entry_duration">Duration</label>
+            <label class="uk-form-label" for="entry_duration">Duration (minutes)</label>
 
             <div class="uk-form-controls">
-              <%= f.text_field :entry_duration, class: 'uk-width-1-1' %>
+              <%= f.text_field :entry_duration, class: 'uk-width-1-1', placeholder: 'minutes' %>
             </div>
           </div>
 
           <!-- Course length -->
           <div class="uk-form-row uk-display-inline-block uk-margin-right">
-            <label class="uk-form-label" for="course_length">Course length</label>
+            <label class="uk-form-label" for="course_length">Course length (meters)</label>
 
             <div class="uk-form-controls">
-              <%= f.text_field :course_length, class: 'uk-width-1-1' %>
+              <%= f.text_field :course_length, class: 'uk-width-1-1', placeholder: 'meters' %>
             </div>
           </div>
 
