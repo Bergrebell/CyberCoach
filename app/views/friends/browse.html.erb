@@ -18,7 +18,7 @@
               <td><%= link_to user.username, user_path(user) %> </td>
               <td><%= user.points %></td>
               <td><%= user.location rescue '' %></td>
-              <td><%= render(partial: 'request_form', locals: { user: user }) if !current_user.befriended_with(user) %> </td>
+              <td><div class="uk-float-right"> <%= render(partial: 'request_form', locals: { user: user }) if !current_user.befriended_with(user) %> </div></td>
             </tr>
         <% end %>
       </table>
