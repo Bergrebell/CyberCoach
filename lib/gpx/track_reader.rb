@@ -68,7 +68,14 @@ module GPX
         end
       end
       # map to a list of key value pairs
-      @paces = paces.map { |k, v| [k, v] }
+      paces = paces.map { |k, v| [k, v] }
+
+      # filter outliers
+      sum = paces.map { |(_, v)| v }.reduce(:+)
+      mean = sum.to_f / paces.size
+      variance = paces.map {|(_,v)| (v - mean)**2 }.reduce(:+).to_f / paces.size
+      std = Math.sqrt(variance)
+      @paces = paces.select { |(_,v)| (v - mean) < 3*std }
     end
 
 
