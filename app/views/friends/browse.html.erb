@@ -10,23 +10,23 @@
         <tr>
           <th>Username</th>
           <th>Location</th>
-          <th>Actions</th>
+          <th> </th>
         </tr>
         <% @users.each do |user| %>
             <tr>
               <td><%= link_to user.username, user_path(user) %> </td>
-              <td>TODO</td>
+              <td><%= user.location rescue '' %></td>
               <td><%= render(partial: 'request_form', locals: { user: user }) if !current_user.befriended_with(user) %> </td>
             </tr>
         <% end %>
       </table>
 
 
-      <div class="uk-grid">
-        <div class="uk-width-medium-1-1">
+
+
           <%= will_paginate @users, class: 'uk-text-center' %>
-        </div>
-      </div>
+
+
 
     </div>
   </div>
