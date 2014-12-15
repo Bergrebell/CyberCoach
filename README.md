@@ -54,7 +54,7 @@ Start the webrick webserver:
 rails s
 ```
 
-Enter the follwing address in your browser:
+Enter the following address in your browser:
 ```
 http://localhost:3000/
 ```
