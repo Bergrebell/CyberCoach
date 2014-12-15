@@ -26,10 +26,16 @@ class User < ActiveRecord::Base
   validates :email, email_format: {message: "Doesn't look like an email address!"}
 
 
+  validate :check_username, on: :create
+
   after_create :create_coach_user
   after_find :load_coach_user
   after_update :update_coach_user
 
+
+  def check_username
+    errors.add(:username) if !errors.include?(:username) && !Coach.username_available?(self.username)
+  end
 
   def get_coach_user
     coach_user = Coach.user(self.username)
