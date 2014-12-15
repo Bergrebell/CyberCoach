@@ -49,8 +49,14 @@ rake db:seed
 rake achievements:update
 ```
 
+Start the webrick webserver:
 ```
 rails s
+```
+
+Enter the follwing address in your browser:
+```
+http://localhost:3000/
 ```
 
 ##Deployed application on heroku
