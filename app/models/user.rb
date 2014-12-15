@@ -190,7 +190,7 @@ class User < ActiveRecord::Base
     ids +=[-1] if ids.size == 0 # edge case: if ids is empty this corresponds to null!
     # dirty hack: assume that no user will ever have an negative id.
 
-    User.where('id NOT IN (?) AND id != ?', ids, self.id)
+    User.where('id NOT IN (?) AND id != ?', ids, self.id).limit(10).order("RANDOM()")
 
   end
 
