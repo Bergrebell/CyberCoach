@@ -37,6 +37,16 @@ Install bundler:
 gem install bundler
 ```
 
+On a ubuntu-like system install postgres and postgres lib header files:
+```
+apt-get install postgresql libpq-dev 
+```
+
+Install gem pg:
+```
+gem install pg -v '0.17.1'
+```
+
 Resolve the project dependencies:
 ```
 bundle install
