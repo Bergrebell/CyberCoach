@@ -9,12 +9,14 @@
       <table class="uk-table">
         <tr>
           <th>Username</th>
+          <th>Points</th>
           <th>Location</th>
           <th> </th>
         </tr>
         <% @users.each do |user| %>
             <tr>
               <td><%= link_to user.username, user_path(user) %> </td>
+              <td><%= user.points %></td>
               <td><%= user.location rescue '' %></td>
               <td><%= render(partial: 'request_form', locals: { user: user }) if !current_user.befriended_with(user) %> </td>
             </tr>
