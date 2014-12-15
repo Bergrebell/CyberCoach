@@ -9,7 +9,8 @@ class FriendsController < ApplicationController
   end
 
   def browse
-    @users = User.paginate(per_page: 5, page: params[:page])
+    page = Integer(params[:page]).abs rescue 1
+    @users = User.paginate(per_page: 5, page: page)
   end
 
   # Conform a friend request
