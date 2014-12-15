@@ -85,11 +85,15 @@ class User < ActiveRecord::Base
   def load_coach_user
     coach_user = ObjectStore::Store.get([:coach_user,self.id])
     if coach_user.nil?
-      coach_user = Coach.user self.username
-      ObjectStore::Store.set([:coach_user,self.id],coach_user)
-      self.email = coach_user.email
-      self.real_name = coach_user.real_name
-      self.public_visible = coach_user.public_visible
+      begin
+        coach_user = Coach.user self.username
+        ObjectStore::Store.set([:coach_user,self.id],coach_user)
+        self.email = coach_user.email
+        self.real_name = coach_user.real_name
+        self.public_visible = coach_user.public_visible
+      rescue
+        self.delete
+      end
     end
     self.email = coach_user.email unless self.email
     self.real_name = coach_user.real_name unless self.real_name
