@@ -35,8 +35,16 @@
               </li>
 
               <!-- friends menu -->
-              <li<%= params[:controller] == 'friends' ? ' class=uk-active' : '' %>>
-                <a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends</a>
+              <li data-uk-dropdown class="uk-parent<%= params[:controller] == 'friends' ? ' uk-active' : '' %>">
+                <a href="<%= friends_index_url %>"><i class="uk-icon-users"></i> Friends
+                  <i class="uk-icon-angle-down"></i></a>
+
+                <div class="uk-dropdown uk-dropdown-navbar">
+                  <ul class="uk-nav uk-nav-navbar">
+                    <li><a href="<%= friends_index_url %>">Friends</a></li>
+                    <li><a href="<%= friends_browse_url %>">Users</a></li>
+                  </ul>
+                </div>
               </li>
 
               <!-- achievement menu -->
