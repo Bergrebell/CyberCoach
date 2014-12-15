@@ -17,7 +17,7 @@ module Facade
 
     def self.authenticate(username, password)
       coach_user = Coach.authenticate(username, password)
-      if coach_user
+      if coach_user && coach_user.public_visible == Coach4rb::Privacy::Public
         get_or_create_rails_user(coach_user, username, password)
       else
         false
