@@ -1,1 +1,38 @@
-See README.md.
+SportsMate - ASE Course 2014/15
+--------------------------------------------
+
+##Installation
+```
+git clone https://github.com/Bergrebell/CyberCoach.git
+```
+
+Install bundler:
+```
+gem install bundler
+```
+
+Resolve the project dependencies:
+```
+bundle install
+```
+
+Create database and insert necessary data:
+```
+rake db:migrate
+rake db:seed
+rake achievements:update
+```
+
+Start the webrick webserver:
+```
+rails s
+```
+
+Enter the follwing address in your browser:
+```
+http://localhost:3000/
+```
+
+
+##Details
+For more details see README.md.
